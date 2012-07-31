@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"
+	default-autowire="byName" default-lazy-init="true">
+
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:/config.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 
+	<import resource="classpath*:/bean-system.xml" />
+	<import resource="classpath*:/bean-bonus.xml" />
+ 	-->
+ 	
+ 	<!-- <import resource="classpath*:/system-bean.xml"/> -->
+ 	
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName">
+			<value>${hibernate.driverClassName}</value>
+		</property>
+		<property name="url">
+			<value>${hibernate.url}</value>
+		</property>
+		<property name="username">
+			<value>${hibernate.username}</value>
+		</property>
+		<property name="password">
+			<value>${hibernate.password}</value>
+		</property>
+	</bean>
+
+	<bean id="dataSource_jndi" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName">
+			<value>${dataSource.jndiName}</value>
+		</property>
+	</bean>
+
+	<!-- ************************** Hibernate SessionFacotry ******************** -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+
+		<!-- 这种方式在WAS中存在问题，Weblogic可以使用 -->
+		<property name="mappingDirectoryLocations">
+			<list>
+				<value>classpath:/com/huateng/db/hbm/</value>
+			</list>
+		</property>
+		<property name="dataSource" ref="${dataSource.switch}" />
+
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.use_outer_join">${hibernate.use_outer_join}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.jdbc.batch_size">${hibernate.jdbc.batch_size}</prop>
+				<prop key="hibernate.jdbc.fetch_size">${hibernate.jdbc.fetch_size}</prop>
+				<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.transaction.flush_before_completion">true</prop>
+				<prop key="hibernate.autoReconnect">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- jdbcTemplate -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="${dataSource.switch}" />
+	</bean>
+	
+	<!-- Transaction manager that delegates to JTA (for a transactional JNDI 
+		DataSource) -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager"
+		autowire="byName">
+	</bean>
+
+	<bean id="matchAllWithPropReq"
+		class="org.springframework.transaction.interceptor.NameMatchTransactionAttributeSource">
+		<property name="properties">
+			<props>
+				<prop key="*insert*">
+					PROPAGATION_REQUIRED,-Exception
+				</prop>
+				<prop key="*save*">
+					PROPAGATION_REQUIRED,-Exception
+				</prop>
+				<prop key="*create*">
+					PROPAGATION_REQUIRED,-Exception
+				</prop>
+				<prop key="*update*">
+					PROPAGATION_REQUIRED,-Exception
+				</prop>
+				<prop key="*delete*">
+					PROPAGATION_REQUIRED,-Exception
+				</prop>
+				<prop key="*del*">
+					PROPAGATION_REQUIRED,-Exception
+				</prop>
+				<prop key="*get*">PROPAGATION_SUPPORTS,readOnly</prop>
+				<prop key="*find*">PROPAGATION_SUPPORTS,readOnly</prop>
+				<prop key="*">PROPAGATION_SUPPORTS</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="matchAllTxInterceptor"
+		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager">
+			<ref bean="transactionManager" />
+		</property>
+		<property name="transactionAttributeSource">
+			<ref bean="matchAllWithPropReq" />
+		</property>
+	</bean>
+
+	<bean id="baseTxService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+		abstract="true">
+		<property name="transactionManager">
+			<ref bean="transactionManager" />
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- auto proxy -->
+	<bean id="autoProxyCreator"
+		class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames">
+			<list>
+				<value>*Service</value>
+
+			</list>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>matchAllTxInterceptor</value>
+			</list>
+		</property>
+	</bean>
+
+</beans>
