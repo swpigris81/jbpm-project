@@ -107,7 +107,8 @@
 			<property name="hibernate.connection.username" value="jbpm5" />
 			<property name="hibernate.connection.password" value="jbpm5" />
 			<property name="hibernate.connection.autocommit" value="false" />
-			<property name="hibernate.hbm2ddl.auto" value="create" />
+			<!-- 第一次持久化数据库的时候必须使用create，之后需要改成update -->
+			<property name="hibernate.hbm2ddl.auto" value="update" />
 			<property name="hibernate.show_sql" value="true" />
 			
 		</properties>
