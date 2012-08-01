@@ -3,6 +3,8 @@ package com.huateng.jbpm.test;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.drools.SystemEventListenerFactory;
 import org.jbpm.task.Group;
 import org.jbpm.task.User;
@@ -19,8 +21,11 @@ import com.huateng.jbpm.test.domain.UserInfoDomain;
  *
  */
 public class TaskServerDaemon {
+    private Log log = LogFactory.getLog(TaskServerDaemon.class);
+    
     private boolean running;
     private TaskServer taskServer;
+    private Thread thread = null;
     
     public TaskServerDaemon() {
         this.running = false;
@@ -48,14 +53,27 @@ public class TaskServerDaemon {
             taskSession.addGroup(new Group(group));
         }
         taskServer = new MinaTaskServer(taskService);
-        Thread thread = new Thread(taskServer);
+        thread = new Thread(taskServer);
+        //Thread thread = new Thread(taskServer);
         thread.start();
     }
 
     public void stopServer() throws Exception {
-        if(!isRunning())
+        if(!isRunning()){
             return;
-        taskServer.stop();
+        }
+        try{
+            taskServer.stop();
+        }catch(Exception e){
+            log.error("Exception while stopping task server " + e.getMessage());
+            throw e;
+        }
+        try{
+            thread.interrupt();
+        }catch(Exception e){
+            log.error("Exception while stopping task server thread " + e.getMessage());
+            throw e;
+        }
     }
     
     public boolean isRunning() {
