@@ -45,7 +45,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-core-5.3.0.Final.jar" sourcepath="C:/Users/Jason/.m2/repository/org/jbpm/jbpm-human-task-core/5.3.0.Final/jbpm-human-task-core-5.3.0.Final-sources.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-hornetq-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-jms-5.3.0.Final.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-mina-5.3.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-mina-5.3.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/JBPM5.3/droolsjbpm-jbpm-5.0.0-877-g18e6d9d.zip"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-persistence-jpa-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-test-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-workitems-5.3.0.Final.jar"/>

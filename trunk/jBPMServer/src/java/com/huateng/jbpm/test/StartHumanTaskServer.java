@@ -8,7 +8,8 @@ import org.apache.commons.logging.LogFactory;
 
 public class StartHumanTaskServer implements ServletContextListener {
     public final static Log log = LogFactory.getLog(StartHumanTaskServer.class);
-
+    private TaskServerDaemon taskServerDaemon = new TaskServerDaemon();
+    
     public static void main(String[] args) {
         final TaskServerDaemon taskServerDaemon = new TaskServerDaemon();
 
@@ -30,7 +31,6 @@ public class StartHumanTaskServer implements ServletContextListener {
     }
 
     public void contextDestroyed(ServletContextEvent event) {
-        final TaskServerDaemon taskServerDaemon = new TaskServerDaemon();
         log.info("stopping server...");
         try {
             taskServerDaemon.stopServer();
@@ -43,7 +43,6 @@ public class StartHumanTaskServer implements ServletContextListener {
     }
 
     public void contextInitialized(ServletContextEvent event) {
-        final TaskServerDaemon taskServerDaemon = new TaskServerDaemon();
         log.info("starting server...");
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
