@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="sys" extends="struts-default">
+		<interceptors>
+			<interceptor-stack name="default">
+				<interceptor-ref name="exception">
+					<param name="logEnabled">true</param>
+					<param name="logLevel">warn</param>
+				</interceptor-ref>
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="default"></default-interceptor-ref>
+
+
+		<!-- 系统登录 -->
+		<action name="testAction" class="com.huateng.jbpm.test.client.web.action.TestAction">
+			<result name="success" type="dispatcher">/jsp/main.jsp
+			</result>
+			<result name="loginPage" type="redirect">/index.jsp	</result>
+		</action>
+	</package>
+</struts>
