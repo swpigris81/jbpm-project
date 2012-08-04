@@ -50,7 +50,7 @@
 		<!-- 这种方式在WAS中存在问题，Weblogic可以使用 -->
 		<property name="mappingDirectoryLocations">
 			<list>
-				<value>classpath:/com/huateng/db/hbm/</value>
+				<!-- <value>classpath:/com/huateng/db/hbm/</value> -->
 			</list>
 		</property>
 		<property name="dataSource" ref="${dataSource.switch}" />
