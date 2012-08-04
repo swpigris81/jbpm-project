@@ -4,9 +4,15 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	id="WebApp_ID" version="2.5">
 	<display-name>jBPMServer</display-name>
+	
 	<listener>
   		<listener-class>com.huateng.jbpm.test.StartHumanTaskServer</listener-class>
   	</listener>
+  	<!-- <servlet>
+  		<servlet-name>jbpm5.3</servlet-name>
+  		<servlet-class>com.huateng.jbpm.test.StartHumanTaskServerServlet</servlet-class>
+  		<load-on-startup>2</load-on-startup>
+  	</servlet> -->
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.htm</welcome-file>
