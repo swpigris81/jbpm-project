@@ -49,6 +49,7 @@ import bitronix.tm.TransactionManagerServices;
 /**
  * <p>Description: [人工任务客户端]</p>
  * @author  <a href="mailto: xxx@huateng.com">作者中文名</a>
+ * @deprecated
  * @version $Revision$
  */
 public class HumanTaskClient {
