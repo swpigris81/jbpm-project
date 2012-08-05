@@ -80,6 +80,7 @@ public class JbpmService {
     private TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
     private org.jbpm.task.service.TaskService taskService;
     private StatefulKnowledgeSession ksession;
+    private String[] process;
     private String hostIp = "127.0.0.1";
     private int port = 9123;
     /** session是否需要持久化 **/
@@ -94,6 +95,16 @@ public class JbpmService {
                 new MinaTaskClientHandler(SystemEventListenerFactory.getSystemEventListener())));
         client.connect("127.0.0.1", 9123);
     }
+    /**
+     * <p>Discription:[初始化实体管理工厂以及会话]</p>
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public void init(){
+        setUp();
+        start(process);
+    }
+    
     /**
      * <p>Discription:[获取JBPM客户端，初始化服务器端IP和端口]</p>
      * @coustructor 方法.
@@ -168,9 +179,13 @@ public class JbpmService {
      */
     public KnowledgeBase createKnowledgeBase(String... process) {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        for (String p: process) {
-            //kbuilder.add(ResourceFactory.newClassPathResource(p), ResourceType.BPMN2);
-            kbuilder.add(new ClassPathResource(p), ResourceType.BPMN2);
+        if(process == null || process.length < 1 || process[0].equals("")){
+            kbuilder.add(new ClassPathResource("ProcessTask.bpmn"), ResourceType.BPMN2);
+        }else{
+            for (String p: process) {
+                //kbuilder.add(ResourceFactory.newClassPathResource(p), ResourceType.BPMN2);
+                kbuilder.add(new ClassPathResource(p), ResourceType.BPMN2);
+            }
         }
         
         // Check for errors
@@ -352,6 +367,31 @@ public class JbpmService {
             throw new RuntimeException(ex.getMessage());
         }
     }
+    /**
+     * <p>Discription:[获取会话]</p>
+     * @param sessionId 会话ID
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public StatefulKnowledgeSession getKSession(int sessionId){
+        if(sessionId != -1){
+            //获取历史会话
+            return loadSession(sessionId, "");
+        }else{
+            //获取当前会话
+            return ksession;
+        }
+    }
+    /**
+     * <p>Discription:[获取会话ID]</p>
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public int getKSessionId(){
+        return ksession.getId();
+    }
     
     /**
      * <p>Discription:[获取变量值]</p>
@@ -407,6 +447,9 @@ public class JbpmService {
     public List<String> getNodeTriggered(long processInstanceId) {
         List<String> names = new ArrayList<String>();
         if (sessionPersistence) {
+            if(dbLog == null){
+                dbLog = new JPAProcessInstanceDbLog(ksession.getEnvironment());
+            }
             List<NodeInstanceLog> logs = dbLog.findNodeInstances(processInstanceId);
             if (logs != null) {
                 for (NodeInstanceLog l: logs) {
@@ -565,7 +608,19 @@ public class JbpmService {
     public org.jbpm.task.service.TaskService getService() {
         return new org.jbpm.task.service.TaskService(emf, SystemEventListenerFactory.getSystemEventListener());
     }
-    
+    /**
+     * <p>Discription:[根据任务编号查找任务]</p>
+     * @param taskId 任务编号
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public Task getTaskById(long taskId){
+        BlockingGetTaskResponseHandler handlerT = new BlockingGetTaskResponseHandler();
+        client.getTask(taskId, handlerT);
+        Task task = handlerT.getTask();
+        return task;
+    }
     /**
      * <p>Discription:[领取指定用户的任务]</p>
      * @param user
@@ -735,9 +790,10 @@ public class JbpmService {
      * <p>Discription:[方法功能中文描述]</p>
      * @return StatefulKnowledgeSession ksession.
      */
-    public StatefulKnowledgeSession getKsession() {
+    public StatefulKnowledgeSession getKSession() {
         return ksession;
     }
+    
     /**
      * <p>Discription:[方法功能中文描述]</p>
      * @param ksession The ksession to set.
@@ -759,4 +815,21 @@ public class JbpmService {
     public void setSessionPersistence(boolean sessionPersistence) {
         this.sessionPersistence = sessionPersistence;
     }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String[] process.
+     */
+    public String[] getProcess() {
+        return process;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param process The process to set.
+     */
+    public void setProcess(String... process) {
+        this.process = process;
+    }
+    
 }
