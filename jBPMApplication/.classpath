@@ -42,8 +42,8 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/db2jcc.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-compiler-5.4.0.Final.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-core-5.4.0.Final.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-persistence-jpa-5.4.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-core-5.4.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/drools-distribution-5.4.0.Final/drools-distribution-5.4.0.Final/sources/drools-core-5.4.0.Final-sources.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-persistence-jpa-5.4.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/drools-distribution-5.4.0.Final/drools-distribution-5.4.0.Final/sources/drools-persistence-jpa-5.4.0.Final-sources.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ecj-3.5.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ejb3-persistence-1.0.2.GA.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ezmorph-1.0.6.jar"/>
@@ -64,12 +64,12 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-bpmn2-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-flow-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-flow-builder-5.3.0.Final.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-core-5.3.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/JBPM5.3/droolsjbpm-jbpm-5.0.0-877-g18e6d9d.zip"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-core-5.3.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/droolsjbpm-jbpm-5.0.0-877-g18e6d9d.zip"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-hornetq-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-jms-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-mina-5.3.0.Final.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-persistence-jpa-5.3.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/JBPM5.3/droolsjbpm-jbpm-5.0.0-877-g18e6d9d.zip"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-test-5.3.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-persistence-jpa-5.3.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/droolsjbpm-jbpm-5.0.0-877-g18e6d9d.zip"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-test-5.3.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/droolsjbpm-jbpm-5.0.0-877-g18e6d9d.zip"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-workitems-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jdbc2_0-stdext.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jdom-1.0.jar"/>

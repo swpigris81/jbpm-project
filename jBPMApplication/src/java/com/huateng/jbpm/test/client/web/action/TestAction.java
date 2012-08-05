@@ -12,7 +12,7 @@ import org.nutz.json.Json;
 
 import com.huateng.jbpm.test.client.common.web.action.BaseAction;
 import com.huateng.jbpm.test.client.db.model.LoginForm;
-import com.huateng.jbpm.test.client.jbpm.humantask.HumanTaskClient;
+import com.huateng.jbpm.test.client.jbpm.humantask.JbpmService;
 /**
  * <p>Description: [工作流测试类(WEB)]</p>
  * @author  <a href="mailto: xxx@huateng.com">作者中文名</a>
@@ -22,7 +22,7 @@ public class TestAction extends BaseAction {
     private LoginForm loginForm;
     private String userId;
     
-    private static HumanTaskClient client = new HumanTaskClient();
+    private static JbpmService client = new JbpmService();
     
     static{
         //加载流程定义
@@ -54,7 +54,8 @@ public class TestAction extends BaseAction {
             return null;
         }
         //加载流程定义
-        client.start(true);
+        client.setUp();
+        client.start("");
         //定义参数
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("userId", "李雷");
