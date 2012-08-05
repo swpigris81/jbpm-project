@@ -56,7 +56,7 @@
 			<property name="hibernate.connection.password" value="jbpm5" />
 			<property name="hibernate.connection.autocommit" value="false" />
 			<!-- none|create|update|create-drop。此处仅仅可以使用none，若改为其他值，将导致数据库可能丢失的情况，慎重！ -->
-			<property name="hibernate.hbm2ddl.auto" value="create" />
+			<property name="hibernate.hbm2ddl.auto" value="none" />
 			<property name="hibernate.show_sql" value="true" />
 		</properties>
 	</persistence-unit>
@@ -107,7 +107,7 @@
 			<property name="hibernate.connection.password" value="jbpm5" />
 			<property name="hibernate.connection.autocommit" value="false" />
 			<!-- none|create|update|create-drop。此处仅仅可以使用none，若改为其他值，将导致数据库可能丢失的情况，慎重！ -->
-			<property name="hibernate.hbm2ddl.auto" value="create" />
+			<property name="hibernate.hbm2ddl.auto" value="none" />
 			<property name="hibernate.show_sql" value="true" />
 			
 		</properties>

@@ -8,8 +8,6 @@ import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,6 +18,7 @@ import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderError;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.impl.EnvironmentFactory;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.logger.KnowledgeRuntimeLogger;
 import org.drools.logger.KnowledgeRuntimeLoggerFactory;
@@ -27,7 +26,10 @@ import org.drools.persistence.jpa.JPAKnowledgeService;
 import org.drools.persistence.jta.JtaTransactionManager;
 import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
+import org.drools.runtime.KnowledgeSessionConfiguration;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.jbpm.process.audit.JPAProcessInstanceDbLog;
+import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
 import org.jbpm.task.Content;
 import org.jbpm.task.Task;
 import org.jbpm.task.TaskData;
@@ -58,6 +60,8 @@ public class HumanTaskClient {
     private KnowledgeRuntimeLogger logger;
     private StatefulKnowledgeSession ksession;
     private String [] processFiles;
+    
+    private JPAProcessInstanceDbLog dbLog;
     
     private String hostIp;
     private int port;
@@ -133,6 +137,28 @@ public class HumanTaskClient {
         return kbase;
     }
     
+    public Environment createEnvironment(EntityManagerFactory emf) {
+        bitronix.tm.BitronixTransactionManager transactionManager = TransactionManagerServices.getTransactionManager();
+        Environment env = EnvironmentFactory.newEnvironment();
+        env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
+        env.set(EnvironmentName.TRANSACTION_MANAGER, new JtaTransactionManager(transactionManager, null, transactionManager));
+        env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER, new MultipleUseJpaPersistenceContextManager(env));
+        return env;
+    }
+    
+    public StatefulKnowledgeSession createStatefullKnowledgeSession(KnowledgeBase kbase, EntityManagerFactory emf){
+        StatefulKnowledgeSession session;
+        final KnowledgeSessionConfiguration conf = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
+        Environment env = createEnvironment(emf);
+        session = JPAKnowledgeService.newStatefulKnowledgeSession(kbase, conf, env);
+        new JPAWorkingMemoryDbLogger(session);
+        if (dbLog == null) {
+            dbLog = new JPAProcessInstanceDbLog(session.getEnvironment());
+        }
+        //knowledgeSessionSetLocal.get().add(session);
+        return session;
+    }
+    
     /**
      * <p>Discription:[加载流程模板和注册人工任务]</p>
      * @param bpmnFile 要加载的流程图相对路径
@@ -143,16 +169,6 @@ public class HumanTaskClient {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public void start(String hostIp, int port) throws RuntimeException {
-        bitronix.tm.BitronixTransactionManager transactionManager = TransactionManagerServices.getTransactionManager();
-//        try {
-//            transactionManager.begin();
-//        } catch (NotSupportedException e) {
-//            log.error(e.getMessage(), e);
-//            throw new RuntimeException(e);
-//        } catch (SystemException e) {
-//            log.error(e.getMessage(), e);
-//            throw new RuntimeException(e);
-//        }
         KnowledgeBase kbase = null;
         if(getProcessFiles() == null || getProcessFiles().length < 1){
             kbase = createKnowledgeBase(new String[]{"ProcessTask.bpmn"});
@@ -161,12 +177,7 @@ public class HumanTaskClient {
         }
         //ksession = kbase.newStatefulKnowledgeSession();
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa");
-        Environment env = KnowledgeBaseFactory.newEnvironment();
-        env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
-        env.set(EnvironmentName.TRANSACTION_MANAGER, new JtaTransactionManager(transactionManager, null, transactionManager));
-        env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER, new MultipleUseJpaPersistenceContextManager(env));
-        
-        ksession = JPAKnowledgeService.newStatefulKnowledgeSession( kbase, null, env );
+        ksession = createStatefullKnowledgeSession(kbase, emf);
         logger = KnowledgeRuntimeLoggerFactory.newConsoleLogger(ksession);
         BaseHumanTaskHandler humanTaskHandler = new BaseHumanTaskHandler();
         humanTaskHandler.setConnection(hostIp, port);
@@ -244,6 +255,14 @@ public class HumanTaskClient {
         }else{
             return ksession;
         }
+    }
+    
+    public void getkContext(){
+        
+    }
+    
+    public void getNodes(long processInstanceId){
+        
     }
     
     /**
