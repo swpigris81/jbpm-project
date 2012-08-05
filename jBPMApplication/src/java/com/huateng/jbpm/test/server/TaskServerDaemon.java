@@ -5,6 +5,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -84,7 +85,7 @@ public class TaskServerDaemon {
     public void startDb() throws NamingException {
         Context ctx = new InitialContext();
         ds = new PoolingDataSource();
-//        DataSource ds1 = (DataSource) ctx.lookup("java:comp/env/jbpm-ds");
+        //DataSource ds1 = (DataSource) ctx.lookup("java:comp/UserTransaction");
         
         ds.setUniqueName("jbpm-ds");
         //ds.setClassName("com.mysql.jdbc.Driver");

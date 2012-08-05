@@ -6,8 +6,12 @@
     LoginForm loginForm = (LoginForm)request.getSession().getAttribute("userInfo");
 %>
 <html>
-	<form action="testAction!getTasks.action">
+	<form action="testAction!newTask.action">
 		<input type="text" name="userId" id="userId" value="<%=loginForm.getUserId() %>"/>
 		<input type="submit" value="提交"/>
 	</form>
+	<form action="testAction!getTasks.action">
+		<input type="text" name="taskId" id="taskId" value=""/>
+		<input type="submit" value="提交"/>
+	</form> 
 </html>
