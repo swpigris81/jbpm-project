@@ -11,7 +11,8 @@
 	<persistence-unit name="org.jbpm.persistence.jpa"
 		transaction-type="JTA">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<jta-data-source>jbpm-ds</jta-data-source>
+		<!-- <jta-data-source>jbpm-ds</jta-data-source> -->
+		<jta-data-source>java:comp/env/jbpm-ds</jta-data-source>
 		<mapping-file>META-INF/JBPMorm.xml</mapping-file>
 		<mapping-file>META-INF/ProcessInstanceInfo.hbm.xml</mapping-file>
 		<class>org.jbpm.persistence.processinstance.ProcessInstanceInfo</class>
@@ -49,15 +50,23 @@
 			<property name="hibernate.max_fetch_depth" value="3" />
 			<property name="hibernate.transaction.manager_lookup_class"
 				value="org.hibernate.transaction.BTMTransactionManagerLookup" />
-			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+			<!-- <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
 			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/jbpm5?useUnicode=true&amp;characterEncoding=UTF-8" />
 			<property name="hibernate.connection.username" value="jbpm5" />
-			<property name="hibernate.connection.password" value="jbpm5" />
+			<property name="hibernate.connection.password" value="jbpm5" /> -->
+			
+			<property name="hibernate.dialect" value="org.hibernate.dialect.DB2Dialect" />
+			<property name="hibernate.connection.driver_class" value="com.ibm.db2.jcc.DB2Driver" />
+			<property name="hibernate.connection.url" value="jdbc:db2://192.168.0.108:50001/payment" />
+			<property name="hibernate.connection.username" value="payment" />
+			<property name="hibernate.connection.password" value="123456" />
+			
 			<property name="hibernate.connection.autocommit" value="false" />
 			<!-- none|create|update|create-drop。此处仅仅可以使用none，若改为其他值，将导致数据库可能丢失的情况，慎重！ -->
 			<property name="hibernate.hbm2ddl.auto" value="none" />
 			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.jndi.class" value="bitronix.tm.jndi.BitronixInitialContextFactory"/> 
 		</properties>
 	</persistence-unit>
 	
@@ -100,11 +109,18 @@
 			<property name="hibernate.transaction.manager_lookup_class"
 				value="org.hibernate.transaction.BTMTransactionManagerLookup" />
 			
-			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+			<!-- <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
 			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/jbpm5?useUnicode=true&amp;characterEncoding=UTF-8" />
 			<property name="hibernate.connection.username" value="jbpm5" />
-			<property name="hibernate.connection.password" value="jbpm5" />
+			<property name="hibernate.connection.password" value="jbpm5" /> -->
+			
+			<property name="hibernate.dialect" value="org.hibernate.dialect.DB2Dialect" />
+			<property name="hibernate.connection.driver_class" value="com.ibm.db2.jcc.DB2Driver" />
+			<property name="hibernate.connection.url" value="jdbc:db2://192.168.0.108:50001/payment" />
+			<property name="hibernate.connection.username" value="payment" />
+			<property name="hibernate.connection.password" value="123456" />
+			
 			<property name="hibernate.connection.autocommit" value="false" />
 			<!-- none|create|update|create-drop。此处仅仅可以使用none，若改为其他值，将导致数据库可能丢失的情况，慎重！ -->
 			<property name="hibernate.hbm2ddl.auto" value="none" />
