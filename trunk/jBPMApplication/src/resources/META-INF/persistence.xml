@@ -14,7 +14,7 @@
 		<!-- <jta-data-source>jbpm-ds</jta-data-source> -->
 		<jta-data-source>java:comp/env/jbpm-ds</jta-data-source>
 		<mapping-file>META-INF/JBPMorm.xml</mapping-file>
-		<!-- <mapping-file>META-INF/ProcessInstanceInfoBak.hbm.xml</mapping-file> -->
+		<!-- <mapping-file>META-INF/ProcessInstanceInfo.hbm.xml</mapping-file> -->
 		<class>org.jbpm.persistence.processinstance.ProcessInstanceInfo</class>
 		<class>org.jbpm.persistence.processinstance.ProcessInstanceEventInfo</class>
 		<class>org.drools.persistence.info.SessionInfo</class>
