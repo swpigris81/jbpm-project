@@ -63,7 +63,6 @@ import org.jbpm.task.service.responsehandlers.BlockingGetContentResponseHandler;
 import org.jbpm.task.service.responsehandlers.BlockingGetTaskResponseHandler;
 import org.jbpm.task.service.responsehandlers.BlockingTaskOperationResponseHandler;
 import org.jbpm.task.service.responsehandlers.BlockingTaskSummaryResponseHandler;
-import org.jbpm.test.JbpmJUnitTestCase.TestWorkItemHandler;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 
 import bitronix.tm.BitronixTransactionManager;
@@ -77,7 +76,6 @@ public class JbpmService {
     private WorkingMemoryInMemoryLogger logger;
     private EntityManagerFactory emf;
     private JPAProcessInstanceDbLog dbLog;
-    private TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
     private org.jbpm.task.service.TaskService taskService;
     private StatefulKnowledgeSession ksession;
     private String[] process;
@@ -483,10 +481,6 @@ public class JbpmService {
         } else {
             logger.clear();
         }
-    }
-    
-    public TestWorkItemHandler getTestWorkItemHandler() {
-        return workItemHandler;
     }
     /**
      * <p>Discription:[判断变量是否在流程内]</p>
