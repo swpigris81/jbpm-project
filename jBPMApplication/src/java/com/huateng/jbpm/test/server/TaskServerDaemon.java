@@ -5,7 +5,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.sql.DataSource;
+import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -85,20 +85,20 @@ public class TaskServerDaemon {
     public void startDb() throws NamingException {
         Context ctx = new InitialContext();
         ds = new PoolingDataSource();
-        //DataSource ds1 = (DataSource) ctx.lookup("java:comp/UserTransaction");
+        UserTransaction ds1 = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
         
-        ds.setUniqueName("jbpm-ds");
-        //ds.setClassName("com.mysql.jdbc.Driver");
-        //ds.setClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
-        ds.setClassName("bitronix.tm.resource.jdbc.lrc.LrcXADataSource");
-        ds.setMaxPoolSize(3);
-        ds.setAllowLocalTransactions(true);
-        ds.getDriverProperties().put("user", "payment");
-        ds.getDriverProperties().put("password", "123456");
-        ds.getDriverProperties().put("url", "jdbc:db2://192.168.0.108:50001/payment");
-        ds.getDriverProperties().put("driverClassName","com.ibm.db2.jcc.DB2Driver");
-        ds.init();
-        ctx.bind("jbpm-ds", ds);
+//        ds.setUniqueName("jbpm-ds");
+//        //ds.setClassName("com.mysql.jdbc.Driver");
+//        //ds.setClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
+//        ds.setClassName("bitronix.tm.resource.jdbc.lrc.LrcXADataSource");
+//        ds.setMaxPoolSize(3);
+//        ds.setAllowLocalTransactions(true);
+//        ds.getDriverProperties().put("user", "payment");
+//        ds.getDriverProperties().put("password", "123456");
+//        ds.getDriverProperties().put("url", "jdbc:db2://192.168.0.108:50001/payment");
+//        ds.getDriverProperties().put("driverClassName","com.ibm.db2.jcc.DB2Driver");
+//        ds.init();
+//        ctx.bind("jbpm-ds", ds);
         
         entityManagerFactory = Persistence.createEntityManagerFactory("org.jbpm.task");
         
