@@ -89,14 +89,14 @@ public class TaskServerDaemon {
         
         ds.setUniqueName("jbpm-ds");
         //ds.setClassName("com.mysql.jdbc.Driver");
-        ds.setClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
-//        ds.setClassName("bitronix.tm.resource.jdbc.lrc.LrcXADataSource");
+        //ds.setClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
+        ds.setClassName("bitronix.tm.resource.jdbc.lrc.LrcXADataSource");
         ds.setMaxPoolSize(3);
         ds.setAllowLocalTransactions(true);
-        ds.getDriverProperties().put("user", "jbpm5");
-        ds.getDriverProperties().put("password", "jbpm5");
-        ds.getDriverProperties().put("url", "jdbc:mysql://localhost:3306/jbpm5?useUnicode=true&amp;characterEncoding=UTF-8");
-        //ds.getDriverProperties().put("driverClassName","com.mysql.jdbc.Driver");
+        ds.getDriverProperties().put("user", "payment");
+        ds.getDriverProperties().put("password", "123456");
+        ds.getDriverProperties().put("url", "jdbc:db2://192.168.0.108:50001/payment");
+        ds.getDriverProperties().put("driverClassName","com.ibm.db2.jcc.DB2Driver");
         ds.init();
         ctx.bind("jbpm-ds", ds);
         
