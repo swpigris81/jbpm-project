@@ -5,8 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.struts2.ServletActionContext;
+import org.drools.definition.process.Node;
 import org.jbpm.task.Task;
 import org.jbpm.task.User;
 import org.jbpm.task.query.TaskSummary;
@@ -30,7 +37,11 @@ public class TestAction extends BaseAction {
     
     static{
         //加载流程定义
-        client.init();
+        try {
+            client.init();
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
     }
     
     /**
@@ -57,13 +68,33 @@ public class TestAction extends BaseAction {
         }
         Task task = client.getTaskById(NumberUtils.toLong(taskId));
         LOG.info("asdsad", task.getTaskData().getStatus().toString());
-        System.out.println(client.getVariableValue("date", task.getTaskData().getProcessInstanceId(), client.getKSession(2)));
-        List list = client.getNodeTriggered(task.getTaskData().getProcessInstanceId());
-        if(list != null && !list.isEmpty()){
-            for(int i=0; i< list.size(); i++){
-                System.out.println(list.get(i));
+        Context ctx = null;
+        UserTransaction transactionManager = null;
+        try{
+            ctx = new InitialContext();
+            transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+            transactionManager.begin();
+            System.out.println(client.getVariableValue("date", task.getTaskData().getProcessInstanceId(), client.getKSession(-1)));
+            Node [] nodes = client.getNodeTriggered(task.getTaskData().getProcessInstanceId(), client.getKSession(-1));
+            if(nodes != null && nodes.length>0){
+                for(int i=0; i< nodes.length; i++){
+                    System.out.println(nodes[i]);
+                }
             }
-        }
+            transactionManager.commit();
+        }catch(Exception e){
+            if(transactionManager != null){
+                try {
+                    transactionManager.rollback();
+                } catch (IllegalStateException e1) {
+                    e1.printStackTrace();
+                } catch (SecurityException e1) {
+                    e1.printStackTrace();
+                } catch (SystemException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        } 
         return null;
     }
     /**

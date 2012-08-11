@@ -3,16 +3,6 @@
 	<classpathentry kind="src" path="src/java"/>
 	<classpathentry kind="src" path="src/config"/>
 	<classpathentry kind="src" path="src/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.5.0_22">
-		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v6.0">
-		<attributes>
-			<attribute name="owner.project.facets" value="jst.web"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/activation-1.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/antlr-2.7.7.jar"/>
@@ -69,7 +59,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-jms-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-mina-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-persistence-jpa-5.3.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/droolsjbpm-jbpm-5.0.0-877-g18e6d9d.zip"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-test-5.3.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/droolsjbpm-jbpm-5.0.0-877-g18e6d9d.zip"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-workitems-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jdbc2_0-stdext.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jdom-1.0.jar"/>
@@ -128,5 +117,10 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ehcache-1.2.3.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/hibernate-3.3.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/nutz-1.b.44-jdk5.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
