@@ -9,8 +9,9 @@ import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.drools.KnowledgeBaseFactory;
 import org.drools.SystemEventListenerFactory;
+import org.drools.impl.EnvironmentFactory;
+import org.drools.persistence.jta.JtaTransactionManager;
 import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
 import org.jbpm.task.Group;
@@ -20,9 +21,9 @@ import org.jbpm.task.service.TaskService;
 import org.jbpm.task.service.TaskServiceSession;
 import org.jbpm.task.service.mina.MinaTaskServer;
 
-import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.resource.jdbc.PoolingDataSource;
 
+import com.huateng.jbpm.test.client.jbpm.humantask.MultipleUseJpaPersistenceContextManager;
 import com.huateng.jbpm.test.server.domain.UserInfoDomain;
 
 /**
@@ -33,12 +34,20 @@ import com.huateng.jbpm.test.server.domain.UserInfoDomain;
 public class TaskServerDaemon {
     private Log log = LogFactory.getLog(TaskServerDaemon.class);
     
+    /** 工作流是否正在运行中 **/
     private boolean running;
+    /** 工作流服务 **/
     private TaskServer taskServer;
-    private PoolingDataSource ds;
-    private EntityManagerFactory emf;
-    private EntityManagerFactory entityManagerFactory;
+    /** 工作流运行的线程 **/
     private Thread thread = null;
+    /** JTA实体管理工厂 **/
+    public static EntityManagerFactory jtaEmf;
+    /** 非JTA实体管理工厂 **/
+    private EntityManagerFactory noneJtaEmf;
+    /** JNDI数据源(通过JAVA代码实现) **/
+    private PoolingDataSource ds;
+    
+    public static Environment env;
     
     public TaskServerDaemon() {
         this.running = false;
@@ -58,7 +67,7 @@ public class TaskServerDaemon {
             log.error("JNDI数据库配置失败", e);
             throw new RuntimeException(e);
         }
-        TaskService taskService = new TaskService(entityManagerFactory, SystemEventListenerFactory.getSystemEventListener());
+        TaskService taskService = new TaskService(jtaEmf, SystemEventListenerFactory.getSystemEventListener());
         TaskServiceSession taskSession = taskService.createSession() ;
         UserInfoDomain userInfo = new UserInfoDomain();
         taskService.setUserinfo( userInfo);
@@ -85,8 +94,6 @@ public class TaskServerDaemon {
     public void startDb() throws NamingException {
         Context ctx = new InitialContext();
         ds = new PoolingDataSource();
-        UserTransaction ds1 = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
-        
 //        ds.setUniqueName("jbpm-ds");
 //        //ds.setClassName("com.mysql.jdbc.Driver");
 //        //ds.setClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
@@ -99,13 +106,14 @@ public class TaskServerDaemon {
 //        ds.getDriverProperties().put("driverClassName","com.ibm.db2.jcc.DB2Driver");
 //        ds.init();
 //        ctx.bind("jbpm-ds", ds);
+        noneJtaEmf = Persistence.createEntityManagerFactory("org.jbpm.task");
+        jtaEmf = Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa");
         
-        entityManagerFactory = Persistence.createEntityManagerFactory("org.jbpm.task");
-        
-        emf = Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa");
-        Environment env = KnowledgeBaseFactory.newEnvironment();
-        env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
-        env.set(EnvironmentName.TRANSACTION_MANAGER,TransactionManagerServices.getTransactionManager());
+        env = EnvironmentFactory.newEnvironment();
+        env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, jtaEmf);
+        UserTransaction transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+        env.set(EnvironmentName.TRANSACTION_MANAGER, new JtaTransactionManager(transactionManager, null, transactionManager));
+        env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER, new MultipleUseJpaPersistenceContextManager(env));
     }
     
     public void stopServer() throws Exception {
@@ -119,13 +127,15 @@ public class TaskServerDaemon {
             throw e;
         }
         try{
-            entityManagerFactory.close();
+            noneJtaEmf.close();
         }catch(Exception e){
             log.error("Exception while stopping entity manager factory " + e.getMessage());
             throw e;
         }
         try{
-            emf.close();
+            if(jtaEmf != null){
+                jtaEmf.close();
+            }
         }catch(Exception e){
             log.error("Exception while stopping entity manager factory " + e.getMessage());
             throw e;

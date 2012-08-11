@@ -2,16 +2,16 @@ package com.huateng.jbpm.test.client.jbpm.humantask;
 
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.NamingException;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -29,12 +29,14 @@ import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderError;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.definition.process.Connection;
 import org.drools.definition.process.Node;
 import org.drools.impl.EnvironmentFactory;
 import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ClassPathResource;
+import org.drools.persistence.PersistenceContext;
+import org.drools.persistence.info.SessionInfo;
 import org.drools.persistence.jpa.JPAKnowledgeService;
-import org.drools.persistence.jta.JtaTransactionManager;
 import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
 import org.drools.runtime.KnowledgeSessionConfiguration;
@@ -44,11 +46,11 @@ import org.drools.runtime.process.NodeInstance;
 import org.drools.runtime.process.NodeInstanceContainer;
 import org.drools.runtime.process.ProcessInstance;
 import org.drools.runtime.process.WorkflowProcessInstance;
+import org.jbpm.persistence.ProcessPersistenceContextManager;
 import org.jbpm.process.audit.JPAProcessInstanceDbLog;
 import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
 import org.jbpm.process.audit.NodeInstanceLog;
 import org.jbpm.task.Content;
-import org.jbpm.task.Group;
 import org.jbpm.task.Task;
 import org.jbpm.task.TaskData;
 import org.jbpm.task.TaskService;
@@ -56,7 +58,8 @@ import org.jbpm.task.User;
 import org.jbpm.task.query.TaskSummary;
 import org.jbpm.task.service.ContentData;
 import org.jbpm.task.service.TaskClient;
-import org.jbpm.task.service.local.LocalTaskService;
+import org.jbpm.task.service.TaskServiceSession;
+import org.jbpm.task.service.local.LocalHumanTaskService;
 import org.jbpm.task.service.mina.MinaTaskClientConnector;
 import org.jbpm.task.service.mina.MinaTaskClientHandler;
 import org.jbpm.task.service.responsehandlers.BlockingGetContentResponseHandler;
@@ -64,9 +67,12 @@ import org.jbpm.task.service.responsehandlers.BlockingGetTaskResponseHandler;
 import org.jbpm.task.service.responsehandlers.BlockingTaskOperationResponseHandler;
 import org.jbpm.task.service.responsehandlers.BlockingTaskSummaryResponseHandler;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
+import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 
-import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.TransactionManagerServices;
+
+import com.huateng.jbpm.test.process.audit.JPAFixProcessInstanceDbLog;
+import com.huateng.jbpm.test.server.TaskServerDaemon;
 
 public class JbpmService {
     private Log log = LogFactory.getLog(JbpmService.class);
@@ -75,14 +81,20 @@ public class JbpmService {
     private TaskClient client;
     private WorkingMemoryInMemoryLogger logger;
     private EntityManagerFactory emf;
-    private JPAProcessInstanceDbLog dbLog;
+    private JPAFixProcessInstanceDbLog dbLog;
     private org.jbpm.task.service.TaskService taskService;
     private StatefulKnowledgeSession ksession;
+    private ProcessInstance processInstance;
     private String[] process;
     private String hostIp = "127.0.0.1";
     private int port = 9123;
     /** session是否需要持久化 **/
     private boolean sessionPersistence = true;
+    
+    /** 查询数据库起始行 **/
+    private final static String FIRST_RESULT = "start";
+    /** 查询数据库终止行 **/
+    private final static String MAX_RESULTS = "limit";
     
     /**
      * <p>Discription:[获取JBPM客户端，使用默认的服务器端IP和端口]</p>
@@ -96,9 +108,10 @@ public class JbpmService {
     /**
      * <p>Discription:[初始化实体管理工厂以及会话]</p>
      * @author:[创建者中文名字]
+     * @throws NamingException 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void init(){
+    public void init() throws NamingException{
         setUp();
         start(process);
     }
@@ -121,7 +134,8 @@ public class JbpmService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public void setUp() {
-        emf = Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa");
+        //emf = Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa");
+        emf = TaskServerDaemon.jtaEmf;
     }
     /**
      * <p>Discription:[关闭流程]</p>
@@ -158,15 +172,18 @@ public class JbpmService {
      * @param emf 实体管理工厂
      * @return
      * @author:[创建者中文名字]
+     * @throws NamingException 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public Environment createEnvironment(EntityManagerFactory emf) {
-        BitronixTransactionManager transactionManager = TransactionManagerServices.getTransactionManager();
-        Environment env = EnvironmentFactory.newEnvironment();
-        env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
-        env.set(EnvironmentName.TRANSACTION_MANAGER, new JtaTransactionManager(transactionManager, null, transactionManager));
-        env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER, new MultipleUseJpaPersistenceContextManager(env));
-        return env;
+    public Environment createEnvironment(EntityManagerFactory emf) throws NamingException {
+//        Environment env = EnvironmentFactory.newEnvironment();
+//        env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
+//        InitialContext ctx = new InitialContext();
+//        UserTransaction transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+//        env.set(EnvironmentName.TRANSACTION_MANAGER, new JtaTransactionManager(transactionManager, null, transactionManager));
+//        env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER, new MultipleUseJpaPersistenceContextManager(env));
+//        return env;
+        return TaskServerDaemon.env;
     }
     /**
      * <p>Discription:[创建基础知识]</p>
@@ -216,9 +233,10 @@ public class JbpmService {
      * @param kbase 基础知识
      * @return
      * @author:[创建者中文名字]
+     * @throws NamingException 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public StatefulKnowledgeSession createKnowledgeSession(KnowledgeBase kbase) {
+    public StatefulKnowledgeSession createKnowledgeSession(KnowledgeBase kbase) throws NamingException {
         StatefulKnowledgeSession session;
         final KnowledgeSessionConfiguration conf = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
         
@@ -227,7 +245,7 @@ public class JbpmService {
             session = JPAKnowledgeService.newStatefulKnowledgeSession(kbase, conf, env);
             new JPAWorkingMemoryDbLogger(session);
             if (dbLog == null) {
-                dbLog = new JPAProcessInstanceDbLog(session.getEnvironment());
+                dbLog = new JPAFixProcessInstanceDbLog(session.getEnvironment());
             }
         } else {
             Environment env = EnvironmentFactory.newEnvironment();
@@ -243,9 +261,10 @@ public class JbpmService {
      * @param process 流程图地址
      * @return
      * @author:[创建者中文名字]
+     * @throws NamingException 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public StatefulKnowledgeSession createKnowledgeSession(String... process) {
+    public StatefulKnowledgeSession createKnowledgeSession(String... process) throws NamingException {
         KnowledgeBase kbase = createKnowledgeBase(process);
         return createKnowledgeSession(kbase);
     }
@@ -296,9 +315,10 @@ public class JbpmService {
      * @param process 流程图地址
      * @return
      * @author:[创建者中文名字]
+     * @throws NamingException 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public StatefulKnowledgeSession loadSession(int id, String... process) { 
+    public StatefulKnowledgeSession loadSession(int id, String... process) throws NamingException { 
         KnowledgeBase kbase = createKnowledgeBase(process);
         final KnowledgeSessionConfiguration config = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
         config.setOption( ClockTypeOption.get( ClockType.PSEUDO_CLOCK.getId() ) );
@@ -307,7 +327,14 @@ public class JbpmService {
         return ksession;
     }
     
-    public void start(String ... process){
+    /**
+     * <p>Discription:[创建会话]</p>
+     * @param process
+     * @author:[创建者中文名字]
+     * @throws NamingException 
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public void start(String ... process) throws NamingException{
         KnowledgeBase kbase = null;
         if(process == null || process.length < 1 || process[0].equals("")){
             kbase = createKnowledgeBase("ProcessTask.bpmn");
@@ -357,9 +384,9 @@ public class JbpmService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void startProcess(String taskId, Map<String, Object> params) throws RuntimeException {
+    public void startProcess(String processId, Map<String, Object> params) throws RuntimeException {
         try {
-            ksession.startProcess( taskId, params );
+            setProcessInstance(ksession.startProcess( processId, params ));
         }
         catch (IllegalArgumentException ex) {
             throw new RuntimeException(ex.getMessage());
@@ -370,9 +397,10 @@ public class JbpmService {
      * @param sessionId 会话ID
      * @return
      * @author:[创建者中文名字]
+     * @throws NamingException 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public StatefulKnowledgeSession getKSession(int sessionId){
+    public StatefulKnowledgeSession getKSession(int sessionId) throws NamingException{
         if(sessionId != -1){
             //获取历史会话
             return loadSession(sessionId, "");
@@ -389,6 +417,31 @@ public class JbpmService {
      */
     public int getKSessionId(){
         return ksession.getId();
+    }
+    /**
+     * <p>Discription:[获取指定实体管理工厂]</p>
+     * @param entityName
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public EntityManagerFactory getEntityManagerFactory(String entityName){
+        if(entityName == null || "".equals(entityName.trim())){
+            entityName = "org.jbpm.persistence.jpa";
+        }
+        return Persistence.createEntityManagerFactory(entityName);
+    }
+    
+    /**
+     * <p>Discription:[获取流程]</p>
+     * @param processInstanceId 流程ID
+     * @param ksession 会话
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public WorkflowProcessInstance getProcessInstance(long processInstanceId, StatefulKnowledgeSession ksession){
+        return (WorkflowProcessInstance) ksession.getProcessInstance(processInstanceId);
     }
     
     /**
@@ -442,11 +495,11 @@ public class JbpmService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public List<String> getNodeTriggered(long processInstanceId) {
+    public List<String> getNodeNameTriggered(long processInstanceId) {
         List<String> names = new ArrayList<String>();
         if (sessionPersistence) {
             if(dbLog == null){
-                dbLog = new JPAProcessInstanceDbLog(ksession.getEnvironment());
+                dbLog = new JPAFixProcessInstanceDbLog(ksession.getEnvironment());
             }
             List<NodeInstanceLog> logs = dbLog.findNodeInstances(processInstanceId);
             if (logs != null) {
@@ -475,13 +528,14 @@ public class JbpmService {
     public void clearHistory() {
         if (sessionPersistence) {
             if (dbLog == null) {
-                dbLog = new JPAProcessInstanceDbLog();
+                dbLog = new JPAFixProcessInstanceDbLog();
             }
             dbLog.clear();
         } else {
             logger.clear();
         }
     }
+    
     /**
      * <p>Discription:[判断变量是否在流程内]</p>
      * @param process 流程
@@ -538,6 +592,59 @@ public class JbpmService {
         }
     }
     /**
+     * <p>Discription:[获取流程图中的所有节点信息, 包括开始和结束节点]</p>
+     * @param process
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public Node[] getNodeTriggered(long processInstanceId, StatefulKnowledgeSession ksession) {
+        ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
+        WorkflowProcessInstanceImpl instance = null;
+        if (processInstance instanceof WorkflowProcessInstanceImpl) {
+            instance = (WorkflowProcessInstanceImpl) processInstance;
+        }
+        Node [] nodes = instance.getNodeContainer().getNodes();
+        return nodes;
+    }
+    /**
+     * <p>Discription:[获取当前节点]</p>
+     * @param task 当前任务
+     * @param ksession 会话
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public Node getCurrentNode(Task task, StatefulKnowledgeSession ksession) {
+        ProcessInstance processInstance = ksession.getProcessInstance(task.getTaskData().getProcessInstanceId());
+        WorkflowProcessInstanceImpl instance = null;
+        if (processInstance instanceof WorkflowProcessInstanceImpl) {
+            instance = (WorkflowProcessInstanceImpl) processInstance;
+        }
+        //ProcessContext kcontext = new org.drools.spi.ProcessContext(ksession);
+        WorkItemNodeInstance wni = findNodeInstance(task.getTaskData().getWorkItemId(), instance);
+        return wni.getNode();
+    }
+    
+    private WorkItemNodeInstance findNodeInstance(long workItemId, NodeInstanceContainer container) {
+        for (NodeInstance nodeInstance: container.getNodeInstances()) {
+            if (nodeInstance instanceof WorkItemNodeInstance) {
+                WorkItemNodeInstance workItemNodeInstance = (WorkItemNodeInstance) nodeInstance;
+                if (workItemNodeInstance.getWorkItem().getId() == workItemId) {
+                    return workItemNodeInstance;
+                }
+            }
+            if (nodeInstance instanceof NodeInstanceContainer) {
+                WorkItemNodeInstance result = findNodeInstance(workItemId, ((NodeInstanceContainer) nodeInstance));
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
      * <p>Discription:[获取从开始节点到此节点的节点数量]</p>
      * @param process 流程
      * @param nodeName 此节点名称
@@ -545,7 +652,7 @@ public class JbpmService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public int getNumOfIncommingConnections(ProcessInstance process, String nodeName, int num) {
+    public int getNumOfNodeIncommingConnections(ProcessInstance process, String nodeName) {
         if(isNodeExists(process, nodeName)){
             WorkflowProcessInstanceImpl instance = (WorkflowProcessInstanceImpl) process;
             for(Node node : instance.getNodeContainer().getNodes()) {
@@ -557,6 +664,26 @@ public class JbpmService {
         return 0;
     }
     /**
+     * <p>Discription:[获取从开始节点到此节点过程中的所有节点]</p>
+     * @param process 流程
+     * @param nodeName 此节点名称
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public Map<String, List<Connection>> getNodeIncommingConnections(ProcessInstance process, String nodeName) {
+        if(isNodeExists(process, nodeName)){
+            WorkflowProcessInstanceImpl instance = (WorkflowProcessInstanceImpl) process;
+            for(Node node : instance.getNodeContainer().getNodes()) {
+                if(node.getName().equals(nodeName)) {
+                    return node.getIncomingConnections();
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
      * <p>Discription:[获取从此节点开始之后的节点数量]</p>
      * @param process 流程
      * @param nodeName 此节点名称
@@ -564,7 +691,7 @@ public class JbpmService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public int getNumOfOutgoingConnections(ProcessInstance process, String nodeName) {
+    public int getNumOfNodeOutgoingConnections(ProcessInstance process, String nodeName) {
         if(isNodeExists(process, nodeName)){
             WorkflowProcessInstanceImpl instance = (WorkflowProcessInstanceImpl) process;
             for(Node node : instance.getNodeContainer().getNodes()) {
@@ -575,33 +702,160 @@ public class JbpmService {
         }
         return 0;
     }
-    
-    public TaskService getTaskService(StatefulKnowledgeSession ksession) {
-        if (taskService == null) {
-            taskService = new org.jbpm.task.service.TaskService(
-                emf, SystemEventListenerFactory.getSystemEventListener());
-            
-            Map vars = new HashMap();
-            Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("/LoadUsers.mvel"));     
-            Map<String, User> users = ( Map<String, User> ) org.jbpm.task.service.TaskService.eval( reader, vars );
-            
-            reader = new InputStreamReader(this.getClass().getResourceAsStream("/LoadGroups.mvel"));
-            Map<String, Group> groups = ( Map<String, Group> ) org.jbpm.task.service.TaskService.eval( reader, vars ); 
-            
-            taskService.addUsersAndGroups(users, groups);
+    /**
+     * <p>Discription:[获取从此节点出发之后的节点]</p>
+     * @param process 流程
+     * @param nodeName 此节点名称
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public Map<String, List<Connection>> getNodeOutgoingConnections(ProcessInstance process, String nodeName) {
+        if(isNodeExists(process, nodeName)){
+            WorkflowProcessInstanceImpl instance = (WorkflowProcessInstanceImpl) process;
+            for(Node node : instance.getNodeContainer().getNodes()) {
+                if(node.getName().equals(nodeName)) {
+                    return node.getOutgoingConnections();
+                }
+            }
         }
-//        SyncWSHumanTaskHandler humanTaskHandler = new SyncWSHumanTaskHandler(
-//            new LocalTaskService(taskService), ksession);
-//        humanTaskHandler.setLocal(true);
-//        humanTaskHandler.connect();
-        BaseHumanTaskHandler humanTaskHandler = new BaseHumanTaskHandler();
-        ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
-        return new LocalTaskService(taskService);
+        return null;
+    }
+    /**
+     * <p>Discription:[根据节点名称获取节点]</p>
+     * @param process 流程
+     * @param nodeName 节点名称
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public Node getNodeByNodeName(ProcessInstance process, String nodeName){
+        if(isNodeExists(process, nodeName)){
+            WorkflowProcessInstanceImpl instance = (WorkflowProcessInstanceImpl) process;
+            for(Node node : instance.getNodeContainer().getNodes()) {
+                if(node.getName().equals(nodeName)) {
+                    return node;
+                }
+            }
+        }
+        return null;
     }
     
+    /**
+     * <p>Discription:[手动查询数据]</p>
+     * @param EntityManagerFactory emf 
+     * @param queryString 查询语句
+     * @param params 查询参数，必须与sql中的参数名称匹配
+     * @param singleResult 是否只查询一条记录。true：只返回一条记录，false：返回所有记录
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public Object queryByParams(EntityManagerFactory emf, String queryString, Map<String, Object> params, boolean singleResult){
+        TaskServiceSession ssession = null;
+        if(emf == null){
+            ssession = getService().createSession();
+        }else{
+            ssession = getService(emf).createSession();
+        }
+        Query query = ssession.getTaskPersistenceManager().createQuery(queryString);
+        if( params != null && ! params.isEmpty() ) { 
+            for( String name : params.keySet() ) { 
+                if( FIRST_RESULT.equals(name) ) {
+                    query.setFirstResult((Integer) params.get(name));
+                    continue;
+                }
+                if( MAX_RESULTS.equals(name) ) { 
+                    query.setMaxResults((Integer) params.get(name));
+                    continue;
+                }
+                query.setParameter(name, params.get(name) );
+            }
+        }
+        if( singleResult ) { 
+            return query.getSingleResult();
+        }
+        return query.getResultList();
+    }
+    /**
+     * <p>Discription:[手动查询数据]</p>
+     * @param EntityManagerFactory emf 
+     * @param queryString 查询语句（参照Taskorm.xml文件）
+     * @param params 查询参数，必须与sql中的参数名称匹配
+     * @param singleResult 是否只查询一条记录。true：只返回一条记录，false：返回所有记录
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public Object queryByNamedQueryParams(EntityManagerFactory emf, String queryString, Map<String, Object> params, boolean singleResult){
+        if(emf == null){
+            emf = Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa");
+        }
+        EntityManager em = emf.createEntityManager();
+        
+        em.getTransaction().begin();
+        Query query = em.createNamedQuery(queryString);
+        log.info("调用的查询语句: " + queryString);
+        log.info("查询参数：" + params);
+        if( params != null && ! params.isEmpty() ) { 
+            for( String name : params.keySet() ) { 
+                if( FIRST_RESULT.equals(name) ) {
+                    query.setFirstResult((Integer) params.get(name));
+                    continue;
+                }
+                if( MAX_RESULTS.equals(name) ) { 
+                    query.setMaxResults((Integer) params.get(name));
+                    continue;
+                }
+                query.setParameter(name, params.get(name) );
+            }
+        }
+        Object obj = null;
+        if( singleResult ) { 
+            obj = query.getSingleResult();
+        }
+        obj = query.getResultList();
+        em.getTransaction().commit();
+        em.close();
+        emf.close();
+        return obj;
+    }
+    /**
+     * <p>Discription:[获取任务服务接口]</p>
+     * @param ksession
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public TaskService getTaskService(StatefulKnowledgeSession ksession) {
+        return LocalHumanTaskService.getTaskService(ksession);
+    }
+    /**
+     * <p>Discription:[获取任务服务]</p>
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
     public org.jbpm.task.service.TaskService getService() {
+        if(emf == null){
+            emf = Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa");
+        }
         return new org.jbpm.task.service.TaskService(emf, SystemEventListenerFactory.getSystemEventListener());
     }
+    /**
+     * <p>Discription:[获取任务服务]</p>
+     * @param emf
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public org.jbpm.task.service.TaskService getService(EntityManagerFactory emf) {
+        if(emf == null){
+            emf = Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa");
+        }
+        return new org.jbpm.task.service.TaskService(emf, SystemEventListenerFactory.getSystemEventListener());
+    }
+    
     /**
      * <p>Discription:[根据任务编号查找任务]</p>
      * @param taskId 任务编号
@@ -788,6 +1042,33 @@ public class JbpmService {
         return ksession;
     }
     
+    public SessionInfo getSessionInfo(int sessionId){
+        PersistenceContext context = ((ProcessPersistenceContextManager) TaskServerDaemon.env.get( EnvironmentName.PERSISTENCE_CONTEXT_MANAGER )).getCommandScopedPersistenceContext();
+        SessionInfo sessionInfo = context.findSessionInfo(sessionId);
+        return sessionInfo;
+    }
+    
+    public StatefulKnowledgeSession getKSession(SessionInfo sessionInfo){
+        if(sessionInfo != null){
+            return sessionInfo.getJPASessionMashallingHelper().getObject();
+        }
+        return null;
+    }
+    /**
+     * <p>Discription:[获取非持久化Ksession]</p>
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public StatefulKnowledgeSession getNonJPAKSession(){
+        final KnowledgeSessionConfiguration conf = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
+        KnowledgeBase kbase = createKnowledgeBase(process);
+        Environment env = EnvironmentFactory.newEnvironment();
+        EntityManagerFactory emf = getEntityManagerFactory("org.jbpm.task");
+        env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
+        return kbase.newStatefulKnowledgeSession(conf, env);
+    }
+    
     /**
      * <p>Discription:[方法功能中文描述]</p>
      * @param ksession The ksession to set.
@@ -824,6 +1105,34 @@ public class JbpmService {
      */
     public void setProcess(String... process) {
         this.process = process;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return ProcessInstance processInstance.
+     */
+    public ProcessInstance getProcessInstance() {
+        return processInstance;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param processInstance The processInstance to set.
+     */
+    public void setProcessInstance(ProcessInstance processInstance) {
+        this.processInstance = processInstance;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return EntityManagerFactory emf.
+     */
+    public EntityManagerFactory getEmf() {
+        return emf;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param emf The emf to set.
+     */
+    public void setEmf(EntityManagerFactory emf) {
+        this.emf = emf;
     }
     
 }
