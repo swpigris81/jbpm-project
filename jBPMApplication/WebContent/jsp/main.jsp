@@ -14,4 +14,8 @@
 		<input type="text" name="taskId" id="taskId" value=""/>
 		<input type="submit" value="提交"/>
 	</form> 
+	<form action="testAction!nextTask.action">
+		<input type="text" name="taskId" id="taskId" value=""/>
+		<input type="submit" value="提交"/>
+	</form>
 </html>

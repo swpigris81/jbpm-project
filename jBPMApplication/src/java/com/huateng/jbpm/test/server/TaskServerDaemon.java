@@ -106,7 +106,7 @@ public class TaskServerDaemon {
 //        ds.getDriverProperties().put("driverClassName","com.ibm.db2.jcc.DB2Driver");
 //        ds.init();
 //        ctx.bind("jbpm-ds", ds);
-        noneJtaEmf = Persistence.createEntityManagerFactory("org.jbpm.task");
+//        noneJtaEmf = Persistence.createEntityManagerFactory("org.jbpm.task");
         jtaEmf = Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa");
         
         env = EnvironmentFactory.newEnvironment();
@@ -127,7 +127,9 @@ public class TaskServerDaemon {
             throw e;
         }
         try{
-            noneJtaEmf.close();
+            if(noneJtaEmf != null){
+                noneJtaEmf.close();
+            }
         }catch(Exception e){
             log.error("Exception while stopping entity manager factory " + e.getMessage());
             throw e;
