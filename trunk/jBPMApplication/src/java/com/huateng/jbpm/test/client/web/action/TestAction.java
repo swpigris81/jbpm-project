@@ -66,6 +66,16 @@ public class TestAction extends BaseAction {
         if(this.taskId == null){
             return null;
         }
+        List<String> groups = new ArrayList<String>();
+        groups.add("cardCenter");
+        LoginForm userInfo = (LoginForm) ServletActionContext.getRequest().getSession().getAttribute("userInfo");
+        if(userId == null){
+             userId = userInfo.getUserId();
+        }
+        List<TaskSummary> tasks = client.getAssignedTasks(new User(userId), groups);
+        LOG.info(Json.toJson(tasks));
+        
+        TaskSummary task1 = null;
         Task task = client.getTaskById(NumberUtils.toLong(taskId));
         LOG.info("asdsad", task.getTaskData().getStatus().toString());
         Context ctx = null;
@@ -74,6 +84,11 @@ public class TestAction extends BaseAction {
             ctx = new InitialContext();
             transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
             transactionManager.begin();
+            
+            task1 = client.getTaskService(client.getKSession(-1)).getTasksAssignedAsPotentialOwner(userId, groups, "en-UK").get(0);
+            
+            LOG.info(Json.toJson(task1));
+            
             System.out.println(client.getVariableValue("date", task.getTaskData().getProcessInstanceId(), client.getKSession(-1)));
             Node [] nodes = client.getNodeTriggered(task.getTaskData().getProcessInstanceId(), client.getKSession(-1));
             if(nodes != null && nodes.length>0){
@@ -98,6 +113,65 @@ public class TestAction extends BaseAction {
         return null;
     }
     /**
+     * <p>Discription:[完成此任务，进入下一任务]</p>
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public String nextTask(){
+        if(this.taskId == null){
+            return null;
+        }
+        List<String> groups = new ArrayList<String>();
+        groups.add("cardCenter");
+        LoginForm userInfo = (LoginForm) ServletActionContext.getRequest().getSession().getAttribute("userInfo");
+        if(userId == null){
+             userId = userInfo.getUserId();
+        }
+        
+        Context ctx = null;
+        UserTransaction transactionManager = null;
+        try{
+            ctx = new InitialContext();
+            transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+            transactionManager.begin();
+            TaskSummary taskSummary = client.getTaskService(client.getKSession(-1)).getTasksAssignedAsPotentialOwner(userId, groups, "en-UK").get(0);
+            LOG.info("用户：" + userId + "查询得到的自己的任务ID：" + taskSummary.getId());
+            Task task = client.getTaskById(taskSummary.getId());
+            LOG.info("此时任务状态为：" + task.getTaskData().getStatus());
+            LOG.info("用户：" + userId + "开始执行自己的任务。。。");
+            client.startTask(new User(userId), groups, taskSummary);
+            task = client.getTaskById(taskSummary.getId());
+            LOG.info("此时任务状态为：" + task.getTaskData().getStatus());
+            LOG.info("用户：" + userId + "已经开始执行自己的任务。。。");
+            LOG.info("用户：" + userId + "开始完成自己的任务。。。");
+            client.completeTask(new User(userId), taskSummary);
+            task = client.getTaskById(taskSummary.getId());
+            LOG.info("此时任务状态为：" + task.getTaskData().getStatus());
+            LOG.info("用户：" + userId + "已经完成自己的任务。。。");
+            
+            transactionManager.commit();
+        }catch(Exception e){
+            if(transactionManager != null){
+                try {
+                    transactionManager.rollback();
+                } catch (IllegalStateException e1) {
+                    e1.printStackTrace();
+                } catch (SecurityException e1) {
+                    e1.printStackTrace();
+                } catch (SystemException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+        
+        
+        
+        return null;
+    }
+    
+    
+    /**
      * <p>Discription:[新建任务]</p>
      * @return
      * @author:[创建者中文名字]
@@ -114,10 +188,12 @@ public class TestAction extends BaseAction {
         params.put("userName", "测试用户");
         //启动流程
         client.startProcess(params);
+        LOG.info("流程已启动，获取得到的taskID是：" + client.getTaskId());
         List<String> groups = new ArrayList<String>();
         groups.add("cardCenter");
         List<TaskSummary> tasks = client.getAssignedTasks(new User(userId), groups);
         LOG.info(Json.toJson(tasks));
+        LOG.info("获取的当前任务：" + Json.toJson(tasks.get(0)));
         return null;
     }
 

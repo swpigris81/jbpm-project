@@ -60,6 +60,7 @@ import org.jbpm.task.service.TaskClientHandler.GetTaskResponseHandler;
 import org.jbpm.task.service.mina.MinaTaskClientConnector;
 import org.jbpm.task.service.mina.MinaTaskClientHandler;
 import org.jbpm.task.service.responsehandlers.AbstractBaseResponseHandler;
+import org.jbpm.task.service.responsehandlers.AbstractBlockingResponseHandler;
 import org.jbpm.task.utils.OnErrorAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +74,7 @@ public class BaseHumanTaskHandler implements WorkItemHandler {
     private TaskClient client;
     private KnowledgeRuntime session;
     private OnErrorAction action;
+    private long taskId;
 
     public BaseHumanTaskHandler() {
         this.session = null;
@@ -253,9 +255,26 @@ public class BaseHumanTaskHandler implements WorkItemHandler {
             }
         }
         task.setDeadlines(HumanTaskHandlerHelper.setDeadlines(workItem, businessAdministrators));
+        TaskAddedHandler handler = new TaskAddedHandler(workItem.getId());
+        client.addTask(task, content, handler);
+        logger.info("新增任务名称：" + taskName + ", 该任务ID： " + handler.getTaskId());
+        this.taskId = handler.getTaskId();
+    }
 
-        client.addTask(task, content, new TaskAddedHandler(workItem.getId()));
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return long taskId.
+     */
+    public long getTaskId() {
+        return taskId;
+    }
 
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param taskId The taskId to set.
+     */
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
     }
 
     public void dispose() throws Exception {
@@ -269,15 +288,21 @@ public class BaseHumanTaskHandler implements WorkItemHandler {
         client.getTaskByWorkItemId(workItem.getId(), abortTaskResponseHandler);
     }
 
-    private class TaskAddedHandler extends AbstractBaseResponseHandler implements AddTaskResponseHandler {
+    private class TaskAddedHandler extends AbstractBlockingResponseHandler implements AddTaskResponseHandler {
 
         private long workItemId;
+        
+        private static final int TASK_ID_WAIT_TIME = 10000;
+
+        private volatile long taskId;
+
+        public synchronized void execute(long taskId) {
+            this.taskId = taskId;
+            setDone(true);
+        }
 
         public TaskAddedHandler(long workItemId) {
             this.workItemId = workItemId;
-        }
-
-        public void execute(long taskId) {
         }
 
         @Override
@@ -296,6 +321,30 @@ public class BaseHumanTaskHandler implements WorkItemHandler {
                 logger.error(logMsg.toString(), getError());
             }
 
+        }
+        
+        public long getTaskId() {
+            // note that this method doesn't need to be synced because if waitTillDone returns true,
+            // it means taskId is available 
+            boolean done = waitTillDone(TASK_ID_WAIT_TIME);
+
+            if (!done) {
+                throw new RuntimeException("Timeout : unable to retrieve Task Id");
+            }
+
+            return taskId;
+        }
+        
+        public long getTaskId(int taskWaitTime) {
+            // note that this method doesn't need to be synced because if waitTillDone returns true,
+            // it means taskId is available 
+            boolean done = waitTillDone(taskWaitTime);
+
+            if (!done) {
+                throw new RuntimeException("Timeout : unable to retrieve Task Id");
+            }
+
+            return taskId;
         }
     }
 

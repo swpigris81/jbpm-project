@@ -64,6 +64,7 @@ import org.jbpm.task.service.mina.MinaTaskClientConnector;
 import org.jbpm.task.service.mina.MinaTaskClientHandler;
 import org.jbpm.task.service.responsehandlers.BlockingGetContentResponseHandler;
 import org.jbpm.task.service.responsehandlers.BlockingGetTaskResponseHandler;
+import org.jbpm.task.service.responsehandlers.BlockingQueryGenericResponseHandler;
 import org.jbpm.task.service.responsehandlers.BlockingTaskOperationResponseHandler;
 import org.jbpm.task.service.responsehandlers.BlockingTaskSummaryResponseHandler;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
@@ -85,6 +86,7 @@ public class JbpmService {
     private org.jbpm.task.service.TaskService taskService;
     private StatefulKnowledgeSession ksession;
     private ProcessInstance processInstance;
+    private BaseHumanTaskHandler humanTaskHandler;
     private String[] process;
     private String hostIp = "127.0.0.1";
     private int port = 9123;
@@ -342,7 +344,7 @@ public class JbpmService {
             kbase = createKnowledgeBase(process);
         }
         StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        BaseHumanTaskHandler humanTaskHandler = new BaseHumanTaskHandler();
+        humanTaskHandler = new BaseHumanTaskHandler(ksession);
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
     }
     
@@ -855,7 +857,15 @@ public class JbpmService {
         }
         return new org.jbpm.task.service.TaskService(emf, SystemEventListenerFactory.getSystemEventListener());
     }
-    
+    /**
+     * <p>Discription:[流程启动之后（前提条件），获取任务ID, 此任务ID只是启动流程时的ID, 每次重新启动流程此ID将会被修改]</p>
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public long getTaskId(){
+        return humanTaskHandler.getTaskId();
+    }
     /**
      * <p>Discription:[根据任务编号查找任务]</p>
      * @param taskId 任务编号
@@ -921,7 +931,7 @@ public class JbpmService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void startTask(User user, ArrayList<String> groups, TaskSummary task) {
+    public void startTask(User user, List<String> groups, TaskSummary task) {
         System.out.println("Starting task " + task.getId());
         BlockingTaskOperationResponseHandler operationResponseHandler = new BlockingTaskOperationResponseHandler();
         client.claim(task.getId(), user.getId(), groups, operationResponseHandler);

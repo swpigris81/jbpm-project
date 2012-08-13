@@ -37,11 +37,11 @@
 		</property>
 	</bean>
 
-	<bean id="dataSource_jndi" class="org.springframework.jndi.JndiObjectFactoryBean">
+	<!-- <bean id="dataSource_jndi" class="org.springframework.jndi.JndiObjectFactoryBean">
 		<property name="jndiName">
 			<value>${dataSource.jndiName}</value>
 		</property>
-	</bean>
+	</bean> -->
 
 	<!-- ************************** Hibernate SessionFacotry ******************** -->
 	<bean id="sessionFactory"
@@ -51,6 +51,11 @@
 		<property name="mappingDirectoryLocations">
 			<list>
 				<!-- <value>classpath:/com/huateng/db/hbm/</value> -->
+			</list>
+		</property>
+		<property name="mappingResources">
+			<list>
+				<value>META-INF/ProcessInstanceInfo.hbm.xml</value>
 			</list>
 		</property>
 		<property name="dataSource" ref="${dataSource.switch}" />
