@@ -37,4 +37,11 @@
     <servlet-name>AxisAdminServlet</servlet-name>
     <url-pattern>/axis2-admin/*</url-pattern>
   </servlet-mapping>
+  
+  <resource-ref>
+    <description>This is a database connection</description>
+    <res-ref-name>jdbc/jbpm-ds</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
 </web-app>
