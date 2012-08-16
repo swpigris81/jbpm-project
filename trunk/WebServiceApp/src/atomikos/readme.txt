@@ -36,3 +36,5 @@ atomikos3.8+tomcat6+hibernate3+JBPM5.3配置数据源JNDI步骤
     <res-auth>Container</res-auth>
   </resource-ref>
 6：在调用transaction的时候，必须开启事务，完成之后，必须关闭事务，否则异常
+
+refer to: http://www.atomikos.com/Documentation/Tomcat6Integration35Lifecycle#AtomikosTomcatFactoryFactory_jav
