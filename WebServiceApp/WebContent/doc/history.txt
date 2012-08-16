@@ -1,0 +1,5 @@
+2012-08-16
+搭建系统框架，集成：Struts2, Spring3.05, Hibernate3.2, JBPM5.3, SpringSecurity3.05, axis2(WebService)
+
+2012-08-16
+完成JBPM5.3在Tomcat上运行环境的配置，详细配置步骤参考：src/atomikos/readme.txt
