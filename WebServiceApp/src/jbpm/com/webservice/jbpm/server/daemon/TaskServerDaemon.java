@@ -5,6 +5,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.sql.DataSource;
 import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
@@ -46,7 +47,7 @@ public class TaskServerDaemon {
     /** 非JTA实体管理工厂 **/
     private EntityManagerFactory noneJtaEmf;
     /** JNDI数据源(通过JAVA代码实现) **/
-    private PoolingDataSource ds;
+    private DataSource ds;
     /** 环境参数 **/
     public static Environment env;
     /**
@@ -95,9 +96,9 @@ public class TaskServerDaemon {
      * @throws NamingException 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void startDb() throws NamingException {
+    public void startDb() throws Exception {
         Context ctx = new InitialContext();
-        ds = new PoolingDataSource();
+        //ds = new PoolingDataSource();
 //        ds.setUniqueName("jbpm-ds");
 //        //ds.setClassName("com.mysql.jdbc.Driver");
 //        //ds.setClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
@@ -115,9 +116,17 @@ public class TaskServerDaemon {
         
         env = EnvironmentFactory.newEnvironment();
         env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, jtaEmf);
+        ds = (DataSource) ctx.lookup("java:comp/env/jdbc/jbpm-ds");
         UserTransaction transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
-        env.set(EnvironmentName.TRANSACTION_MANAGER, new JtaTransactionManager(transactionManager, null, transactionManager));
-        env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER, new MultipleUseJpaPersistenceContextManager(env));
+        try{
+            transactionManager.begin();
+            env.set(EnvironmentName.TRANSACTION_MANAGER, new JtaTransactionManager(transactionManager, null, null));
+            env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER, new MultipleUseJpaPersistenceContextManager(env));
+            transactionManager.commit();
+        }catch(Exception e){
+            transactionManager.rollback();
+            throw e;
+        }
     }
     /**
      * <p>Discription:[停止服务]</p>
@@ -129,12 +138,12 @@ public class TaskServerDaemon {
         if(!isRunning()){
             return;
         }
-        try{
-            ds.close();
-        }catch(Exception e){
-            log.error("Exception while stopping dataSource " + e.getMessage());
-            throw e;
-        }
+//        try{
+//            ds.close();
+//        }catch(Exception e){
+//            log.error("Exception while stopping dataSource " + e.getMessage());
+//            throw e;
+//        }
         try{
             if(noneJtaEmf != null){
                 noneJtaEmf.close();

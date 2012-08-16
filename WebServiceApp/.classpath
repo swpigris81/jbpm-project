@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/security/apache"/>
+	<classpathentry kind="src" path="src/atomikos"/>
 	<classpathentry kind="src" path="src/security/spring"/>
 	<classpathentry kind="src" path="src/webservice"/>
 	<classpathentry kind="src" path="src/system"/>
@@ -67,7 +68,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-compiler-5.4.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-core-5.4.0.Final.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-persistence-jpa-5.4.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-persistence-jpa-5.4.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/drools-distribution-5.4.0.Final/drools-distribution-5.4.0.Final/sources/drools-persistence-jpa-5.4.0.Final-sources.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dwr.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ecj-3.5.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ehcache-1.2.3.jar"/>
@@ -184,5 +185,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/transactions-osgi.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/transactions.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/axis2-core-2.1.6.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/test/catalina.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
