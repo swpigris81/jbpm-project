@@ -186,5 +186,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/transactions.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/axis2-core-2.1.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/test/catalina.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/shiro-all-1.2.1.jar" sourcepath="WebContent/WEB-INF/lib/shiro-root-1.2.1-source-release.zip"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
