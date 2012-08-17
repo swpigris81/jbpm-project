@@ -49,6 +49,7 @@ import org.jbpm.persistence.ProcessPersistenceContextManager;
 import org.jbpm.process.audit.JPAProcessInstanceDbLog;
 import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
 import org.jbpm.process.audit.NodeInstanceLog;
+import org.jbpm.process.workitem.wsht.SyncWSHumanTaskHandler;
 import org.jbpm.task.Content;
 import org.jbpm.task.Task;
 import org.jbpm.task.TaskData;
@@ -59,6 +60,7 @@ import org.jbpm.task.service.ContentData;
 import org.jbpm.task.service.TaskClient;
 import org.jbpm.task.service.TaskServiceSession;
 import org.jbpm.task.service.local.LocalHumanTaskService;
+import org.jbpm.task.service.local.LocalTaskService;
 import org.jbpm.task.service.mina.MinaTaskClientConnector;
 import org.jbpm.task.service.mina.MinaTaskClientHandler;
 import org.jbpm.task.service.responsehandlers.BlockingGetContentResponseHandler;
@@ -74,8 +76,8 @@ import com.webservice.jbpm.client.handler.HumanTaskHandler;
 import com.webservice.jbpm.process.audit.JPAFixProcessInstanceDbLog;
 import com.webservice.jbpm.server.daemon.TaskServerDaemon;
 
-public class JbpmService {
-    private Log log = LogFactory.getLog(JbpmService.class);
+public class JbpmServer {
+    private Log log = LogFactory.getLog(JbpmServer.class);
     
     private static final long DEFAULT_WAIT_TIME = 5000;
     private TaskClient client;
@@ -101,7 +103,7 @@ public class JbpmService {
      * <p>Discription:[获取JBPM客户端，使用默认的服务器端IP和端口]</p>
      * @coustructor 方法.
      */
-    public JbpmService(){
+    public JbpmServer(){
         client = new TaskClient(new MinaTaskClientConnector("client 1",
                 new MinaTaskClientHandler(SystemEventListenerFactory.getSystemEventListener())));
         client.connect("127.0.0.1", 9123);
@@ -121,7 +123,7 @@ public class JbpmService {
      * <p>Discription:[获取JBPM客户端，初始化服务器端IP和端口]</p>
      * @coustructor 方法.
      */
-    public JbpmService(String hostIp, int port){
+    public JbpmServer(String hostIp, int port){
         this.hostIp = hostIp;
         this.port = port;
         client = new TaskClient(new MinaTaskClientConnector("client 1",
@@ -344,7 +346,14 @@ public class JbpmService {
         }
         StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
         humanTaskHandler = new HumanTaskHandler(ksession);
-        humanTaskHandler.setClient(client);
+        // 创建 local human service 及其 handler
+        org.jbpm.task.service.TaskService tService = new org.jbpm.task.service.TaskService(emf,
+                SystemEventListenerFactory.getSystemEventListener());
+//        taskServiceSession = tService.createSession();
+        SyncWSHumanTaskHandler humanTaskHandler = new SyncWSHumanTaskHandler(new LocalTaskService(tService),
+                ksession);
+        humanTaskHandler.setLocal(true);
+        humanTaskHandler.connect();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
     }
     
