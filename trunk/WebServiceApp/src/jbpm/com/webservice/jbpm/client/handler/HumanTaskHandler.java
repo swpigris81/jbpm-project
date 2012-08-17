@@ -45,7 +45,6 @@ import org.jbpm.task.service.TaskClientHandler.GetTaskResponseHandler;
 import org.jbpm.task.service.mina.MinaTaskClientConnector;
 import org.jbpm.task.service.mina.MinaTaskClientHandler;
 import org.jbpm.task.service.responsehandlers.AbstractBaseResponseHandler;
-import org.jbpm.task.service.responsehandlers.AbstractBlockingResponseHandler;
 import org.jbpm.task.service.responsehandlers.BlockingAddTaskResponseHandler;
 import org.jbpm.task.utils.OnErrorAction;
 import org.slf4j.Logger;
@@ -233,7 +232,7 @@ public class HumanTaskHandler implements WorkItemHandler {
         } // If the content is not set we will automatically copy all the input objects into 
         // the task content
         else {
-            contentObject = new HashMap(workItem.getParameters());
+            contentObject = new HashMap<String, Object>(workItem.getParameters());
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream out;
             try {
@@ -368,7 +367,7 @@ public class HumanTaskHandler implements WorkItemHandler {
                 in.close();
                 results.put("Result", result);
                 if (result instanceof Map) {
-                    Map<?, ?> map = (Map) result;
+                    Map<?, ?> map = (Map<?, ?>) result;
                     for (Map.Entry<?, ?> entry : map.entrySet()) {
                         if (entry.getKey() instanceof String) {
                             results.put((String) entry.getKey(), entry.getValue());
