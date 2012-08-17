@@ -105,6 +105,12 @@
 				<value>classpath:/com/huateng/db/hbm/</value>
 			</list>
 		</property> -->
+		<!-- class = "org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
+		<property name="packagesToScan">
+               <list>
+                    <value>org.projects.graduates.domain</value>
+               </list>
+		</property> -->
 		<property name="mappingResources">
 			<list>
 				<value>META-INF/ProcessInstanceInfo.hbm.xml</value>
@@ -137,12 +143,17 @@
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager" autowire="byName">
 		<property name="dataSource" ref="${dataSource.switch}" />
 	</bean>
-	
+	<!-- 在业务逻辑层中使用延迟加载 -->
+	<bean id="hibernateInterceptor" class="org.springframework.orm.hibernate3.HibernateInterceptor">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory"/>
+		</property>
+	</bean>
 	<!-- Hibernate局部事务 -->
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager"
 		autowire="byName">
-		<property name="dataSource" ref="${dataSource.switch}" />
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	<!-- 事务级别 -->
 	<bean id="matchAllWithPropReq"
