@@ -349,7 +349,8 @@ public class JbpmServer {
         // 创建 local human service 及其 handler
         org.jbpm.task.service.TaskService tService = new org.jbpm.task.service.TaskService(emf,
                 SystemEventListenerFactory.getSystemEventListener());
-//        taskServiceSession = tService.createSession();
+        //taskServiceSession = tService.createSession();
+        //用于不处理持久化使用（referto: jbpm-docs.pdf/13.2.2）
         SyncWSHumanTaskHandler humanTaskHandler = new SyncWSHumanTaskHandler(new LocalTaskService(tService),
                 ksession);
         humanTaskHandler.setLocal(true);
