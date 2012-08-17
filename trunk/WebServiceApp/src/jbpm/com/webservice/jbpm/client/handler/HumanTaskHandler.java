@@ -46,6 +46,7 @@ import org.jbpm.task.service.mina.MinaTaskClientConnector;
 import org.jbpm.task.service.mina.MinaTaskClientHandler;
 import org.jbpm.task.service.responsehandlers.AbstractBaseResponseHandler;
 import org.jbpm.task.service.responsehandlers.AbstractBlockingResponseHandler;
+import org.jbpm.task.service.responsehandlers.BlockingAddTaskResponseHandler;
 import org.jbpm.task.utils.OnErrorAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +106,10 @@ public class HumanTaskHandler implements WorkItemHandler {
 
     public void setAction(OnErrorAction action) {
         this.action = action;
+    }
+    
+    public void setClient(TaskClient client) {
+        this.client = client;
     }
 
     public void connect() {
@@ -219,6 +224,7 @@ public class HumanTaskHandler implements WorkItemHandler {
                 out.writeObject(contentObject);
                 out.close();
                 content = new ContentData();
+                content.setType(contentObject.getClass().getName());
                 content.setContent(bos.toByteArray());
                 content.setAccessType(AccessType.Inline);
             } catch (IOException e) {
@@ -227,7 +233,7 @@ public class HumanTaskHandler implements WorkItemHandler {
         } // If the content is not set we will automatically copy all the input objects into 
         // the task content
         else {
-            contentObject = workItem.getParameters();
+            contentObject = new HashMap(workItem.getParameters());
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream out;
             try {
@@ -235,18 +241,21 @@ public class HumanTaskHandler implements WorkItemHandler {
                 out.writeObject(contentObject);
                 out.close();
                 content = new ContentData();
+                content.setType(contentObject.getClass().getName());
                 content.setContent(bos.toByteArray());
                 content.setAccessType(AccessType.Inline);
-                content.setType("java.util.map");
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }
         }
         task.setDeadlines(HumanTaskHandlerHelper.setDeadlines(workItem, businessAdministrators));
         TaskAddedHandler handler = new TaskAddedHandler(workItem.getId());
+        
+        //BlockingAddTaskResponseHandler addTaskResponseHandler = new BlockingAddTaskResponseHandler();
         client.addTask(task, content, handler);
-        logger.info("新增任务名称：" + taskName + ", 该任务ID： " + handler.getTaskId());
-        this.taskId = handler.getTaskId();
+        long taskId = handler.getTaskId();
+        logger.info("新增任务名称：" + taskName + ", 该任务ID： " + taskId);
+        this.taskId = taskId;
     }
 
     /**
@@ -276,18 +285,9 @@ public class HumanTaskHandler implements WorkItemHandler {
         client.getTaskByWorkItemId(workItem.getId(), abortTaskResponseHandler);
     }
 
-    private class TaskAddedHandler extends AbstractBlockingResponseHandler implements AddTaskResponseHandler {
+    private class TaskAddedHandler extends BlockingAddTaskResponseHandler implements AddTaskResponseHandler {
 
         private long workItemId;
-        
-        private static final int TASK_ID_WAIT_TIME = 10000;
-
-        private volatile long taskId;
-
-        public synchronized void execute(long taskId) {
-            this.taskId = taskId;
-            setDone(true);
-        }
 
         public TaskAddedHandler(long workItemId) {
             this.workItemId = workItemId;
@@ -309,30 +309,6 @@ public class HumanTaskHandler implements WorkItemHandler {
                 logger.error(logMsg.toString(), getError());
             }
 
-        }
-        
-        public long getTaskId() {
-            // note that this method doesn't need to be synced because if waitTillDone returns true,
-            // it means taskId is available 
-            boolean done = waitTillDone(TASK_ID_WAIT_TIME);
-
-            if (!done) {
-                throw new RuntimeException("Timeout : unable to retrieve Task Id");
-            }
-
-            return taskId;
-        }
-        
-        public long getTaskId(int taskWaitTime) {
-            // note that this method doesn't need to be synced because if waitTillDone returns true,
-            // it means taskId is available 
-            boolean done = waitTillDone(taskWaitTime);
-
-            if (!done) {
-                throw new RuntimeException("Timeout : unable to retrieve Task Id");
-            }
-
-            return taskId;
         }
     }
 
