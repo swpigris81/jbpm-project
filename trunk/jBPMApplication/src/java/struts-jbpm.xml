@@ -17,7 +17,7 @@
 
 
 		<!-- 系统登录 -->
-		<action name="testAction" class="com.huateng.jbpm.test.client.web.action.TestAction">
+		<action name="testAction" class="com.jbpm.test.client.web.action.TestAction">
 			<result name="success" type="dispatcher">/jsp/main.jsp
 			</result>
 			<result name="loginPage" type="redirect">/index.jsp	</result>
