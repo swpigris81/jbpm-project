@@ -3,7 +3,7 @@
   <display-name>jBPMApplication</display-name>
 	<servlet>
   		<servlet-name>jbpm5.3</servlet-name>
-  		<servlet-class>com.huateng.jbpm.test.server.StartHumanTaskServerServlet</servlet-class>
+  		<servlet-class>com.jbpm.test.server.StartHumanTaskServerServlet</servlet-class>
   		<load-on-startup>2</load-on-startup>
   	</servlet>
 	<welcome-file-list>
