@@ -1,118 +1,128 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%
-    String path = request.getContextPath();
+    String path1 = request.getContextPath();
 %>
-
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="pragma" content="no-cache">
-<meta http-equiv="cache-control" content="no-cache">
-<meta http-equiv="expires" content="0">
-<title>登录</title>
+<script type="text/javascript" src="<%=path1%>/dwr/engine.js"></script>
+<script type="text/javascript" src="<%=path1%>/dwr/util.js"></script>
+<script type="text/javascript" src="<%=path1%>/dwr/interface/messageService.js"></script>
 
+<%@include file="/jsp/common/config.jsp" %>
+<%
+Object loginRoleName = session.getAttribute("loginRoleName");
+%>
+<script type="text/javascript">
+var loginRoleName = "<%=loginRoleName%>";
+</script>
+<link rel="stylesheet" type="text/css" href="<%=path %>/js/util/calendar/simple/calendar/calendar.css">
+<script type="text/javascript" src="<%=path %>/js/util/calendar/simple/calendar/calendar.js"></script>
 
+<script type="text/javascript" src="<%=path %>/js/util/extTree.js"></script>
+<script type="text/javascript" src="<%=path %>/js/index.js"></script>
+<!--
+<script type="text/javascript" src="<%=path %>/js/ext-2.2.1/source/ux/RemoteValidator.js"></script>
+<script type="text/javascript" src="<%=path %>/js/point/system/login.js"></script>
+<script type="text/javascript" src="<%=path %>/js/point/system/register.js"></script>
+-->
+<script type="text/javascript" src="<%=path %>/js/ext-2.2.1/source/ux/TabCloseMenu.js"></script>
+<script type="text/javascript" src="<%=path %>/js/util/tabPanel.js"></script>
+
+<script type="text/javascript" src="<%=path%>/js/util/messageRemind.js"></script>
+
+<script type="text/javascript">
+var rootMenu;
+var menuId;
+</script>
+
+<script type="text/javascript">
+Ext.onReady(function(){
+	Ext.QuickTips.init();
+	Ext.form.Field.prototype.msgTarget = 'side';
+	enableDWRAjax(true);
+});
+</script>
+<!--
 <style type="text/css">
-body {
-	background: #026AA9;
-	font-size: 12px;
-	margin-left: auto;
-	margin-right: a
+#header {
+    background: #7F99BE url(<%=path %>/images/layout-browser-hd-bg.gif) repeat-x center;
 }
-
-table,table td {
-	margin: 0;
-	padding: 0;
-	font-size: 12px;
-}
-
-.bj {
-	background: url(<%=request.getContextPath()%>/image/loginbj.jpg )
-		no-repeat;
-	width: 969px;
-	height: 439px;
-}
-
-* /
-		.box {
-	border: 1px #83BDD5 solid;
-	background: #ffffff;
-	width: 100px;
-	font-size: 12px;
+#header h1 {
+    font-size: 16px;
+    color: #fff;
+    font-weight: normal;
+    padding: 5px 10px;
 }
 </style>
-
+-->
+<script type="text/javascript">
+function recieveMsg(msg){
+  	//提示框的长度和宽度的偏移量
+	var windowwidth = 320;
+	var windowheight = 180;
+	//可见区域大小的宽度-提示框的宽度
+	var xwidth = document.body.clientWidth-windowwidth;
+	//可见区域大小的高度-提示框的高度
+	var yheight = document.body.clientHeight-windowheight;
+	//alert(xwidth+" "+yheight+" "+xwidths+" "+yheights);
+	var show = Ext.getCmp("messageWindow_show");
+	if(!show){
+	    var messageWindow = new Ext.Window({
+		    id:"messageWindow_show",
+			title:"您有新的消息",
+			width:windowwidth,
+			height:windowheight,
+			html:"您有新的消息: <br>" + msg.messageContent + "<br>发送时间：" + msg.messageSendTime.format("Y-m-d H:i:s"),
+			modal:false,
+			layout:"fit",
+			x:xwidth,
+			y:yheight,
+			buttons:[{
+			    text:"点击查看",
+			    handler:function(){
+			        goToTabPanel("","8ac388f134d57cdd0134d57f9d1b0001",true);
+			        messageWindow.close();
+			    }
+			}],
+			resizable:false
+		});
+		messageWindow.show();
+	}
+}
+</script>
+<title>redeempoint system</title>
 </head>
 <body>
-	<form id="loginForm" name="form1" method="post"
-		action='testAction!login.action'>
-		<input type="hidden" id="strPath" name="strPath" value="<%=path%>" />
-		<table width="969" height="612" align="center" border="0"
-			cellpadding="0" cellspacing="0">
-			<tr>
-				<td height="88">&nbsp;</td>
-			</tr>
-			<tr>
-				<td height="432" class="bj">
-					<table width="969" height="432" border="0" cellpadding="0"
-						cellspacing="0">
-						<tr height="180">
-							<td>&nbsp;</td>
-						</tr>
-						<tr>
-							<td height="80">&nbsp;</td>
-							<td>
-								<!--    <table  width="210" height="85" border="1" align="left" cellpadding="0" cellspacing="3" style="height: 85px;">-->
-								<table border="0">
-									<tr>
-										<td width="300"></td>
-										<td>
-											<table>
-												<tr>
-													<td width="60"><font color="#ffffff">机构:</font></td>
-													<td colspan="2"><input type="text" value="9900"
-														name="loginForm.branId" style="width: 120px"></td>
-												</tr>
-												<tr>
-													<td><font color="#ffffff">操作员:</font></td>
-													<td colspan="2"><input type="text" value="00001"
-														name="loginForm.userId" style="width: 120px"></td>
-												</tr>
-												<tr>
-													<td><font color="#ffffff">登录密码:</font></td>
-													<td colspan="2"><input type="password" value="111111"
-														name="loginForm.userPwd" style="width: 120px"></td>
-												</tr>
-											</table>
-										</td>
+<!--
+<div id="header">
+	<table width="100%">
+		<tr>
+			<td>
+				<h1>会员积分兑换系统</h1>
+			</td>
+			<td align="right" width="60%">
+				<a href="javascript:systemLogin()">登录系统</a>
+			</td>
+			<td align="right" width="10%">
+				<a href="javascript:systemRegister()">尚未注册？</a>
+			</td>
+			<td align="right" width="10%">
+				<a href="<%=path%>/j_spring_security_logout">退出系统</a>
+			</td>
+		</tr>
+	</table>
+</div>
+-->
+<%@include file="/jsp/common/header.jsp" %>
+<div id="loadMarskDiv" style="position:absolute; z-index: 9999; display:none; width:100%; height:100%;"></div>
+<script type="text/javascript">
 
-										<td>
-											<table>
-												<tr>
-													<td>&nbsp;&nbsp;</td>
-													<td><input type="submit" value="登录"
-														style="width: 80px"></td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-							</td>
-							<td height="85">&nbsp;</td>
-						</tr>
-						<tr>
-							<td height="180">&nbsp;</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td height="85">&nbsp;</td>
-			</tr>
-		</table>
-	</form>
+</script>
+<!-- 
+<br>
+<a href="<%=path%>/login.jsp">登录系统</a>
+<p><a href="<%=path%>/j_spring_security_logout">退出系统</a></p>
+ -->
 </body>
 </html>
