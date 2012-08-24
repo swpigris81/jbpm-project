@@ -14,10 +14,14 @@
 		</property>
 	</bean>
 	
-	<!-- 
-	<import resource="classpath*:/bean-system.xml" />
-	<import resource="classpath*:/bean-bonus.xml" />
- 	-->
+	<import resource="classpath*:/applicationContext-dwr-message.xml" />
+	<import resource="classpath*:/applicationContext-system-jms.xml" />
+	
+	<import resource="classpath*:/applicationContext-common-dao.xml" />
+	<import resource="classpath*:/applicationContext-system-dao.xml" />
+	<import resource="classpath*:/applicationContext-system-service.xml" />
+	<import resource="classpath*:/applicationContext-system-action.xml" />
+	<import resource="classpath*:/applicationContext-system-quartz.xml" />
 	
 	<!-- C3P0数据源配置 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
@@ -114,6 +118,20 @@
 		<property name="mappingResources">
 			<list>
 				<value>META-INF/ProcessInstanceInfo.hbm.xml</value>
+				<!-- 系统管理 -->
+				<value>com/webservice/system/codelist/bean/xml/CodeList.hbm.xml</value>
+				<value>com/webservice/system/codelist/bean/xml/CodeListData.hbm.xml</value>
+				<value>com/webservice/system/invitation/bean/xml/SystemInviteProcess.hbm.xml</value>
+				<value>com/webservice/system/menu/bean/xml/ButtonInfo.hbm.xml</value>
+				<value>com/webservice/system/menu/bean/xml/MenuInfo.hbm.xml</value>
+				<value>com/webservice/system/message/bean/xml/SystemMessage.hbm.xml</value>
+				<value>com/webservice/system/right/bean/xml/RightInfo.hbm.xml</value>
+				<value>com/webservice/system/role/bean/xml/RoleInfo.hbm.xml</value>
+				<value>com/webservice/system/role/bean/xml/RoleMenuInfo.hbm.xml</value>
+				<value>com/webservice/system/role/bean/xml/UserRole.hbm.xml</value>
+				<value>com/webservice/system/systembackup/bean/xml/SystemBackupInfo.hbm.xml</value>
+				<value>com/webservice/system/systembackup/bean/xml/SystemBackupSettingInfo.hbm.xml</value>
+				<value>com/webservice/system/user/bean/xml/UserInfo.hbm.xml</value>
 			</list>
 		</property>
 
