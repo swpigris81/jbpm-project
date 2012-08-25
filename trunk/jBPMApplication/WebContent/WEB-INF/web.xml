@@ -36,14 +36,6 @@
 		<filter-name>encodingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	<!-- <filter>
-		<filter-name>sessionFilter</filter-name>
-		<filter-class>com.huateng.web.security.filter.SessionFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>sessionFilter</filter-name>
-		<url-pattern>*.action</url-pattern>
-	</filter-mapping> -->
 	<filter>
 		<filter-name>OpenSessionInViewFilter</filter-name>
 		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
