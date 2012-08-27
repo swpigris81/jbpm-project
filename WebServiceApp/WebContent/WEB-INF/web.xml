@@ -72,6 +72,60 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
+	<!-- SpringSecurity session 监听器 -->
+	<listener>
+		<listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+	</listener>
+	<!-- SpringSecurity3配置 -->
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- 自定义Servlet配置 -->
+	<servlet>
+		<servlet-name>dwr</servlet-name>
+		<servlet-class>org.directwebremoting.servlet.DwrServlet</servlet-class>
+		<init-param>
+			<description>调试DWR,发布系统时应将其设为false</description>
+			<param-name>debug</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<description>使用服务器推技术(反转AJAX)</description>
+	      	<param-name>activeReverseAjaxEnabled</param-name>
+	      	<param-value>true</param-value>
+	  	</init-param>
+	  	<init-param>
+	      	<param-name>crossDomainSessionSecurity</param-name>
+	      	<param-value>false</param-value>
+	  	</init-param>
+	  	<init-param>
+			<param-name>maxWaitAfterWrite</param-name>
+			<param-value>100</param-value>
+	  	</init-param>
+	  	<init-param>
+	  		<param-name>config</param-name>
+	  		<param-value>WEB-INF/dwr/dwr.xml</param-value>
+	  	</init-param>
+	  	<init-param>
+	  		<param-name>initApplicationScopeCreatorsAtStartup</param-name>
+	  		<param-value>true</param-value>
+	  	</init-param>
+	  	<init-param>
+	  		<description>对dwr scriptSession 自定义管理</description>
+	  		<param-name>org.directwebremoting.extend.ScriptSessionManager</param-name>
+	  		<param-value>com.integral.util.dwr.DwrScriptSessionManagerUtil</param-value>
+	  	</init-param>
+	  	<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>dwr</servlet-name>
+		<url-pattern>/dwr/*</url-pattern>
+	</servlet-mapping>
 	<!-- 集成Struts2 -->
 	<filter>
 		<filter-name>struts2</filter-name>
@@ -81,11 +135,25 @@
 		<filter-name>struts2</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+	<!-- 避免内存泄漏 -->
+	<filter>
+		<filter-name>struts-cleanup</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>struts-cleanup</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- Spring刷新Interceptor防止内存泄漏 -->
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
 	<!-- 会话超时设置（分钟） -->
 	<session-config>
-		<session-timeout>240</session-timeout>
+		<session-timeout>480</session-timeout>
 	</session-config>
 	<welcome-file-list>
+	  <welcome-file>login.jsp</welcome-file>
 	  <welcome-file>index.html</welcome-file>
 	  <welcome-file>index.htm</welcome-file>
 	  <welcome-file>index.jsp</welcome-file>
