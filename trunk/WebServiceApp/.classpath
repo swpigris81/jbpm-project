@@ -139,8 +139,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/protobuf-java-2.4.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/quartz-all-1.8.5.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/rome-0.9.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-api-1.6.4.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-log4j12-1.6.4.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/smack-3.0.4.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/spring-security-acl-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/spring-security-aspects-3.0.5.RELEASE.jar"/>
@@ -185,9 +183,9 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/axis2-core-2.1.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/test/catalina.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/shiro-all-1.2.1.jar" sourcepath="WebContent/WEB-INF/lib/shiro-root-1.2.1-source-release.zip"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/activemq-all-5.5.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/aopalliance-1.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/javassist-3.16.1-GA.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/activemq-all-5.6.0.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
