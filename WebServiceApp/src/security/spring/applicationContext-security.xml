@@ -186,7 +186,7 @@
 		<property name="dataSource" ref="dataSource"></property>
 	</bean>
 	
-	<bean id="mySystemFilter" class="com.integral.util.spring.security.filter.SystemFilter">
+	<bean id="mySystemFilter" class="com.webservice.security.spring.filter.SystemFilter">
 		<property name="authenticationManager" ref="authenticationManager"></property>
 		<property name="accessDecisionManager" ref="myAccessDecisionManagerBean"></property>
 		<property name="securityMetadataSource" ref="securityMetadataSource"></property>

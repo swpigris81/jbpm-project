@@ -81,7 +81,7 @@
 		<!-- 如果设为true那么在取得连接的同时将校验连接的有效性。默认为false -->
 		<property name="testConnectionOnCheckin" value="false"></property>
 	</bean>
-	<bean id="dataSourceProperties" class="com.integral.util.security.PropertiesEncryptFactoryBean">
+	<bean id="dataSourceProperties" class="com.webservice.system.util.PropertiesEncryptFactoryBean">
 		<property name="properties">
 			<props>
 				<prop key="user">${hibernate.username}</prop><!-- FSpZoipCml0kfuP5dmkK9A== -->
@@ -157,7 +157,7 @@
 	</bean>
 	
 	<!-- JDBC事务控制机制(全局事务) -->
-	<bean id="jdbcTransactionManager"
+	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager" autowire="byName">
 		<property name="dataSource" ref="${dataSource.switch}" />
 	</bean>
@@ -168,7 +168,7 @@
 		</property>
 	</bean>
 	<!-- Hibernate局部事务 -->
-	<bean id="transactionManager"
+	<bean id="hibernateTransactionManager"
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager"
 		autowire="byName">
 		<property name="sessionFactory" ref="sessionFactory" />
@@ -206,23 +206,10 @@
 	<bean id="matchAllTxInterceptor"
 		class="org.springframework.transaction.interceptor.TransactionInterceptor">
 		<property name="transactionManager">
-			<ref bean="transactionManager" />
+			<ref bean="hibernateTransactionManager" />
 		</property>
 		<property name="transactionAttributeSource">
 			<ref bean="matchAllWithPropReq" />
-		</property>
-	</bean>
-	<!-- 代理服务 -->
-	<bean id="baseTxService"
-		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
-		abstract="true">
-		<property name="transactionManager">
-			<ref bean="transactionManager" />
-		</property>
-		<property name="transactionAttributes">
-			<props>
-				<prop key="*">PROPAGATION_REQUIRED</prop>
-			</props>
 		</property>
 	</bean>
 
@@ -240,5 +227,22 @@
 			</list>
 		</property>
 	</bean>
-
+	<!-- 代理服务 -->
+	<bean id="serviceProxy" abstract="true"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager">
+			<ref bean="transactionManager" />
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+				<!-- <prop key="sa*">PROPAGATION_REQUIRED</prop>
+				<prop key="add*">PROPAGATION_REQUIRED</prop>
+				<prop key="ins*">PROPAGATION_REQUIRED</prop>
+				<prop key="del*">PROPAGATION_REQUIRED</prop>
+				<prop key="upd*">PROPAGATION_REQUIRED</prop>
+				<prop key="mod*">PROPAGATION_REQUIRED</prop> -->
+			</props>
+		</property>
+	</bean>
 </beans>
