@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/security/apache"/>
+	<classpathentry kind="src" path="src/common"/>
 	<classpathentry kind="src" path="src/security/spring"/>
 	<classpathentry kind="src" path="src/webservice"/>
 	<classpathentry kind="src" path="src/system"/>
@@ -187,5 +188,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/axis2-core-2.1.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/test/catalina.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/shiro-all-1.2.1.jar" sourcepath="WebContent/WEB-INF/lib/shiro-root-1.2.1-source-release.zip"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/activemq-all-5.5.1.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
