@@ -15,14 +15,15 @@ function authorize(){
 		baseAttrs:{uiProvider:Ext.ux.TreeCheckNodeUI},
 		listeners:{
 			"loadexception":function(loader, node, response){
-				if(response.status == "403" || response.status == "404"){
-					Ext.Msg.alert("系统提示","您无权访问本页面,请联系系统管理员！",function(btn){
-						if(btn == "ok" || btn == "yes"){
-							parent.top.location = path;
-						}
+				try{
+					if(response.status == "200"){
+						refreshTree();
+					}else{
+						httpStatusCodeHandler(response.status);
+					}
+				}catch(e){
+					Ext.Msg.alert('错误提示',"系统错误！错误代码："+e, function(btn){
 					});
-				}else{
-					refreshTree();
 				}
 			}
 		}
@@ -91,14 +92,15 @@ function authorize(){
 		reader:roleReader,
 		listeners:{
 			"loadexception":function(loader, node, response){
-				if(response.status == "403"){
-					Ext.Msg.alert("系统提示","您无权访问本页面,请联系系统管理员！",function(btn){
-						if(btn == "ok" || btn == "yes"){
-							parent.top.location = path;
-						}
+				try{
+					if(response.status == "200"){
+						loadAuthorizeRole();
+					}else{
+						httpStatusCodeHandler(response.status);
+					}
+				}catch(e){
+					Ext.Msg.alert('错误提示',"系统错误！错误代码："+e, function(btn){
 					});
-				}else{
-					loadAuthorizeRole();
 				}
 			}
 		}
@@ -223,22 +225,23 @@ function authorize(){
 		reader:userReader,
 		listeners:{
 			"loadexception":function(loader, node, response){
-				if(response.status == "403"){
-					Ext.Msg.alert("系统提示","您无权访问本页面,请联系系统管理员！",function(btn){
-						if(btn == "ok" || btn == "yes"){
-							parent.top.location = path;
-						}
+				try{
+					if(response.status == "200"){
+						var gridSelectionModel = roleGrid.getSelectionModel();
+						var gridSelection = gridSelectionModel.getSelections();
+						if(gridSelection.length != 1){
+				            Ext.MessageBox.alert('提示','请选择一条信息！');
+				            return false;
+				        }
+				        var roleId = gridSelection[0].get("roleId");
+				        //读取角色用户
+				        loadAuthorizeUser(roleId);
+					}else{
+						httpStatusCodeHandler(response.status);
+					}
+				}catch(e){
+					Ext.Msg.alert('错误提示',"系统错误！错误代码："+e, function(btn){
 					});
-				}else{
-					var gridSelectionModel = roleGrid.getSelectionModel();
-					var gridSelection = gridSelectionModel.getSelections();
-					if(gridSelection.length != 1){
-			            Ext.MessageBox.alert('提示','请选择一条信息！');
-			            return false;
-			        }
-			        var roleId = gridSelection[0].get("roleId");
-			        //读取角色用户
-			        loadAuthorizeUser(roleId);
 				}
 			}
 		},
