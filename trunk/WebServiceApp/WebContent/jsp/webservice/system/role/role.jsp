@@ -4,7 +4,7 @@
 <html>
 <head>
 <%@include file="/jsp/common/config.jsp" %>
-<script type="text/javascript" src="<%=path %>/js/point/system/role.js"></script>
+<script type="text/javascript" src="<%=path %>/js/webservice/system/role.js"></script>
 <title>Insert title here</title>
 </head>
 <body>
