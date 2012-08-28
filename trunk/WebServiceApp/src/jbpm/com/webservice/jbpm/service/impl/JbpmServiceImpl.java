@@ -3,64 +3,133 @@ package com.webservice.jbpm.service.impl;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.process.ProcessInstance;
-import org.jbpm.task.TaskService;
+import javax.naming.InitialContext;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
-import com.webservice.jbpm.server.JbpmSupport;
-import com.webservice.jbpm.service.JbpmService;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jbpm.task.Task;
+import org.jbpm.task.User;
+import org.jbpm.task.query.TaskSummary;
 
-/** 
- * <p>Description: [描述该类概要功能介绍]</p>
+import com.webservice.jbpm.client.service.JbpmService;
+import com.webservice.jbpm.service.IJbpmService;
+/**
+ * <p>Description: [工作流服务类]</p>
  * @author  <a href="mailto: xxx@huateng.com">作者中文名</a>
- * @version $Revision$ 
+ * @version $Revision$
  */
-public class JbpmServiceImpl implements JbpmService {
-    private JbpmSupport jbpmSupport;
+public class JbpmServiceImpl implements IJbpmService {
+    private Log log = LogFactory.getLog(JbpmServiceImpl.class);
     /**
-     * <p>Discription:[启动工作流]</p>
-     * @param processId 启动工作流ID
-     * @param reqMap 启动参数
-     * @param process 启动工作流程图地址
-     * @return
+     * 工作流客户端
+     */
+    private JbpmService jbpmClient = new JbpmService();
+    /**
+     * <p>Discription:[开始任务]</p>
+     * @param userName 用户
+     * @param roleList 用户角色
+     * @param taskId 任务ID
+     * @param processId 任务所在流程图ID
      * @throws Exception
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public ProcessInstance startProcess(String processId, Map<String, Object> reqMap, String... process) throws Exception{
-        if(jbpmSupport == null){
-            throw new Exception("工作流框架初始化异常！");
+    public void startTask(String userName, List<String> roleList, String taskId, String... processId) throws Exception{
+        if(taskId == null || "".equals(taskId.trim())){
+            return;
         }
-        jbpmSupport.setProcess(process);
-        jbpmSupport.init();
-        StatefulKnowledgeSession ksession = jbpmSupport.getKsession();
-        if(ksession == null){
-            throw new Exception("工作流初始化异常！");
+        //保证processId至少存在一个, 否则使用默认流程图
+        if(processId != null && processId.length > 0 && !"".equals(processId[0].trim())){
+            jbpmClient.setProcess(processId);
         }
-        ProcessInstance processInstance = ksession.startProcess(processId, reqMap);
-        ksession.fireAllRules();
-        return processInstance;
+        jbpmClient.init();
+        InitialContext ctx = null;
+        UserTransaction transactionManager = null;
+        try{
+            ctx = new InitialContext();
+            transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+            transactionManager.begin();
+            Task task = jbpmClient.getTaskById(NumberUtils.toLong(taskId));
+            if(task != null){
+                TaskSummary taskSummary = new TaskSummary();
+                taskSummary.setId(task.getId());
+                jbpmClient.startTask(new User(userName), roleList, taskSummary);
+            }else{
+                throw new Exception("当前系统中不存在ID为：" + taskId + " 的工作流任务，请联系系统管理员.");
+            }
+            transactionManager.commit();
+        }catch(Exception e){
+            if(transactionManager != null){
+                try {
+                    transactionManager.rollback();
+                } catch (IllegalStateException e1) {
+                    log.error(e1.getMessage(), e1);
+                    throw e1;
+                } catch (SecurityException e1) {
+                    log.error(e1.getMessage(), e1);
+                    throw e1;
+                } catch (SystemException e1) {
+                    log.error(e1.getMessage(), e1);
+                    throw e1;
+                }
+            }
+            log.error(e.getMessage(), e);
+            throw e;
+        }
     }
-    
-    public List getAssignedTasksList(String user, List<String> group){
-        TaskService taskService = jbpmSupport.getTaskService();
-        return null;
-    }
-    
-    
     
     /**
-     * <p>Discription:[方法功能中文描述]</p>
-     * @return JbpmSupport jbpmSupport.
+     * <p>Discription:[完成工作任务]</p>
+     * @param userName 用户名
+     * @param taskId 任务ID
+     * @param resultMap 对该任务完成的结果，如批准通过/不通过等
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public JbpmSupport getJbpmSupport() {
-        return jbpmSupport;
-    }
-    /**
-     * <p>Discription:[方法功能中文描述]</p>
-     * @param jbpmSupport The jbpmSupport to set.
-     */
-    public void setJbpmSupport(JbpmSupport jbpmSupport) {
-        this.jbpmSupport = jbpmSupport;
+    public void completeTask(String userName, String taskId, Map resultMap, String... processId) throws Exception{
+        if(taskId == null || "".equals(taskId.trim())){
+            return;
+        }
+        //保证processId至少存在一个, 否则使用默认流程图
+        if(processId != null && processId.length > 0 && !"".equals(processId[0].trim())){
+            jbpmClient.setProcess(processId);
+        }
+        jbpmClient.init();
+        InitialContext ctx = null;
+        UserTransaction transactionManager = null;
+        try{
+            ctx = new InitialContext();
+            transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+            transactionManager.begin();
+            Task task = jbpmClient.getTaskById(NumberUtils.toLong(taskId));
+            if(task != null){
+                TaskSummary taskSummary = new TaskSummary();
+                taskSummary.setId(task.getId());
+                jbpmClient.completeTask(new User(userName), taskSummary, resultMap, null);
+            }else{
+                throw new Exception("当前系统中不存在ID为：" + taskId + " 的工作流任务，请联系系统管理员.");
+            }
+            transactionManager.commit();
+        }catch(Exception e){
+            if(transactionManager != null){
+                try {
+                    transactionManager.rollback();
+                } catch (IllegalStateException e1) {
+                    log.error(e1.getMessage(), e1);
+                    throw e1;
+                } catch (SecurityException e1) {
+                    log.error(e1.getMessage(), e1);
+                    throw e1;
+                } catch (SystemException e1) {
+                    log.error(e1.getMessage(), e1);
+                    throw e1;
+                }
+            }
+            log.error(e.getMessage(), e);
+            throw e;
+        }
     }
 }
