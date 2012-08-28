@@ -51,7 +51,7 @@
 <%@page import="org.springframework.security.core.context.SecurityContextImpl"%>
 <%@page import="org.springframework.security.web.authentication.WebAuthenticationDetails"%>
 <%@page import="java.util.Collection"%>
-<%@page import="com.integral.system.user.bean.UserInfo"%>
+<%@page import="com.webservice.system.user.bean.UserInfo"%>
 <%
 String userName = "";
 String userRole = "";
