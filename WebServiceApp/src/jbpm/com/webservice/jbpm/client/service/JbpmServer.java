@@ -75,7 +75,12 @@ import bitronix.tm.TransactionManagerServices;
 import com.webservice.jbpm.client.handler.HumanTaskHandler;
 import com.webservice.jbpm.process.audit.JPAFixProcessInstanceDbLog;
 import com.webservice.jbpm.server.daemon.TaskServerDaemon;
-
+/**
+ * @deprecated
+ * <p>Description: [已过时]</p>
+ * @author  <a href="mailto: xxx@huateng.com">作者中文名</a>
+ * @version $Revision$
+ */
 public class JbpmServer {
     private Log log = LogFactory.getLog(JbpmServer.class);
     
