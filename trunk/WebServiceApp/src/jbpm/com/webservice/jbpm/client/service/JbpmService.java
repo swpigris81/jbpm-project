@@ -1,7 +1,9 @@
 package com.webservice.jbpm.client.service;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,7 @@ import org.jbpm.persistence.ProcessPersistenceContextManager;
 import org.jbpm.process.audit.JPAProcessInstanceDbLog;
 import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
 import org.jbpm.process.audit.NodeInstanceLog;
+import org.jbpm.task.AccessType;
 import org.jbpm.task.Content;
 import org.jbpm.task.Task;
 import org.jbpm.task.TaskData;
@@ -970,6 +973,42 @@ public class JbpmService {
         operationResponseHandler = new BlockingTaskOperationResponseHandler();
         client.complete(task.getId(), user.getId(), contentData, operationResponseHandler);
         operationResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
+        log.info("Completed task " + task.getId());
+    }
+    
+    /**
+     * <p>Discription:[完成任务]</p>
+     * @param user 用户
+     * @param task 任务
+     * @param data 传递的消息
+     * @param notUse 扩展参数，暂时未用
+     * @author:[创建者中文名字]
+     * @throws Exception 
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public void completeTask(User user, TaskSummary task, Map data, String notUse) throws Exception {
+        log.info("Completing task " + task.getId());
+        ContentData contentData = null;
+        if(data != null && !data.isEmpty()){
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out;
+            try{
+                out = new ObjectOutputStream(bos);
+                out.writeObject(data);
+                out.close();
+                contentData = new ContentData();
+                contentData.setContent(bos.toByteArray());
+                contentData.setAccessType(AccessType.Inline);
+            }catch(Exception e){
+                log.error(e.getMessage(), e);
+                throw e;
+            }finally{
+                if(bos != null){
+                    bos.close();
+                }
+            }
+        }
+        completeTask(user, task, contentData);
         log.info("Completed task " + task.getId());
     }
     
