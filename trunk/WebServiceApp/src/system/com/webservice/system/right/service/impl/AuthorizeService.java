@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.jbpm.task.UserInfo;
-
 import com.webservice.common.dao.IBaseDao;
 import com.webservice.system.menu.bean.ButtonInfo;
 import com.webservice.system.menu.bean.MenuInfo;
@@ -16,6 +14,7 @@ import com.webservice.system.menu.bean.MenuTree;
 import com.webservice.system.right.bean.AuthorizeInfo;
 import com.webservice.system.right.dao.IAuthorizeDao;
 import com.webservice.system.right.service.IAuthorizeService;
+import com.webservice.system.user.bean.UserInfo;
 import com.webservice.system.util.ProtectUserInfo;
 
 /**
