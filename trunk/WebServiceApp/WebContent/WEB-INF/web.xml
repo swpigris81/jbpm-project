@@ -29,7 +29,7 @@
 	<servlet>
   		<servlet-name>jbpm5.3</servlet-name>
   		<servlet-class>com.webservice.jbpm.server.servlet.HumanTaskServerServlet</servlet-class>
-  		<load-on-startup>2</load-on-startup>
+  		<load-on-startup>99</load-on-startup>
   	</servlet>
   	<!-- Spring配置文件路径 -->
 	<context-param>
