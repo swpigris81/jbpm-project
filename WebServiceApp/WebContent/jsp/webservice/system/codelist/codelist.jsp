@@ -18,6 +18,6 @@
 <body >
 <div id="codelist_div" style="width:100%; height:100%"></div>
 <iframe id="export2excel" style="width:0px; height: 0px; display:none;"></iframe>
-<script type="text/javascript" src="<%=path%>/js/point/system/codelist.js"></script>
+<script type="text/javascript" src="<%=path%>/js/webservice/system/codelist.js"></script>
 </body>
 </html>

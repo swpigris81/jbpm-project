@@ -23,7 +23,7 @@
 <!-- <script type="text/javascript" src="<%=path%>/dwr/interface/messageService.js"></script> -->
 
 <script type="text/javascript" src="<%=path%>/dwr/interface/userService.js"></script>
-<script type="text/javascript" src="<%=path%>/js/point/system/message.js"></script>
+<script type="text/javascript" src="<%=path%>/js/webservice/system/message.js"></script>
 
 <style type="text/css">
 .wap {
