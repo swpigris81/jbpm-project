@@ -82,6 +82,12 @@ function closeCurrentMenuTab(){
  * @param httpStatusCode
  */
 function httpStatusCodeHandler(httpStatusCode){
+	if(httpStatusCode == "500"){
+		Ext.Msg.alert('错误提示',"服务器错误，请联系系统管理员！", function(btn){
+			//关闭当前页面
+		});
+		return false;
+	}
 	if(httpStatusCode == "404"){
 		Ext.Msg.alert('错误提示',"当前页面不可用，请检查您的URL地址。页面即将关闭！", function(btn){
 			//关闭当前页面
