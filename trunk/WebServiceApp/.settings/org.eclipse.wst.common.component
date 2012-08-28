@@ -11,6 +11,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/webservice"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/atomikos"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/common"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/loan"/>
         <property name="context-root" value="WebServiceApp"/>
         <property name="java-output-path" value="/WebServiceApp/WebContent/WEB-INF/classes"/>
     </wb-module>
