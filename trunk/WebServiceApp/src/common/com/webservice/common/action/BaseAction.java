@@ -105,5 +105,13 @@ public class BaseAction extends ActionSupport {
         definition.setIsolationLevel(TransactionDefinition.ISOLATION_SERIALIZABLE);
         return transactionManager.getTransaction(definition);
     }
-    
+    /**
+     * <p>Discription:[入口]</p>
+     * @return
+     * @author:[代超]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public String begin(){
+        return SUCCESS;
+    }
 }
