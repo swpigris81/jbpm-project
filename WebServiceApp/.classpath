@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/security/apache"/>
+	<classpathentry kind="src" path="src/loan"/>
 	<classpathentry kind="src" path="src/common"/>
 	<classpathentry kind="src" path="src/security/spring"/>
 	<classpathentry kind="src" path="src/webservice"/>
