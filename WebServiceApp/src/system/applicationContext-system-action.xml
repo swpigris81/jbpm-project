@@ -86,7 +86,7 @@
 		<property name="systemInviteProcessService" ref="systemInviteProcessService"></property>
 		<property name="transactionManager" ref="transactionManager"></property>
 	</bean>
-	<bean id="messageAction" class="com.webservice.system.message.action.MessageAction">
+	<bean id="messageAction" class="com.webservice.system.message.action.MessageAction" scope="prototype">
 		<property name="transactionManager" ref="transactionManager"></property>
 		<property name="messageService" ref="messageService"></property>
 	</bean>
