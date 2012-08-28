@@ -1,5 +1,5 @@
 package com.webservice.jbpm.service;
 
-public interface JbpmService {
+public interface IJbpmService {
 
 }
