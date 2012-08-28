@@ -13,16 +13,20 @@
 			</list>
 		</property>
 	</bean>
-	
+	<import resource="classpath*:/applicationContext-jbpm-service.xml" />
 	<import resource="classpath*:/applicationContext-dwr-message.xml" />
 	<import resource="classpath*:/applicationContext-system-jms.xml" />
 	<import resource="classpath*:/applicationContext-common-dao.xml" />
 	<import resource="classpath*:/applicationContext-system-dao.xml" />
+	<import resource="classpath*:/applicationContext-system-quartz.xml" />
 	<import resource="classpath*:/applicationContext-system-service.xml" />
 	<import resource="classpath*:/applicationContext-system-action.xml" />
-	<import resource="classpath*:/applicationContext-system-quartz.xml" />
 	<!-- JBPM5.3 -->
+	<!-- 
 	<import resource="classpath*:/applicationContext-jbpm-service.xml" />
+	-->
+	<import resource="classpath*:/applicationContext-security.xml"/>
+	
 	
 	<!-- C3P0数据源配置 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
