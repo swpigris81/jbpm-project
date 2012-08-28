@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 /** 
  * <p>Description: [描述该类概要功能介绍]</p>
  * @author  <a href="mailto: xxx@huateng.com">作者中文名</a>
+ * @deprecated 已过时
  * @version $Revision$ 
  */
 public class HumanTaskHandler implements WorkItemHandler {
