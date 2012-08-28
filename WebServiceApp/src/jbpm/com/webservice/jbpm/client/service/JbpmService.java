@@ -73,7 +73,7 @@ import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 
 import bitronix.tm.TransactionManagerServices;
 
-import com.webservice.jbpm.client.handler.HumanTaskHandler;
+import com.webservice.jbpm.client.handler.AsyncHumanTaskHandler;
 import com.webservice.jbpm.process.audit.JPAFixProcessInstanceDbLog;
 import com.webservice.jbpm.server.daemon.TaskServerDaemon;
 
@@ -88,7 +88,7 @@ public class JbpmService {
     private org.jbpm.task.service.TaskService taskService;
     private StatefulKnowledgeSession ksession;
     private ProcessInstance processInstance;
-    private HumanTaskHandler humanTaskHandler;
+    private AsyncHumanTaskHandler humanTaskHandler;
     private String[] process;
     private String hostIp = "127.0.0.1";
     private int port = 9123;
@@ -346,8 +346,7 @@ public class JbpmService {
             kbase = createKnowledgeBase(process);
         }
         StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        humanTaskHandler = new HumanTaskHandler(ksession);
-        humanTaskHandler.setClient(client);
+        humanTaskHandler = new AsyncHumanTaskHandler(client, ksession);
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
     }
     
