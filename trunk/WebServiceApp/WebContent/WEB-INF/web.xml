@@ -35,7 +35,7 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			/WEB-INF/classes/applicationContext.xml,/WEB-INF/classes/applicationContext-security.xml<!-- ,/WEB-INF/classes/applicationContext-shiro.xml -->
+			/WEB-INF/classes/applicationContext.xml<!-- ,/WEB-INF/classes/applicationContext-shiro.xml -->
 		</param-value>
 	</context-param>
 	<!-- Hibernate缓存配置 -->
