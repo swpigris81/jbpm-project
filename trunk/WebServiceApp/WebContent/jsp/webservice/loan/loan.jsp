@@ -4,9 +4,11 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<%@include file="/jsp/common/config.jsp" %>
+<script type="text/javascript" src="<%=path%>/js/webservice/loan/loan.js"></script>
 <title>请款</title>
 </head>
 <body>
-	请款
+	<div style="width: 100%;height: 100%" id="loan_div"></div>
 </body>
 </html>
