@@ -33,9 +33,6 @@ public class SystemBackupAction extends BaseAction {
     private String backValue;
     private String backTime;
     
-    private int start;
-    private int limit;
-    
     private SystemBackupInfo backInfo;
     /**
      * <p>Discription:[系统备份列表]</p>
@@ -291,21 +288,5 @@ public class SystemBackupAction extends BaseAction {
 
     public void setBackInfo(SystemBackupInfo backInfo) {
         this.backInfo = backInfo;
-    }
-
-    public int getStart() {
-        return start;
-    }
-
-    public void setStart(int start) {
-        this.start = start;
-    }
-
-    public int getLimit() {
-        return limit;
-    }
-
-    public void setLimit(int limit) {
-        this.limit = limit;
     }
 }
