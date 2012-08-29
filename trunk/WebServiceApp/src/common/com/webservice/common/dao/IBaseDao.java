@@ -113,7 +113,7 @@ public interface IBaseDao {
      * @author:[代超]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    List queryPageByHQL(String hql, Map<String, Object> params, int start, int limit);
+    public List queryPageByHQL(String hql, Map<String, Object> params, int start, int limit);
     /**
      * <p>Discription:[分页查询, 使用Hibernate的传值方式即：where a = :a]</p>
      * @param sql
@@ -124,5 +124,15 @@ public interface IBaseDao {
      * @author:[代超]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    List queryPageBySQL(String sql, Map<String, Object> params, int start, int limit);
+    public List queryPageBySQL(String sql, Map<String, Object> params, int start, int limit);
+    /**
+     * <p>Discription:[根据指定条件分页查询]</p>
+     * @param instance 含有指定条件的POJO对象
+     * @param start
+     * @param limit
+     * @return
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public List findByExample(Object instance, int start, int limit);
 }

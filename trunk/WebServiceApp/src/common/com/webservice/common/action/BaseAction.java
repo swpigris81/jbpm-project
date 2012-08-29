@@ -27,7 +27,37 @@ public class BaseAction extends ActionSupport {
      * <p>Discription:序列号</p>
      */
     private static final long serialVersionUID = 1L;
+    public int start;
+    public int limit;
     
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return int start.
+     */
+    public int getStart() {
+        return start;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param start The start to set.
+     */
+    public void setStart(int start) {
+        this.start = start;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return int limit.
+     */
+    public int getLimit() {
+        return limit;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param limit The limit to set.
+     */
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
     /**
      * <p>Discription:获取写文件流工具</p>
      * @param request
