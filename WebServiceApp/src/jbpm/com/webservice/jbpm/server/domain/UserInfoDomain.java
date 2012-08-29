@@ -9,10 +9,10 @@ import org.jbpm.task.Group;
 import org.jbpm.task.OrganizationalEntity;
 import org.jbpm.task.UserInfo;
 
-/** 
+/**
  * <p>Description: [描述该类概要功能介绍]</p>
- * @author  <a href="mailto: xxx@huateng.com">作者中文名</a>
- * @version $Revision$ 
+ * @author  <a href="mailto: swpigris81@126.com">大牙-小白</a>
+ * @version v0.1
  */
 public class UserInfoDomain implements UserInfo {
     private Map<Group, List<OrganizationalEntity>> groups = new HashMap<Group, List<OrganizationalEntity>>();

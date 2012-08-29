@@ -373,7 +373,7 @@ public class JbpmService {
      */
     public void startProcess(Map<String, Object> params) throws RuntimeException {
         try {
-            startProcess( "com.huateng.process.task", params );
+            startProcess("com.webservice.process.task", params);
         }
         catch (IllegalArgumentException ex) {
             throw new RuntimeException(ex.getMessage());

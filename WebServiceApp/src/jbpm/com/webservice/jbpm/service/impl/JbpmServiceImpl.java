@@ -18,8 +18,8 @@ import com.webservice.jbpm.client.service.JbpmService;
 import com.webservice.jbpm.service.IJbpmService;
 /**
  * <p>Description: [工作流服务类]</p>
- * @author  <a href="mailto: xxx@huateng.com">作者中文名</a>
- * @version $Revision$
+ * @author  <a href="mailto: swpigris81@126.com">大牙-小白</a>
+ * @version v0.1
  */
 public class JbpmServiceImpl implements IJbpmService {
     private Log log = LogFactory.getLog(JbpmServiceImpl.class);
