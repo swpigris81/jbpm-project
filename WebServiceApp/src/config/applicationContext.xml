@@ -13,20 +13,27 @@
 			</list>
 		</property>
 	</bean>
-	<import resource="classpath*:/applicationContext-jbpm-service.xml" />
+	<!-- DWR service -->
 	<import resource="classpath*:/applicationContext-dwr-message.xml" />
 	<import resource="classpath*:/applicationContext-system-jms.xml" />
+	<!-- Spring3.0.5 & Hibernate3 -->
 	<import resource="classpath*:/applicationContext-common-dao.xml" />
 	<import resource="classpath*:/applicationContext-system-dao.xml" />
+	<!-- Spring Quartz -->
 	<import resource="classpath*:/applicationContext-system-quartz.xml" />
+	<!-- Spring3.0.5 -->
 	<import resource="classpath*:/applicationContext-system-service.xml" />
+	<!-- Spring3.0.5 & Struts2 -->
 	<import resource="classpath*:/applicationContext-system-action.xml" />
 	<!-- JBPM5.3 -->
-	<!-- 
 	<import resource="classpath*:/applicationContext-jbpm-service.xml" />
-	-->
+	<!-- Spring Security3.0.5 -->
 	<import resource="classpath*:/applicationContext-security.xml"/>
 	
+	<!-- 请款 -->
+	<import resource="classpath*:/applicationContext-loan-dao.xml"/>
+	<import resource="classpath*:/applicationContext-loan-service.xml"/>
+	<import resource="classpath*:/applicationContext-loan-action.xml"/>
 	
 	<!-- C3P0数据源配置 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
@@ -84,7 +91,7 @@
 		-->
 		<property name="testConnectionOnCheckout" value="false"></property>
 		<!-- 如果设为true那么在取得连接的同时将校验连接的有效性。默认为false -->
-		<property name="testConnectionOnCheckin" value="false"></property>
+		<property name="testConnectionOnCheckin" value="true"></property>
 	</bean>
 	<bean id="dataSourceProperties" class="com.webservice.system.util.PropertiesEncryptFactoryBean">
 		<property name="properties">
@@ -179,7 +186,7 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	<!-- 事务级别 -->
-	<bean id="matchAllWithPropReq"
+	<!-- <bean id="matchAllWithPropReq"
 		class="org.springframework.transaction.interceptor.NameMatchTransactionAttributeSource">
 		<property name="properties">
 			<props>
@@ -206,9 +213,9 @@
 				<prop key="*">PROPAGATION_SUPPORTS</prop>
 			</props>
 		</property>
-	</bean>
+	</bean> -->
 	<!-- 配置hibernate事务 -->
-	<bean id="matchAllTxInterceptor"
+	<!-- <bean id="matchAllTxInterceptor"
 		class="org.springframework.transaction.interceptor.TransactionInterceptor">
 		<property name="transactionManager">
 			<ref bean="hibernateTransactionManager" />
@@ -216,10 +223,10 @@
 		<property name="transactionAttributeSource">
 			<ref bean="matchAllWithPropReq" />
 		</property>
-	</bean>
+	</bean> -->
 
 	<!-- 配置自动代理 -->
-	<bean id="autoProxyCreator"
+	<!-- <bean id="autoProxyCreator"
 		class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
 		<property name="beanNames">
 			<list>
@@ -231,7 +238,7 @@
 				<value>matchAllTxInterceptor</value>
 			</list>
 		</property>
-	</bean>
+	</bean> -->
 	<!-- 代理服务 -->
 	<bean id="serviceProxy" abstract="true"
 		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
