@@ -111,7 +111,7 @@
 		<!-- 这种方式在WAS中存在问题，Weblogic可以使用, 不建议使用这种方式 -->
 		<!-- <property name="mappingDirectoryLocations">
 			<list>
-				<value>classpath:/com/huateng/db/hbm/</value>
+				<value>classpath:/com/hbm/</value>
 			</list>
 		</property> -->
 		<!-- class = "org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"

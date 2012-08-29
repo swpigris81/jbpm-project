@@ -50,11 +50,11 @@ import org.jbpm.task.utils.OnErrorAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** 
+/**
  * <p>Description: [描述该类概要功能介绍]</p>
- * @author  <a href="mailto: xxx@huateng.com">作者中文名</a>
+ * @author  <a href="mailto: swpigris81@126.com">大牙-小白</a>
  * @deprecated 已过时
- * @version $Revision$ 
+ * @version v0.1
  */
 public class HumanTaskHandler implements WorkItemHandler {
     private static final Logger logger = LoggerFactory.getLogger(HumanTaskHandler.class);

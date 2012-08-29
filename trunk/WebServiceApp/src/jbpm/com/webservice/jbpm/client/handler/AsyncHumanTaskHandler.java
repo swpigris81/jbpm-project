@@ -13,10 +13,10 @@ import org.jbpm.task.utils.OnErrorAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** 
+/**
  * <p>Description: [添加获取任务ID的功能]</p>
- * @author  <a href="mailto: xxx@huateng.com">作者中文名</a>
- * @version $Revision$ 
+ * @author  <a href="mailto: swpigris81@126.com">大牙-小白</a>
+ * @version v0.1
  */
 public class AsyncHumanTaskHandler extends AsyncWSHumanTaskHandler {
     private static final Logger logger = LoggerFactory.getLogger(AsyncHumanTaskHandler.class);

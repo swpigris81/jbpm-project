@@ -66,7 +66,7 @@
   <itemDefinition id="_8-resultUserIdItem" structureRef="String" />
   <itemDefinition id="_8-resultUserNameItem" structureRef="String" />
 
-  <process processType="Private" isExecutable="true" id="com.huateng.process.task" name="Sample Process" tns:packageName="defaultPackage" >
+  <process processType="Private" isExecutable="true" id="com.webservice.process.task" name="Sample Process" tns:packageName="defaultPackage" >
 
     <!-- process variables -->
     <property id="date" itemSubjectRef="_dateItem"/>
@@ -94,8 +94,8 @@
         <dataInput id="_4_dateInput" name="date" />
         <dataInput id="_4_GroupIdInput" name="GroupId" />
         <dataOutput id="_4_resultUserNameOutput" name="resultUserName" />
-        <dataOutput id="_4_resultUserIdOutput" name="resultUserId" />
         <dataOutput id="_4_commentOutput" name="comment" />
+        <dataOutput id="_4_resultUserIdOutput" name="resultUserId" />
         <dataOutput id="_4_outcomeOutput" name="outcome" />
         <inputSet>
           <dataInputRefs>_4_userIdInput</dataInputRefs>
@@ -106,8 +106,8 @@
         </inputSet>
         <outputSet>
           <dataOutputRefs>_4_resultUserNameOutput</dataOutputRefs>
-          <dataOutputRefs>_4_resultUserIdOutput</dataOutputRefs>
           <dataOutputRefs>_4_commentOutput</dataOutputRefs>
+          <dataOutputRefs>_4_resultUserIdOutput</dataOutputRefs>
           <dataOutputRefs>_4_outcomeOutput</dataOutputRefs>
         </outputSet>
       </ioSpecification>
@@ -139,12 +139,12 @@
         <targetRef>resultUserName</targetRef>
       </dataOutputAssociation>
       <dataOutputAssociation>
-        <sourceRef>_4_resultUserIdOutput</sourceRef>
-        <targetRef>resultUserId</targetRef>
-      </dataOutputAssociation>
-      <dataOutputAssociation>
         <sourceRef>_4_commentOutput</sourceRef>
         <targetRef>comment</targetRef>
+      </dataOutputAssociation>
+      <dataOutputAssociation>
+        <sourceRef>_4_resultUserIdOutput</sourceRef>
+        <targetRef>resultUserId</targetRef>
       </dataOutputAssociation>
       <dataOutputAssociation>
         <sourceRef>_4_outcomeOutput</sourceRef>
@@ -156,8 +156,8 @@
         <dataInput id="_5_resultInput" name="result" />
         <dataInput id="_5_userIdInput" name="userId" />
         <dataInput id="_5_userNameInput" name="userName" />
-        <dataInput id="_5_commentInput" name="comment" />
         <dataInput id="_5_dateInput" name="date" />
+        <dataInput id="_5_commentInput" name="comment" />
         <dataInput id="_5_GroupIdInput" name="GroupId" />
         <dataOutput id="_5_resultOutput" name="result" />
         <dataOutput id="_5_resultUserNameOutput" name="resultUserName" />
@@ -167,8 +167,8 @@
           <dataInputRefs>_5_resultInput</dataInputRefs>
           <dataInputRefs>_5_userIdInput</dataInputRefs>
           <dataInputRefs>_5_userNameInput</dataInputRefs>
-          <dataInputRefs>_5_commentInput</dataInputRefs>
           <dataInputRefs>_5_dateInput</dataInputRefs>
+          <dataInputRefs>_5_commentInput</dataInputRefs>
           <dataInputRefs>_5_GroupIdInput</dataInputRefs>
         </inputSet>
         <outputSet>
@@ -191,12 +191,12 @@
         <targetRef>_5_userNameInput</targetRef>
       </dataInputAssociation>
       <dataInputAssociation>
-        <sourceRef>comment</sourceRef>
-        <targetRef>_5_commentInput</targetRef>
-      </dataInputAssociation>
-      <dataInputAssociation>
         <sourceRef>date</sourceRef>
         <targetRef>_5_dateInput</targetRef>
+      </dataInputAssociation>
+      <dataInputAssociation>
+        <sourceRef>comment</sourceRef>
+        <targetRef>_5_commentInput</targetRef>
       </dataInputAssociation>
       <dataInputAssociation>
         <targetRef>_5_GroupIdInput</targetRef>
@@ -227,8 +227,8 @@
         <dataInput id="_6_resultInput" name="result" />
         <dataInput id="_6_userIdInput" name="userId" />
         <dataInput id="_6_userNameInput" name="userName" />
-        <dataInput id="_6_dateInput" name="date" />
         <dataInput id="_6_commentInput" name="comment" />
+        <dataInput id="_6_dateInput" name="date" />
         <dataInput id="_6_GroupIdInput" name="GroupId" />
         <dataOutput id="_6_resultOutput" name="result" />
         <dataOutput id="_6_resultUserNameOutput" name="resultUserName" />
@@ -238,8 +238,8 @@
           <dataInputRefs>_6_resultInput</dataInputRefs>
           <dataInputRefs>_6_userIdInput</dataInputRefs>
           <dataInputRefs>_6_userNameInput</dataInputRefs>
-          <dataInputRefs>_6_dateInput</dataInputRefs>
           <dataInputRefs>_6_commentInput</dataInputRefs>
+          <dataInputRefs>_6_dateInput</dataInputRefs>
           <dataInputRefs>_6_GroupIdInput</dataInputRefs>
         </inputSet>
         <outputSet>
@@ -262,12 +262,12 @@
         <targetRef>_6_userNameInput</targetRef>
       </dataInputAssociation>
       <dataInputAssociation>
-        <sourceRef>date</sourceRef>
-        <targetRef>_6_dateInput</targetRef>
-      </dataInputAssociation>
-      <dataInputAssociation>
         <sourceRef>comment</sourceRef>
         <targetRef>_6_commentInput</targetRef>
+      </dataInputAssociation>
+      <dataInputAssociation>
+        <sourceRef>date</sourceRef>
+        <targetRef>_6_dateInput</targetRef>
       </dataInputAssociation>
       <dataInputAssociation>
         <targetRef>_6_GroupIdInput</targetRef>
@@ -298,8 +298,8 @@
         <dataInput id="_7_resultInput" name="result" />
         <dataInput id="_7_userIdInput" name="userId" />
         <dataInput id="_7_userNameInput" name="userName" />
-        <dataInput id="_7_commentInput" name="comment" />
         <dataInput id="_7_dateInput" name="date" />
+        <dataInput id="_7_commentInput" name="comment" />
         <dataInput id="_7_GroupIdInput" name="GroupId" />
         <dataOutput id="_7_resultOutput" name="result" />
         <dataOutput id="_7_resultUserNameOutput" name="resultUserName" />
@@ -309,8 +309,8 @@
           <dataInputRefs>_7_resultInput</dataInputRefs>
           <dataInputRefs>_7_userIdInput</dataInputRefs>
           <dataInputRefs>_7_userNameInput</dataInputRefs>
-          <dataInputRefs>_7_commentInput</dataInputRefs>
           <dataInputRefs>_7_dateInput</dataInputRefs>
+          <dataInputRefs>_7_commentInput</dataInputRefs>
           <dataInputRefs>_7_GroupIdInput</dataInputRefs>
         </inputSet>
         <outputSet>
@@ -333,12 +333,12 @@
         <targetRef>_7_userNameInput</targetRef>
       </dataInputAssociation>
       <dataInputAssociation>
-        <sourceRef>comment</sourceRef>
-        <targetRef>_7_commentInput</targetRef>
-      </dataInputAssociation>
-      <dataInputAssociation>
         <sourceRef>date</sourceRef>
         <targetRef>_7_dateInput</targetRef>
+      </dataInputAssociation>
+      <dataInputAssociation>
+        <sourceRef>comment</sourceRef>
+        <targetRef>_7_commentInput</targetRef>
       </dataInputAssociation>
       <dataInputAssociation>
         <targetRef>_7_GroupIdInput</targetRef>
@@ -437,7 +437,7 @@
   </process>
 
   <bpmndi:BPMNDiagram>
-    <bpmndi:BPMNPlane bpmnElement="com.huateng.process.task" >
+    <bpmndi:BPMNPlane bpmnElement="com.webservice.process.task" >
       <bpmndi:BPMNShape bpmnElement="_1" >
         <dc:Bounds x="36" y="10" width="48" height="48" />
       </bpmndi:BPMNShape>

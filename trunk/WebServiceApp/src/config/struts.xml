@@ -57,4 +57,7 @@
     <!-- <include file="com/integral/applications/account/config/account_manage.xml"></include> -->
     <!-- 系统备份 -->
     <include file="struts-systembackup.xml"></include>
+    
+    <!-- 请款 -->
+    <include file="struts-loan.xml"></include>
 </struts>

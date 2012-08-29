@@ -22,10 +22,10 @@ import org.slf4j.LoggerFactory;
 
 import com.webservice.jbpm.server.daemon.TaskServerDaemon;
 
-/** 
+/**
  * <p>Description: [修复jbpm-bam-5.3.0.Final.jar中的JPAProcessInstanceDbLog类]</p>
- * @author  <a href="mailto: xxx@huateng.com">作者中文名</a>
- * @version $Revision$ 
+ * @author  <a href="mailto: swpigris81@126.com">大牙-小白</a>
+ * @version v0.1
  */
 public class JPAFixProcessInstanceDbLog extends JPAProcessInstanceDbLog {
 private static Logger logger = LoggerFactory.getLogger(JPAFixProcessInstanceDbLog.class);
