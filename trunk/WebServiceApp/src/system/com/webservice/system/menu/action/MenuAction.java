@@ -288,6 +288,7 @@ ServletRequestAware, ServletResponseAware {
         // 开始事务
         TransactionStatus status = transactionManager.getTransaction(definition);
         PrintWriter out = null;
+        boolean bool = false;
         try{
             out = super.getPrintWriter(request, response);
             BeanUtils.populate(menu, requestMap);
@@ -310,13 +311,18 @@ ServletRequestAware, ServletResponseAware {
                 }
             }
             out.print("{success:true}");
+            bool = true;
         }catch(Exception e){
             status.setRollbackOnly();
             out.print("{success:false}");
+            bool = false;
+            LOG.error(e.getMessage(), e);
         }finally{
             transactionManager.commit(status);
             //刷新系统内存
-            resourceDetailsMonitor.refresh();
+            if(bool){
+                resourceDetailsMonitor.refresh();
+            }
             if(out!=null){
                 out.flush();
                 out.close();
