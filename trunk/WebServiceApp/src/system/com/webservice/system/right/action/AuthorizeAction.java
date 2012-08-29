@@ -290,7 +290,7 @@ public class AuthorizeAction extends BaseAction implements ServletRequestAware, 
             out = super.getPrintWriter(request, response);
             out.print("{success:true,totalCount:" + userListSize + ",userList:" + Json.toJson(userList) + "}");
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         } finally {
             if (out != null) {
                 out.flush();
@@ -345,7 +345,7 @@ public class AuthorizeAction extends BaseAction implements ServletRequestAware, 
                 out.print("{success:true,menus:" + Json.toJson(list) + "}");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         } finally {
             if (out != null) {
                 out.flush();
@@ -407,6 +407,7 @@ public class AuthorizeAction extends BaseAction implements ServletRequestAware, 
         // 开始事务
         TransactionStatus status = transactionManager.getTransaction(definition);
         PrintWriter out = null;
+        boolean bool = false;
         try {
             out = super.getPrintWriter(request, response);
             if(roleId == null || "".equals(roleId)){
@@ -443,13 +444,18 @@ public class AuthorizeAction extends BaseAction implements ServletRequestAware, 
                 this.authorizeService.saveOrUpdateAll(buttons);
             }
             out.print("{success:true}");
+            bool = true;
         } catch (Exception e) {
             status.setRollbackOnly();
+            bool = false;
+            LOG.error(e.getMessage(), e);
             out.print("{success:false}");
         } finally {
             transactionManager.commit(status);
             //刷新系统内存
-            resourceDetailsMonitor.refresh();
+            if(bool){
+                resourceDetailsMonitor.refresh();
+            }
             if(out!=null){
                 out.flush();
                 out.close();
@@ -474,17 +480,23 @@ public class AuthorizeAction extends BaseAction implements ServletRequestAware, 
         // 开始事务
         TransactionStatus status = transactionManager.getTransaction(definition);
         PrintWriter out = null;
+        boolean bool = false;
         try{
             out = super.getPrintWriter(request, response);
             //删除用户的角色信息
             this.userRoleService.deleteByUser(userNames);
             out.print("{success:true}");
+            bool = true;
         }catch(Exception e){
             status.setRollbackOnly();
             out.print("{success:false}");
+            LOG.error(e.getMessage(), e);
+            bool = false;
         }finally{
             this.transactionManager.commit(status);
-            this.resourceDetailsMonitor.refresh();
+            if(bool){
+                this.resourceDetailsMonitor.refresh();
+            }
             if(out != null){
                 out.flush();
                 out.close();
@@ -511,7 +523,6 @@ public class AuthorizeAction extends BaseAction implements ServletRequestAware, 
                         //当前选中的用户赞未分配角色
                         //查询该用户是否已经存在在数据库
                         UserRole userRole = null;
-                        
                         List existRole = this.userRoleService.findRoleByUserID(user[0]);
                         if(existRole != null && existRole.size() > 0){
                             userRole = (UserRole) existRole.get(0);
@@ -536,17 +547,23 @@ public class AuthorizeAction extends BaseAction implements ServletRequestAware, 
         // 开始事务
         TransactionStatus status = transactionManager.getTransaction(definition);
         PrintWriter out = null;
+        boolean bool = false;
         try{
             out = super.getPrintWriter(request, response);
             this.userRoleService.saveOrUpdateAll(newUser);
             this.userRoleService.updateByUser(sb.toString().split(","));
             out.print("{success:true}");
+            bool = true;
         }catch(Exception e){
             status.setRollbackOnly();
             out.print("{success:false}");
+            LOG.error(e.getMessage(), e);
+            bool = false;
         }finally{
             this.transactionManager.commit(status);
-            this.resourceDetailsMonitor.refresh();
+            if(bool){
+                this.resourceDetailsMonitor.refresh();
+            }
             if(out!=null){
                 out.flush();
                 out.close();
@@ -569,6 +586,7 @@ public class AuthorizeAction extends BaseAction implements ServletRequestAware, 
             out.print("{success:true,totalCount:"+allUsers+",userList:"+Json.toJson(auths)+"}");
         }catch(Exception e){
             out.print("{success:false}");
+            LOG.error(e.getMessage(), e);
         }finally{
             if(out != null){
                 out.flush();
