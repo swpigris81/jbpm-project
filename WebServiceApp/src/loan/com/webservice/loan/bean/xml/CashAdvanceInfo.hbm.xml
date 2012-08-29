@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2011-6-5 15:28:30 by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.webservice.loan.bean.CashAdvanceInfo" table="tbl_webservice_cashadvance">
+        <id name="id" type="java.lang.String">
+            <column name="id" />
+            <generator class="uuid.hex" />
+        </id>
+        <property name="cardId" type="java.lang.String">
+            <column name="card_id" />
+        </property>
+        <property name="cashAmount" type="java.math.BigDecimal">
+            <column name="cash_amount" />
+        </property>
+        <property name="cashDate" type="java.util.Date">
+            <column name="cash_date" />
+        </property>
+        <property name="cashReason" type="java.lang.String">
+            <column name="cash_reason" />
+        </property>
+        <property name="cashRemark" type="java.lang.String">
+            <column name="cash_remark" />
+        </property>
+        <property name="cashUserId" type="java.lang.String">
+            <column name="cash_user_id" />
+        </property>
+        <property name="cashUserName" type="java.lang.String">
+            <column name="cash_user_name" />
+        </property>
+        <property name="cashCheckUserId" type="java.lang.String">
+            <column name="cash_check_user_id" />
+        </property>
+        <property name="cashCheckUserName" type="java.lang.String">
+            <column name="cash_check_user_name" />
+        </property>
+        <property name="cashCheckDate" type="java.util.Date">
+            <column name="cash_check_date" />
+        </property>
+        <property name="cashCheckResult" type="java.lang.String">
+            <column name="cash_check_result" />
+        </property>
+        <property name="cashApprovalUserId" type="java.lang.String">
+            <column name="cash_approval_user_id" />
+        </property>
+        <property name="cashApprovalUserName" type="java.lang.String">
+            <column name="cash_approval_user_name" />
+        </property>
+        <property name="cashApprovalDate" type="java.util.Date">
+            <column name="cash_approval_date" />
+        </property>
+        <property name="cashApprovalResult" type="java.lang.String">
+            <column name="cash_approval_result" />
+        </property>
+        <property name="processTaskId" type="java.lang.Long">
+            <column name="process_task_id" />
+        </property>
+        <property name="cashStatus" type="java.lang.String">
+            <column name="cash_status" />
+        </property>
+    </class>
+</hibernate-mapping>

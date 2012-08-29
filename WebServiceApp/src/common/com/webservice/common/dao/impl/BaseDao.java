@@ -9,7 +9,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
@@ -141,6 +143,37 @@ public class BaseDao extends HibernateDaoSupport implements IBaseDao {
                 return query.list();
             }
         });
+    }
+    
+    public List findByExample(final Object instance, final int start, final int limit){
+        StringBuffer sb = new StringBuffer("from ");
+        if(instance != null){
+            sb.append(instance.getClass().getName()).append(" model where 1=1 ");
+            Map<String, Object> map = null;
+            List params = new ArrayList();
+            try {
+                map = BeanUtils.describe(instance);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            if(map != null){
+                Set<String> keySet = map.keySet();
+                for (String key : keySet) {
+                    if ("class".equals(key)) {
+                        continue;
+                    }
+                    Object value = map.get(key);
+                    if (value == null || "".equals(value)) {
+                        continue;
+                    }
+                    sb.append(" and model.").append(key).append(" = ? ");
+                    params.add(value);
+                }
+            }
+            return queryPageByHQL(sb.toString(), map, start, limit);
+        }else{
+            return null;
+        }
     }
     
     public int excuteSQL(final String sql, final Object[] params) throws DataAccessResourceFailureException, HibernateException, IllegalStateException, SQLException{
