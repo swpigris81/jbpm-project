@@ -11,7 +11,12 @@
 			 <result name="input">/index.jsp</result>
 		</action>
 		-->
-		<action name="cashAdvanceAction" class="com.webservice.loan.action.CashAdvanceAction">
+		<action name="cashAdvance" class="com.webservice.loan.action.CashAdvanceAction" method="begin">
+			 <result name="success">/jsp/webservice/loan/loan.jsp</result>
+			 <result name="input">/index.jsp</result>
+		</action>
+		<!-- 通配符：addCashAdvance.action?method=add -->
+		<action name="*CashAdvance" class="com.webservice.loan.action.CashAdvanceAction" method="{1}">
 			 <result name="success">/jsp/webservice/loan/loan.jsp</result>
 			 <result name="input">/index.jsp</result>
 		</action>
