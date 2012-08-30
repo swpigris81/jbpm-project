@@ -414,10 +414,12 @@ public class AuthorizeAction extends BaseAction implements ServletRequestAware, 
                 throw new Exception("roleId is null");
             }
             //第一步：删除该角色已分配的菜单，按钮权限
-            List menuRight = this.authorizeService.findAuthorizeMenu(roleId);
-            List buttonRight = this.authorizeService.findAuthorizeButton(roleId);
-            this.roleMenuService.deleteAll(menuRight);
-            this.authorizeService.deleteAll(buttonRight);
+            //List menuRight = this.authorizeService.findAuthorizeMenu(roleId);
+            //List buttonRight = this.authorizeService.findAuthorizeButton(roleId);
+            //this.roleMenuService.deleteAll(menuRight);
+            this.roleMenuService.deleteByRoleId(new String[]{roleId});
+            //this.authorizeService.deleteAll(buttonRight);
+            this.authorizeService.deleteByRoleId(new String[]{roleId});
             //第二步：解析分配的权限菜单，按钮
             //如果为空，则不给该角色分配新的菜单
             if(rightId!=null && !"".equals(rightId)){

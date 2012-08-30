@@ -3,8 +3,12 @@
  */
 package com.webservice.system.right.service;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+
+import org.hibernate.HibernateException;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * @author cdai
@@ -85,6 +89,17 @@ public interface IAuthorizeService {
      * @param entities
      */
     public void deleteAll(Collection entities);
+    /**
+     * <p>Discription:[根据角色ID删除其分配的按钮权限]</p>
+     * @param roleId
+     * @throws DataAccessResourceFailureException
+     * @throws HibernateException
+     * @throws IllegalStateException
+     * @throws SQLException
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public void deleteByRoleId(String [] roleId) throws DataAccessResourceFailureException, HibernateException, IllegalStateException, SQLException;
     /**
      * 批量新增修改
      * @param entities
