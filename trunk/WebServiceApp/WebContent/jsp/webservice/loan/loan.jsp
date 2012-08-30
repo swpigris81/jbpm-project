@@ -5,6 +5,9 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%@include file="/jsp/common/config.jsp" %>
+<script type="text/javascript" src="<%=path%>/js/util/dataStore.js"></script>
+<script type="text/javascript" src="<%=path%>/js/ext-2.2.1/source/plugins/autocolumn/TaskQueue.js"></script>
+<script type="text/javascript" src="<%=path%>/js/ext-2.2.1/source/plugins/autocolumn/ColumnWidthCalculator.js"></script>
 <script type="text/javascript" src="<%=path%>/js/webservice/loan/loan.js"></script>
 <title>请款</title>
 </head>
