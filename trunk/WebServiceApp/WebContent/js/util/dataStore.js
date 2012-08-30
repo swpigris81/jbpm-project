@@ -62,3 +62,7 @@ var cardTypeStore = getCodeListCombo();
  * 预算类型
  */
 //var budgetTypeStore = getCodeListCombo();
+/**
+ * 当前状态
+ */
+var statusStore = getCodeListCombo();
