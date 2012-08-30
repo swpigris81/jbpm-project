@@ -96,7 +96,8 @@ public class RoleMenuService implements IRoleMenuService {
             }
         }
         sql += " )";
-        this.baseDao.excuteSQL(sql, roles);
+        //this.baseDao.excuteSQL(sql, roles);
+        this.baseDao.excuteBySQL(sql, roles);
     }
     
     @Override
