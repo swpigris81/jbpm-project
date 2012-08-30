@@ -606,13 +606,14 @@ function setReadOnly(field,value) {
  * @param readOnly 是否只读
  * @returns {Ext.form.TextField}
  */
-function getTextField(name, label, isNull, readOnly){
+function getTextField(name, label, isNull, readOnly, value){
 	var textField = new Ext.form.TextField({
 		name:name,
 		anchor:"90%",
 		fieldLabel:label,
 		readOnly:readOnly,
-		allowBlank:isNull
+		allowBlank:isNull,
+		value:value
 	});
 	return textField;
 }
@@ -637,13 +638,14 @@ function getHiddenField(name, value){
  * @param readOnly 是否只读
  * @returns {Ext.form.NumberField}
  */
-function getNumberField(name, label, isNull, readOnly){
+function getNumberField(name, label, isNull, readOnly, value){
 	var numberField = new Ext.form.NumberField({
 		name:name,
 		anchor:"90%",
 		fieldLabel:label,
 		readOnly:readOnly,
-		allowBlank:isNull
+		allowBlank:isNull,
+		value:value
 	});
 	return numberField;
 }
@@ -655,14 +657,15 @@ function getNumberField(name, label, isNull, readOnly){
  * @param readOnly 是否只读
  * @returns {Ext.form.DateField}
  */
-function getDateField(name, label, isNull, readOnly){
+function getDateField(name, label, isNull, readOnly, value){
 	var dateField = new Ext.form.DateField({
 		name:name,
 		anchor:"90%",
 		format:"Y-m-d",
 		fieldLabel:label,
 		readOnly:readOnly,
-		allowBlank:isNull
+		allowBlank:isNull,
+		value:value
 	});
 	return dateField;
 }
@@ -674,13 +677,14 @@ function getDateField(name, label, isNull, readOnly){
  * @param readOnly 是否只读
  * @returns {Ext.form.DateField}
  */
-function getTextAreaField(name, label, isNull, readOnly){
+function getTextAreaField(name, label, isNull, readOnly, value){
 	var textAreaField = new Ext.form.TextArea({
 		name:name,
 		anchor:"90%",
 		fieldLabel:label,
 		readOnly:readOnly,
-		allowBlank:isNull
+		allowBlank:isNull,
+		value:value
 	});
 	return textAreaField;
 }
@@ -693,7 +697,7 @@ function getTextAreaField(name, label, isNull, readOnly){
  * @param readOnly 是否只读
  * @returns {Ext.form.DateField}
  */
-function getComboBoxField(name, store, label, valueField, textField, isNull, readOnly){
+function getComboBoxField(name, store, label, valueField, textField, isNull, readOnly,value){
 	var comboBoxField = new Ext.form.ComboBox({
 		name:name,
 		anchor:"90%",
@@ -706,7 +710,8 @@ function getComboBoxField(name, store, label, valueField, textField, isNull, rea
 		mode: "local",
 		fieldLabel:label,
 		readOnly:readOnly,
-		allowBlank:isNull
+		allowBlank:isNull,
+		value:value
 	});
 	return comboBoxField;
 }
