@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.impl.SessionFactoryImpl;
@@ -191,6 +192,23 @@ public class BaseDao extends HibernateDaoSupport implements IBaseDao {
         conn.close();
         session.close();
         return 0;
+    }
+    
+    public Integer excuteBySQL(final String sql, final Object parameter[]) {
+        return (Integer) getHibernateTemplate().execute(new HibernateCallback<Integer>(){
+            @Override
+            public Integer doInHibernate(Session session) throws HibernateException, SQLException {
+                log.info("excute by hql: " + sql);
+                SQLQuery sqlQuery = session.createSQLQuery(sql);
+                if (parameter != null && parameter.length > 0) {
+                    for (int i = 0; i < parameter.length; i++) {
+                        sqlQuery.setParameter(i, parameter[i]);
+                    }
+                }
+                return new Integer(sqlQuery.executeUpdate());
+            }
+            
+        });
     }
     
     /**

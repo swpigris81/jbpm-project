@@ -61,6 +61,15 @@ public interface IBaseDao {
      */
     public int excuteSQL(String sql, Object[] params) throws DataAccessResourceFailureException, HibernateException, IllegalStateException, SQLException;
     /**
+     * <p>Discription:[调用Hibernate自带的jdbc执行sql语句,用于insert/update/delete,需要自行组装sql语句]</p>
+     * @param sql
+     * @param parameter
+     * @return
+     * @author 大牙-小白
+     * @update 2012-8-30 大牙-小白 [变更描述]
+     */
+    public Integer excuteBySQL(final String sql, final Object parameter[]);
+    /**
      * <p>Discription:[调用jdbc执行复杂sql的查询]</p>
      * @param sql sql语句
      * @param start 分页查询起始
