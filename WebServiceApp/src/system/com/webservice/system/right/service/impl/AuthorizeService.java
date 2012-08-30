@@ -3,9 +3,13 @@
  */
 package com.webservice.system.right.service.impl;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.hibernate.HibernateException;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 import com.webservice.common.dao.IBaseDao;
 import com.webservice.system.menu.bean.ButtonInfo;
@@ -260,6 +264,30 @@ public class AuthorizeService implements IAuthorizeService {
     
     public void deleteAll(Collection entities){
         this.authorizeDao.deleteAll(entities);
+    }
+    /**
+     * <p>Discription:[根据角色ID删除其分配的按钮权限]</p>
+     * @param roleId
+     * @throws DataAccessResourceFailureException
+     * @throws HibernateException
+     * @throws IllegalStateException
+     * @throws SQLException
+     * @author:[创建者中文名字]
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public void deleteByRoleId(String [] roleId) throws DataAccessResourceFailureException, HibernateException, IllegalStateException, SQLException{
+        if(roleId == null || roleId.length < 1){
+            return;
+        }
+        String sql = "delete from right_info where role_id in ( ? ";
+        if(roleId != null && roleId.length>1){
+            for(int i=1;i<roleId.length;i++){
+                sql += " , ? ";
+            }
+        }
+        sql += " )";
+        //this.baseDao.excuteSQL(sql, roleId);
+        this.baseDao.excuteBySQL(sql, roleId);
     }
     
     @Override
