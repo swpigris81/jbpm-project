@@ -51,4 +51,13 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
     public Long getMyRequestCashSize(CashAdvanceInfo info){
         return cashAdvanceDao.getMyRequestCashSize(info);
     }
+    /**
+     * <p>Discription:[新增请款]</p>
+     * @param info 请款信息
+     * @author 大牙-小白 
+     * @update 2012-8-30 大牙-小白 [变更描述]
+     */
+    public void saveMyRequestCash(CashAdvanceInfo info){
+        cashAdvanceDao.save(info);
+    }
 }
