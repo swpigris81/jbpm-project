@@ -171,7 +171,7 @@ public class BaseDao extends HibernateDaoSupport implements IBaseDao {
                     params.add(value);
                 }
             }
-            return queryPageByHQL(sb.toString(), map, start, limit);
+            return queryPageByHQL(sb.toString(), params.toArray(), start, limit);
         }else{
             return null;
         }
