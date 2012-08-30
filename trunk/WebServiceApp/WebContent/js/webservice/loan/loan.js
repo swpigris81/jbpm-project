@@ -152,17 +152,17 @@ function cashAdvance(){
 			nextText:"下一页",
 			prevText:"上一页",
 			emptyMsg:"无相关记录"
-		}),
-		tbar:[]
+		})
 	})
 	/**
 	 * 主面板
 	 */
 	var mainPanel = new Ext.Panel({
 		layout:'border',
-		height:Ext.get("loan_div").getHeight(),
+		height:Ext.get("loan_div").getHeight() - 15,
 		renderTo:"loan_div",
-		items:[searchPanel, cashGrid]
+		items:[searchPanel, cashGrid],
+		tbar:[]
 	})
 	
 	/**
