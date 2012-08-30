@@ -442,8 +442,9 @@ ServletRequestAware, ServletResponseAware {
     public String findMenuId(){
         String menuPath = request.getParameter("menuPath");
         String menuId = request.getParameter("menuId");
-        if(menuPath != null && menuPath.indexOf("/redeempoint") >= 0){
-            menuPath = menuPath.replace("/redeempoint", "");
+        String path = request.getContextPath();
+        if(menuPath != null && menuPath.indexOf(path) >= 0){
+            menuPath = menuPath.replace(path, "");
         }
         PrintWriter out = null;
         Map<String, Object> result = new HashMap<String, Object>();
