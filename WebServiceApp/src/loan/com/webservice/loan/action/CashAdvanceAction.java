@@ -6,10 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.webservice.common.action.BaseAction;
 import com.webservice.loan.bean.CashAdvanceInfo;
 import com.webservice.loan.service.CashAdvanceService;
+import com.webservice.system.common.constants.Constants;
 /**
  * <p>Description: [请款]</p>
  * @author  <a href="mailto: swpigris81@126.com">大牙-小白</a>
@@ -23,7 +27,8 @@ public class CashAdvanceAction extends BaseAction {
     private String currentUserId;
     /** 当前用户 **/
     private String currentUserName;
-    
+    /** 请款信息 **/
+    private CashAdvanceInfo cashAdvanceInfo;
     /**
      * <p>Discription:[方法功能中文描述]</p>
      * @return CashAdvanceService cashAdvanceService.
@@ -89,6 +94,22 @@ public class CashAdvanceAction extends BaseAction {
     }
 
     /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return CashAdvanceInfo cashAdvanceInfo.
+     */
+    public CashAdvanceInfo getCashAdvanceInfo() {
+        return cashAdvanceInfo;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param cashAdvanceInfo The cashAdvanceInfo to set.
+     */
+    public void setCashAdvanceInfo(CashAdvanceInfo cashAdvanceInfo) {
+        this.cashAdvanceInfo = cashAdvanceInfo;
+    }
+
+    /**
      * <p>Discription:[我的请款信息]</p>
      * @return 显示我发起的请款列表
      * @author:[创建者中文名字]
@@ -99,16 +120,13 @@ public class CashAdvanceAction extends BaseAction {
         PrintWriter out = null;
         try{
             out = super.getPrintWriter();
-            if(this.currentUserId == null || "".equals(this.currentUserId) 
-                    || this.currentUserName == null || "".equals(currentUserName)){
+            if(cashAdvanceInfo == null || cashAdvanceInfo.getCashUserId() == null || cashAdvanceInfo.getCashUserName() == null
+                    || "".equals(cashAdvanceInfo.getCashUserId()) || "".equals(cashAdvanceInfo.getCashUserName())){
                 resultMap.put("success", false);
                 resultMap.put("msg", "当前用户信息为空，请检查！");
             }else{
-                CashAdvanceInfo info = new CashAdvanceInfo();
-                info.setCashUserId(currentUserId);
-                info.setCashUserName(currentUserName);
-                List list = this.cashAdvanceService.getMyRequestCash(info, start, limit);
-                Long size = this.cashAdvanceService.getMyRequestCashSize(info);
+                List list = this.cashAdvanceService.getMyRequestCash(cashAdvanceInfo, start, limit);
+                Long size = this.cashAdvanceService.getMyRequestCashSize(cashAdvanceInfo);
                 resultMap.put("success", true);
                 resultMap.put("cashList", list);
                 resultMap.put("totalCount", size);
@@ -118,6 +136,48 @@ public class CashAdvanceAction extends BaseAction {
             resultMap.put("success", false);
             resultMap.put("msg", "系统错误，错误代码："+e.getMessage());
         }finally{
+            if(out != null){
+                out.print(getJsonString(resultMap));
+                out.flush();
+                out.close();
+            }
+        }
+        return null;
+    }
+    
+    public String newRequest(){
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        // 定义TransactionDefinition并设置好事务的隔离级别和传播方式。
+        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+        // 代价最大、可靠性最高的隔离级别，所有的事务都是按顺序一个接一个地执行
+        definition.setIsolationLevel(TransactionDefinition.ISOLATION_SERIALIZABLE);
+        // 开始事务
+        TransactionStatus status = transactionManager.getTransaction(definition);
+        PrintWriter out = null;
+        try{
+            out = super.getPrintWriter();
+            if(cashAdvanceInfo == null || cashAdvanceInfo.getCashUserId() == null || cashAdvanceInfo.getCashUserName() == null
+                    || "".equals(cashAdvanceInfo.getCashUserId()) || "".equals(cashAdvanceInfo.getCashUserName())){
+                resultMap.put("success", false);
+                resultMap.put("msg", "当前用户信息为空，请检查！");
+            }else{
+                resultMap.put("success", true);
+                this.cashAdvanceService.saveMyRequestCash(cashAdvanceInfo);
+                if(Constants.CASH_STATUS_00.equals(cashAdvanceInfo.getCashStatus())){
+                    resultMap.put("msg", "请款信息已经保存成功！");
+                }else if(Constants.CASH_STATUS_01.equals(cashAdvanceInfo.getCashStatus())){
+                    resultMap.put("msg", "请款信息已经发起审核！");
+                    //启动流程
+                    
+                }
+            }
+        }catch(Exception e){
+            LOG.error(e.getMessage());
+            status.setRollbackOnly();
+            resultMap.put("success", false);
+            resultMap.put("msg", "系统错误，错误代码："+e.getMessage());
+        }finally{
+            this.transactionManager.commit(status);
             if(out != null){
                 out.print(getJsonString(resultMap));
                 out.flush();
