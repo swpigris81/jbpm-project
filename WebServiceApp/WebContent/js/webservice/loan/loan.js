@@ -36,6 +36,8 @@ function cashAdvance(){
 			url: path + "/loan/myRequestCashAdvance.action?method=myRequest"
 		}),
 		reader:cashReader,
+		//倒叙排序
+		sortInfo:{field: 'cashDate', direction: 'DESC'},
 		listeners:{
 			"loadexception":function(loader, node, response){
 				try{
@@ -81,6 +83,7 @@ function cashAdvance(){
 		header:"请款日期",
 		dataIndex:"cashDate",
 		renderer:new Ext.util.Format.dateRenderer("Y-m-d"),
+		sortable:true,
 		width:80
 	},{
 		header:"请款原因",
@@ -102,6 +105,7 @@ function cashAdvance(){
 		header:"请款审批状态",
 		dataIndex:"cashStatus",
 		renderer:cashStatusRender,
+		sortable:true,
 		width:70
 	}]);
 	//查询参数
@@ -135,6 +139,8 @@ function cashAdvance(){
 				var baseParams = searchPanel.getForm().getValues();
 				baseParams.start = 0;
 				baseParams.limit = 50;
+				baseParams["cashAdvanceInfo.cashUserName"] = userName;
+				baseParams["cashAdvanceInfo.cashUserId"] = userId;
 				cashDataStore.baseParams = baseParams;
 				loadCashDataStore();
 			}
@@ -145,6 +151,8 @@ function cashAdvance(){
 				var baseParams = {};
 				baseParams.start = 0;
 				baseParams.limit = 50;
+				baseParams["cashAdvanceInfo.cashUserName"] = userName;
+				baseParams["cashAdvanceInfo.cashUserId"] = userId;
 				cashDataStore.baseParams = baseParams;
 			}
 		}]
@@ -210,6 +218,7 @@ function cashAdvance(){
 		params.limit = 50;
 		params["cashAdvanceInfo.cashUserName"] = userName;
 		params["cashAdvanceInfo.cashUserId"] = userId;
+		cashDataStore.baseParams = params;
 	}
 	loadStoreParams();
 	/**
@@ -221,7 +230,7 @@ function cashAdvance(){
 	 * see buttonRight.js
 	 * loadButtonRight(buttonStore, mainDataStore, dataGrid, pageDiv, params)
 	 */
-	loadButtonRight(buttonRightStore, cashDataStore, mainPanel, "loan_div", params);
+	loadButtonRight(buttonRightStore, cashDataStore, mainPanel, "loan_div");
 	/**
 	 * 加载请款下拉框
 	 */
@@ -280,6 +289,7 @@ function cashAdvance(){
 			labelAlign:"right",
 			border:true,
 			frame:true,
+			url:url,
 			labelWidth:80,
 			items:[{
 				layout:'column',
@@ -307,7 +317,7 @@ function cashAdvance(){
 				items:[{
 					columnWidth:.90,
 					layout:'form',
-					items:[getTextAreaField("cashAdvanceInfo.cashReason", "请款原因", isNull, readOnly), getHiddenField("cashAdvanceInfo.cashUserId", userId)]
+					items:[getTextAreaField("cashAdvanceInfo.cashReason", "请款原因", isNull, readOnly)]
 				}]
 			},{
 				layout:'column',
@@ -315,7 +325,7 @@ function cashAdvance(){
 				items:[{
 					columnWidth:.90,
 					layout:'form',
-					items:[getTextAreaField("cashAdvanceInfo.cashRemark", "备注", true, readOnly), getHiddenField("cashAdvanceInfo.cashUserId", userId)]
+					items:[getTextAreaField("cashAdvanceInfo.cashRemark", "备注", true, readOnly)]
 				}]
 			},
 			getHiddenField("cashAdvanceInfo.cashCheckUserId"), getHiddenField("cashAdvanceInfo.cashCheckUserName"),
