@@ -93,7 +93,6 @@ function buttonManage(){
 	},{
 		header:"所属菜单",
 		dataIndex:"menuName",
-		//renderer:showMenuUrl,
 		width:60
 	},{
 		header:"所属菜单ID",
