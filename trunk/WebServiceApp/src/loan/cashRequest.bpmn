@@ -22,10 +22,12 @@
     <userTask id="_3" name="填写请款单" >
       <ioSpecification>
         <dataInput id="_3_TaskNameInput" name="TaskName" />
+        <dataOutput id="_3_cashAmountOutput" name="cashAmount" />
         <inputSet>
           <dataInputRefs>_3_TaskNameInput</dataInputRefs>
         </inputSet>
         <outputSet>
+          <dataOutputRefs>_3_cashAmountOutput</dataOutputRefs>
         </outputSet>
       </ioSpecification>
       <dataInputAssociation>
@@ -35,6 +37,10 @@
           <to xsi:type="tFormalExpression">_3_TaskNameInput</to>
         </assignment>
       </dataInputAssociation>
+      <dataOutputAssociation>
+        <sourceRef>_3_cashAmountOutput</sourceRef>
+        <targetRef>cashAmount</targetRef>
+      </dataOutputAssociation>
       <potentialOwner>
         <resourceAssignmentExpression>
           <formalExpression>#{userId}</formalExpression>
@@ -45,11 +51,13 @@
       <ioSpecification>
         <dataInput id="_4_TaskNameInput" name="TaskName" />
         <dataInput id="_4_GroupIdInput" name="GroupId" />
+        <dataOutput id="_4_cashCheckResultOutput" name="cashCheckResult" />
         <inputSet>
           <dataInputRefs>_4_TaskNameInput</dataInputRefs>
           <dataInputRefs>_4_GroupIdInput</dataInputRefs>
         </inputSet>
         <outputSet>
+          <dataOutputRefs>_4_cashCheckResultOutput</dataOutputRefs>
         </outputSet>
       </ioSpecification>
       <dataInputAssociation>
@@ -66,16 +74,22 @@
           <to xsi:type="tFormalExpression">_4_GroupIdInput</to>
         </assignment>
       </dataInputAssociation>
+      <dataOutputAssociation>
+        <sourceRef>_4_cashCheckResultOutput</sourceRef>
+        <targetRef>cashCheckResult</targetRef>
+      </dataOutputAssociation>
     </userTask>
     <userTask id="_5" name="审批人审批" >
       <ioSpecification>
         <dataInput id="_5_TaskNameInput" name="TaskName" />
         <dataInput id="_5_GroupIdInput" name="GroupId" />
+        <dataOutput id="_5_cashApprovalResultOutput" name="cashApprovalResult" />
         <inputSet>
           <dataInputRefs>_5_TaskNameInput</dataInputRefs>
           <dataInputRefs>_5_GroupIdInput</dataInputRefs>
         </inputSet>
         <outputSet>
+          <dataOutputRefs>_5_cashApprovalResultOutput</dataOutputRefs>
         </outputSet>
       </ioSpecification>
       <dataInputAssociation>
@@ -92,41 +106,104 @@
           <to xsi:type="tFormalExpression">_5_GroupIdInput</to>
         </assignment>
       </dataInputAssociation>
+      <dataOutputAssociation>
+        <sourceRef>_5_cashApprovalResultOutput</sourceRef>
+        <targetRef>cashApprovalResult</targetRef>
+      </dataOutputAssociation>
     </userTask>
-    <scriptTask id="_6" name="获取审核人审核结果" />
+    <scriptTask id="_6" name="获取审核人审核结果" >
+      <script>kcontext.setVariable("cashCheckResult", cashCheckResult);
+
+int result = java.lang.Integer.parseInt(cashCheckResult);
+
+if (result == 0){
+	//审核驳回
+ 	isAvailable = false;
+ }
+else if(result == 1){
+	//审核通过
+ 	isAvailable = true;
+ }else{
+ 	isAvailable = false;
+ }
+ kcontext.setVariable("isAvailable",isAvailable);
+
+</script>
+    </scriptTask>
     <exclusiveGateway id="_7" name="Gateway" gatewayDirection="Diverging" />
-    <scriptTask id="_8" name="不做事情，直接到结束" />
-    <parallelGateway id="_9" name="Gateway" gatewayDirection="Converging" />
-    <scriptTask id="_10" name="获取用户填写的金额" scriptFormat="http://www.java.com/java" >
+    <scriptTask id="_8" name="不做事情，直接到结束" >
       <script></script>
     </scriptTask>
-    <exclusiveGateway id="_11" name="Gateway" gatewayDirection="Converging" />
-    <scriptTask id="_12" name="获取审批结果" />
+    <exclusiveGateway id="_9" name="结束" gatewayDirection="Converging" />
+    <scriptTask id="_10" name="获取用户填写的金额" scriptFormat="http://www.java.com/java" >
+      <script>kcontext.setVariable("cashAmount", cashAmount);</script>
+    </scriptTask>
+    <exclusiveGateway id="_11" name="开始" gatewayDirection="Converging" />
+    <scriptTask id="_12" name="获取审批结果" scriptFormat="http://www.java.com/java" >
+      <script>kcontext.setVariable("cashApprovalResult", cashApprovalResult);
+
+int result = java.lang.Integer.parseInt(cashApprovalResult);
+
+if (result == 0){
+	//审批驳回
+ 	isAvailable = false;
+ }
+else if(result == 1){
+	//审批通过
+ 	isAvailable = true;
+ }else{
+ 	isAvailable = false;
+ }
+ kcontext.setVariable("isAvailable",isAvailable);
+
+</script>
+    </scriptTask>
     <exclusiveGateway id="_13" name="Gateway" gatewayDirection="Diverging" />
 
     <!-- connections -->
     <sequenceFlow id="_9-_2" sourceRef="_9" targetRef="_2" />
     <sequenceFlow id="_11-_3" sourceRef="_11" targetRef="_3" />
     <sequenceFlow id="_10-_4" sourceRef="_10" targetRef="_4" />
-    <sequenceFlow id="_7-_5" sourceRef="_7" targetRef="_5" >
-      <conditionExpression xsi:type="tFormalExpression" />
+    <sequenceFlow id="_7-_5" sourceRef="_7" targetRef="_5" name="报审批人审批" >
+      <conditionExpression xsi:type="tFormalExpression" language="http://www.java.com/java" >//如果审核通过并且请款金额超过1000元，则需要报审批人审批
+if(isAvailable &amp;&amp; cashAmount &gt;= 1000){
+	return true;
+}else{
+	return false;
+}</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_4-_6" sourceRef="_4" targetRef="_6" />
     <sequenceFlow id="_6-_7" sourceRef="_6" targetRef="_7" />
-    <sequenceFlow id="_7-_8" sourceRef="_7" targetRef="_8" >
-      <conditionExpression xsi:type="tFormalExpression" />
+    <sequenceFlow id="_7-_8" sourceRef="_7" targetRef="_8" name="审核人审批通过" >
+      <conditionExpression xsi:type="tFormalExpression" language="http://www.java.com/java" >//审核人审批通过并且请款金额小于1000，无需报审批人审批直接结束
+if(isAvailable &amp;&amp; cashAmount &lt; 1000){
+	return true;
+}else{
+	return false;
+}</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_8-_9" sourceRef="_8" targetRef="_9" />
-    <sequenceFlow id="_13-_9" sourceRef="_13" targetRef="_9" >
-      <conditionExpression xsi:type="tFormalExpression" />
+    <sequenceFlow id="_13-_9" sourceRef="_13" targetRef="_9" name="审批通过" >
+      <conditionExpression xsi:type="tFormalExpression" language="http://www.java.com/java" >if(isAvailable){
+	return true;
+}else{
+	return false;
+}</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_3-_10" sourceRef="_3" targetRef="_10" />
-    <sequenceFlow id="_7-_11" sourceRef="_7" targetRef="_11" >
-      <conditionExpression xsi:type="tFormalExpression" />
+    <sequenceFlow id="_7-_11" sourceRef="_7" targetRef="_11" name="审核驳回" >
+      <conditionExpression xsi:type="tFormalExpression" language="http://www.java.com/java" >//审核不通过则返回请款人
+if(!isAvailable){
+	return true;
+}</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_1-_11" sourceRef="_1" targetRef="_11" />
-    <sequenceFlow id="_13-_11" sourceRef="_13" targetRef="_11" >
-      <conditionExpression xsi:type="tFormalExpression" />
+    <sequenceFlow id="_13-_11" sourceRef="_13" targetRef="_11" name="审批驳回" >
+      <conditionExpression xsi:type="tFormalExpression" language="http://www.java.com/java" >if(!isAvailable){
+	return true;
+}else{
+	return false;
+}</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_5-_12" sourceRef="_5" targetRef="_12" />
     <sequenceFlow id="_12-_13" sourceRef="_12" targetRef="_13" />
@@ -227,6 +304,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_13-_11" >
         <di:waypoint x="470" y="106" />
+        <di:waypoint x="124" y="55" />
         <di:waypoint x="74" y="108" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_5-_12" >
