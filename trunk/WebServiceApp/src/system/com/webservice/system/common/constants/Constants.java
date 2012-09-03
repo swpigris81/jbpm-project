@@ -35,4 +35,14 @@ public class Constants {
      * 06-审批驳回
      */
     public static String CASH_STATUS_06 = "06";
+    
+    //----------------流程图ID---------------------
+    /**
+     * 请款流程图ID
+     */
+    public static String PROCESS_LOAN_ID = "com.webservice.cashRequest";
+    /**
+     * 请款流程图名字
+     */
+    public static String PROCESS_LOAN_NAME = "cashRequest.bpmn"; 
 }
