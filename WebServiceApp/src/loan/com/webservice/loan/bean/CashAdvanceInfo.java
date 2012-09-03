@@ -30,7 +30,7 @@ public class CashAdvanceInfo {
     private String cashCheckUserName;
     /** 审核时间 **/
     private Date cashCheckDate;
-    /** 审核结果 **/
+    /** 审核结果 0-驳回，1-通过 **/
     private String cashCheckResult;
     /** 审批人 **/
     private String cashApprovalUserId;
@@ -38,7 +38,7 @@ public class CashAdvanceInfo {
     private String cashApprovalUserName;
     /** 审批时间 **/
     private Date cashApprovalDate;
-    /** 审批结果 **/
+    /** 审批结果 0-驳回，1-通过 **/
     private String cashApprovalResult;
     /** 流程任务ID **/
     private Long processTaskId;
