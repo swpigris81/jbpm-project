@@ -111,7 +111,7 @@
         <targetRef>cashApprovalResult</targetRef>
       </dataOutputAssociation>
     </userTask>
-    <scriptTask id="_6" name="获取审核人审核结果" >
+    <scriptTask id="_6" name="获取审核人审核结果" scriptFormat="http://www.java.com/java" >
       <script>kcontext.setVariable("cashCheckResult", cashCheckResult);
 
 int result = java.lang.Integer.parseInt(cashCheckResult);
@@ -131,8 +131,8 @@ else if(result == 1){
 </script>
     </scriptTask>
     <exclusiveGateway id="_7" name="Gateway" gatewayDirection="Diverging" />
-    <scriptTask id="_8" name="不做事情，直接到结束" >
-      <script></script>
+    <scriptTask id="_8" name="不做事情，直接到结束" scriptFormat="http://www.java.com/java" >
+      <script>System.out.println("您请款 【"+cashAmount+"】已经审核通过！");</script>
     </scriptTask>
     <exclusiveGateway id="_9" name="结束" gatewayDirection="Converging" />
     <scriptTask id="_10" name="获取用户填写的金额" scriptFormat="http://www.java.com/java" >
@@ -185,6 +185,7 @@ if(isAvailable &amp;&amp; cashAmount &lt; 1000){
     <sequenceFlow id="_8-_9" sourceRef="_8" targetRef="_9" />
     <sequenceFlow id="_13-_9" sourceRef="_13" targetRef="_9" name="审批通过" >
       <conditionExpression xsi:type="tFormalExpression" language="http://www.java.com/java" >if(isAvailable){
+	System.out.println("您请款【"+cashAmount+"】已经审批通过！")
 	return true;
 }else{
 	return false;
