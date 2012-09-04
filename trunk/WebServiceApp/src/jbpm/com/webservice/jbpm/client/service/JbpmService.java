@@ -197,25 +197,35 @@ public class JbpmService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public KnowledgeBase createKnowledgeBase(String... process) {
-        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        if(process == null || process.length < 1 || process[0].equals("")){
-            kbuilder.add(new ClassPathResource("ProcessTask.bpmn"), ResourceType.BPMN2);
-        }else{
-            for (String p: process) {
-                //kbuilder.add(ResourceFactory.newClassPathResource(p), ResourceType.BPMN2);
-                kbuilder.add(new ClassPathResource(p), ResourceType.BPMN2);
-            }
-        }
-        
-        // Check for errors
-        if (kbuilder.hasErrors()) {
-            if (kbuilder.getErrors().size() > 0) {
-                for (KnowledgeBuilderError error : kbuilder.getErrors()) {
-                    log.warn(error.toString());
+        try{
+            KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+            if(process == null || process.length < 1 || process[0].equals("")){
+                kbuilder.add(new ClassPathResource("ProcessTask.bpmn"), ResourceType.BPMN2);
+            }else{
+                for (String p: process) {
+                    //kbuilder.add(ResourceFactory.newClassPathResource(p), ResourceType.BPMN2);
+                    //kbuilder.add(new ClassPathResource(p), ResourceType.BPMN2);
+                    kbuilder.add(ResourceFactory.newClassPathResource(p), ResourceType.BPMN2);
                 }
             }
+            
+            // Check for errors
+            if (kbuilder.hasErrors()) {
+                if (kbuilder.getErrors().size() > 0) {
+                    for (KnowledgeBuilderError error : kbuilder.getErrors()) {
+                        //log.warn(error.toString());
+                        log.error(error.getMessage());
+                        System.err.println( error.toString() );
+                    }
+                    
+                }
+                throw new IllegalStateException("BPMN2 ERRORs");
+            }
+            return kbuilder.newKnowledgeBase();
+        }catch(Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage(), e);
         }
-        return kbuilder.newKnowledgeBase();
     }
     /**
      * <p>Discription:[创建基础知识]</p>
@@ -881,6 +891,9 @@ public class JbpmService {
         Task task = handlerT.getTask();
         return task;
     }
+    
+    
+    
     /**
      * <p>Discription:[领取指定用户的任务]</p>
      * @param user
