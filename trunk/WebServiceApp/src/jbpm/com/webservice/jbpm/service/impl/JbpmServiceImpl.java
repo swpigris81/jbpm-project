@@ -30,7 +30,7 @@ public class JbpmServiceImpl implements IJbpmService {
     /**
      * <p>Discription:[启动流程，获取该流程的第一个任务]</p>
      * @param param 启动流程同时传入的参数
-     * @param processId 流程图为一ID
+     * @param processId 流程图唯一ID
      * @param processName 流程图名称地址
      * @return
      * @throws Exception
@@ -72,9 +72,38 @@ public class JbpmServiceImpl implements IJbpmService {
         }
         return null;
     }
-    
-    public void assignTaskToUser(){
-        
+    /**
+     * <p>Discription:[分配任务给指定用户]</p>
+     * @param taskId 任务ID
+     * @param userId 分配前任务所属用户
+     * @param targetUserId 分配之后任务所属用户
+     * @param processId 流程图唯一ID
+     * @throws Exception
+     * @author 大牙-小白
+     * @update 2012-9-4 大牙-小白 [变更描述]
+     */
+    public void assignTaskToUser(String taskId, String userId, String targetUserId, String... processId) throws Exception{
+        if(taskId == null || "".equals(taskId.trim())){
+            return;
+        }
+        //保证processId至少存在一个, 否则使用默认流程图
+        if(processId != null && processId.length > 0 && !"".equals(processId[0].trim())){
+            jbpmClient.setProcess(processId);
+        }
+        jbpmClient.init();
+        InitialContext ctx = null;
+        UserTransaction transactionManager = null;
+        try{
+            ctx = new InitialContext();
+            transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+            transactionManager.begin();
+            jbpmClient.assignTaskToUser(NumberUtils.toLong(taskId), userId, targetUserId);
+            transactionManager.commit();
+        }catch(Exception e){
+            transactionManager.rollback();
+            log.error(e.getMessage(), e);
+            throw e;
+        }
     }
     
     /**
@@ -104,9 +133,7 @@ public class JbpmServiceImpl implements IJbpmService {
             transactionManager.begin();
             Task task = jbpmClient.getTaskById(NumberUtils.toLong(taskId));
             if(task != null){
-                TaskSummary taskSummary = new TaskSummary();
-                taskSummary.setId(task.getId());
-                jbpmClient.startTask(new User(userName), roleList, taskSummary);
+                jbpmClient.startTask(new User(userName), roleList, task.getId());
             }else{
                 throw new Exception("当前系统中不存在ID为：" + taskId + " 的工作流任务，请联系系统管理员.");
             }
@@ -157,9 +184,7 @@ public class JbpmServiceImpl implements IJbpmService {
             transactionManager.begin();
             Task task = jbpmClient.getTaskById(NumberUtils.toLong(taskId));
             if(task != null){
-                TaskSummary taskSummary = new TaskSummary();
-                taskSummary.setId(task.getId());
-                jbpmClient.completeTask(new User(userName), taskSummary, resultMap, null);
+                jbpmClient.completeTask(new User(userName), task.getId(), resultMap, null);
             }else{
                 throw new Exception("当前系统中不存在ID为：" + taskId + " 的工作流任务，请联系系统管理员.");
             }

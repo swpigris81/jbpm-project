@@ -17,7 +17,17 @@ public interface IJbpmService {
      * @update 2012-9-3 大牙-小白 [变更描述]
      */
     public Task getFirstTask(Map<String, Object> param, String processId, String... processName) throws Exception;
-    
+    /**
+     * <p>Discription:[分配任务给指定用户]</p>
+     * @param taskId 任务ID
+     * @param userId 分配前任务所属用户
+     * @param targetUserId 分配之后任务所属用户
+     * @param processId 流程图唯一ID
+     * @throws Exception
+     * @author 大牙-小白
+     * @update 2012-9-4 大牙-小白 [变更描述]
+     */
+    public void assignTaskToUser(String taskId, String userId, String targetUserId, String... processId) throws Exception;
     /**
      * <p>Discription:[开始任务]</p>
      * @param userName 用户

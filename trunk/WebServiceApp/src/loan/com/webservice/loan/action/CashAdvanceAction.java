@@ -197,10 +197,13 @@ public class CashAdvanceAction extends BaseAction {
                     //当用户点击提交时的操作
                     Map<String, Object> param = new HashMap<String, Object>();
                     param.put("cashAmount", cashAdvanceInfo.getCashAmount().doubleValue());
+                    param.put("userId", cashAdvanceInfo.getCashUserId());
+                    param.put("userName", cashAdvanceInfo.getCashUserName());
                     //启动流程, 创建一个任务
                     Task task = this.jbpmService.getFirstTask(param, Constants.PROCESS_LOAN_ID, Constants.PROCESS_LOAN_NAME);
                     //将该任务分配给自己
-                    
+                    //task.setPeopleAssignments(peopleAssignments)
+                    this.jbpmService.assignTaskToUser(task.getId().toString(), null, cashAdvanceInfo.getCashUserId(), Constants.PROCESS_LOAN_ID);
                     cashAdvanceInfo.setProcessTaskId(task.getId());
                     this.cashAdvanceService.saveMyRequestCash(cashAdvanceInfo);
                     //填写完成请款单，完成该任务

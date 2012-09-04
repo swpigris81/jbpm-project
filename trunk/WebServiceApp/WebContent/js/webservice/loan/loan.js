@@ -352,6 +352,7 @@ function cashAdvance(){
 			icon:Ext.Msg.INFO
 		});
 		form.getForm().submit({
+			timeout:60000,
 			success: function(form, action) {
 				Ext.Msg.hide();
 				try{
