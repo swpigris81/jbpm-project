@@ -16,21 +16,37 @@
   <itemDefinition id="_cashAmountItem" structureRef="java.lang.Double" />
   <itemDefinition id="_cashCheckResultItem" structureRef="String" />
   <itemDefinition id="_cashApprovalResultItem" structureRef="String" />
+  <itemDefinition id="_userIdItem" structureRef="String" />
+  <itemDefinition id="_userNameItem" structureRef="String" />
+  <itemDefinition id="_groupIdItem" structureRef="String" />
+  <itemDefinition id="_groupNameItem" structureRef="String" />
 
   <itemDefinition id="_3-isAvailableItem" structureRef="Boolean" />
   <itemDefinition id="_3-cashAmountItem" structureRef="java.lang.Double" />
   <itemDefinition id="_3-cashCheckResultItem" structureRef="String" />
   <itemDefinition id="_3-cashApprovalResultItem" structureRef="String" />
+  <itemDefinition id="_3-userIdItem" structureRef="String" />
+  <itemDefinition id="_3-userNameItem" structureRef="String" />
+  <itemDefinition id="_3-groupIdItem" structureRef="String" />
+  <itemDefinition id="_3-groupNameItem" structureRef="String" />
 
   <itemDefinition id="_4-isAvailableItem" structureRef="Boolean" />
   <itemDefinition id="_4-cashAmountItem" structureRef="java.lang.Double" />
   <itemDefinition id="_4-cashCheckResultItem" structureRef="String" />
   <itemDefinition id="_4-cashApprovalResultItem" structureRef="String" />
+  <itemDefinition id="_4-userIdItem" structureRef="String" />
+  <itemDefinition id="_4-userNameItem" structureRef="String" />
+  <itemDefinition id="_4-groupIdItem" structureRef="String" />
+  <itemDefinition id="_4-groupNameItem" structureRef="String" />
 
   <itemDefinition id="_5-isAvailableItem" structureRef="Boolean" />
   <itemDefinition id="_5-cashAmountItem" structureRef="java.lang.Double" />
   <itemDefinition id="_5-cashCheckResultItem" structureRef="String" />
   <itemDefinition id="_5-cashApprovalResultItem" structureRef="String" />
+  <itemDefinition id="_5-userIdItem" structureRef="String" />
+  <itemDefinition id="_5-userNameItem" structureRef="String" />
+  <itemDefinition id="_5-groupIdItem" structureRef="String" />
+  <itemDefinition id="_5-groupNameItem" structureRef="String" />
 
   <process processType="Private" isExecutable="true" id="com.webservice.cashRequest" name="请款流程" tns:packageName="defaultPackage" >
 
@@ -39,6 +55,10 @@
     <property id="cashAmount" itemSubjectRef="_cashAmountItem"/>
     <property id="cashCheckResult" itemSubjectRef="_cashCheckResultItem"/>
     <property id="cashApprovalResult" itemSubjectRef="_cashApprovalResultItem"/>
+    <property id="userId" itemSubjectRef="_userIdItem"/>
+    <property id="userName" itemSubjectRef="_userNameItem"/>
+    <property id="groupId" itemSubjectRef="_groupIdItem"/>
+    <property id="groupName" itemSubjectRef="_groupNameItem"/>
 
     <!-- nodes -->
     <startEvent id="_1" name="StartProcess" />
@@ -69,7 +89,7 @@
       </dataOutputAssociation>
       <potentialOwner>
         <resourceAssignmentExpression>
-          <formalExpression></formalExpression>
+          <formalExpression>#{userId}</formalExpression>
         </resourceAssignmentExpression>
       </potentialOwner>
     </userTask>
@@ -96,7 +116,7 @@
       <dataInputAssociation>
         <targetRef>_4_GroupIdInput</targetRef>
         <assignment>
-          <from xsi:type="tFormalExpression">checkGroup</from>
+          <from xsi:type="tFormalExpression">#{groupId}</from>
           <to xsi:type="tFormalExpression">_4_GroupIdInput</to>
         </assignment>
       </dataInputAssociation>
@@ -128,7 +148,7 @@
       <dataInputAssociation>
         <targetRef>_5_GroupIdInput</targetRef>
         <assignment>
-          <from xsi:type="tFormalExpression">approveGroup</from>
+          <from xsi:type="tFormalExpression">#{groupId}</from>
           <to xsi:type="tFormalExpression">_5_GroupIdInput</to>
         </assignment>
       </dataInputAssociation>

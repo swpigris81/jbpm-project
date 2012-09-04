@@ -204,8 +204,8 @@ public class JbpmService {
             }else{
                 for (String p: process) {
                     //kbuilder.add(ResourceFactory.newClassPathResource(p), ResourceType.BPMN2);
-                    //kbuilder.add(new ClassPathResource(p), ResourceType.BPMN2);
-                    kbuilder.add(ResourceFactory.newClassPathResource(p), ResourceType.BPMN2);
+                    kbuilder.add(new ClassPathResource(p), ResourceType.BPMN2);
+                    //kbuilder.add(ResourceFactory.newClassPathResource(p), ResourceType.BPMN2);
                 }
             }
             
@@ -891,8 +891,21 @@ public class JbpmService {
         Task task = handlerT.getTask();
         return task;
     }
-    
-    
+    /**
+     * <p>Discription:[分配任务给新用户]</p>
+     * @param taskId 任务ID
+     * @param srcUserId 任务原用户
+     * @param targetUserId 任务新用户
+     * @author 大牙-小白
+     * @update 2012-9-4 大牙-小白 [变更描述]
+     */
+    public void assignTaskToUser(Long taskId, String srcUserId, String targetUserId){
+        log.info("assigning task from "+ srcUserId +" to new user : " + targetUserId);
+        BlockingTaskOperationResponseHandler operationResponseHandler = new BlockingTaskOperationResponseHandler();
+        client.delegate(taskId, srcUserId, targetUserId, operationResponseHandler);
+        operationResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
+        log.info("assigning task from "+ srcUserId +" to new user : " + targetUserId);
+    }
     
     /**
      * <p>Discription:[领取指定用户的任务]</p>
@@ -931,12 +944,12 @@ public class JbpmService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void startTask(User user, TaskSummary task) {
-        System.out.println("Starting task " + task.getId());
+    public void startTask(User user, Long taskId) {
+        System.out.println("Starting task " + taskId);
         BlockingTaskOperationResponseHandler operationResponseHandler = new BlockingTaskOperationResponseHandler();
-        client.start(task.getId(), user.getId(), operationResponseHandler);
+        client.start(taskId, user.getId(), operationResponseHandler);
         operationResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
-        System.out.println("Started task " + task.getId());
+        System.out.println("Started task " + taskId);
     }
     /**
      * <p>Discription:[开始任务]</p>
@@ -946,13 +959,13 @@ public class JbpmService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void startTask(User user, List<String> groups, TaskSummary task) {
-        System.out.println("Starting task " + task.getId());
+    public void startTask(User user, List<String> groups, Long taskId) {
+        System.out.println("Starting task " + taskId);
         BlockingTaskOperationResponseHandler operationResponseHandler = new BlockingTaskOperationResponseHandler();
-        client.claim(task.getId(), user.getId(), groups, operationResponseHandler);
-        client.start(task.getId(), user.getId(), operationResponseHandler);
+        client.claim(taskId, user.getId(), groups, operationResponseHandler);
+        client.start(taskId, user.getId(), operationResponseHandler);
         operationResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
-        System.out.println("Started task " + task.getId());
+        System.out.println("Started task " + taskId);
     }
     
     /**
@@ -962,13 +975,13 @@ public class JbpmService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void completeTask(User user, TaskSummary task) {
-        log.info("Completing task " + task.getId());
+    public void completeTask(User user, Long taskId) {
+        log.info("Completing task " + taskId);
         BlockingTaskOperationResponseHandler operationResponseHandler = new BlockingTaskOperationResponseHandler();
         operationResponseHandler = new BlockingTaskOperationResponseHandler();
-        client.complete(task.getId(), user.getId(), null, operationResponseHandler);
+        client.complete(taskId, user.getId(), null, operationResponseHandler);
         operationResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
-        log.info("Completed task " + task.getId());
+        log.info("Completed task " + taskId);
     }
     
     /**
@@ -979,13 +992,13 @@ public class JbpmService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void completeTask(User user, TaskSummary task, ContentData contentData) {
-        log.info("Completing task " + task.getId());
+    public void completeTask(User user, Long taskId, ContentData contentData) {
+        log.info("Completing task " + taskId);
         BlockingTaskOperationResponseHandler operationResponseHandler = new BlockingTaskOperationResponseHandler();
         operationResponseHandler = new BlockingTaskOperationResponseHandler();
-        client.complete(task.getId(), user.getId(), contentData, operationResponseHandler);
+        client.complete(taskId, user.getId(), contentData, operationResponseHandler);
         operationResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
-        log.info("Completed task " + task.getId());
+        log.info("Completed task " + taskId);
     }
     
     /**
@@ -998,8 +1011,8 @@ public class JbpmService {
      * @throws Exception 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void completeTask(User user, TaskSummary task, Map data, String notUse) throws Exception {
-        log.info("Completing task " + task.getId());
+    public void completeTask(User user, Long taskId, Map data, String notUse) throws Exception {
+        log.info("Completing task " + taskId);
         ContentData contentData = null;
         if(data != null && !data.isEmpty()){
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -1020,8 +1033,8 @@ public class JbpmService {
                 }
             }
         }
-        completeTask(user, task, contentData);
-        log.info("Completed task " + task.getId());
+        completeTask(user, taskId, contentData);
+        log.info("Completed task " + taskId);
     }
     
     /**
@@ -1031,9 +1044,9 @@ public class JbpmService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public Object getTaskContentInput(TaskSummary taskSum) {
+    public Object getTaskContentInput(Long taskId) {
         BlockingGetTaskResponseHandler handlerT = new BlockingGetTaskResponseHandler();
-        client.getTask(taskSum.getId(), handlerT);
+        client.getTask(taskId, handlerT);
         Task task2 = handlerT.getTask();
         TaskData taskData = task2.getTaskData();
         BlockingGetContentResponseHandler handlerC = new BlockingGetContentResponseHandler();

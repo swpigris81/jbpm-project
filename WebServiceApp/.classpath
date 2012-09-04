@@ -90,7 +90,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jaxen-1.1-beta-7.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-bam-5.3.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/droolsjbpm-jbpm-5.0.0-877-g18e6d9d.zip"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-bpmn2-5.3.0.Final.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-flow-5.3.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-flow-5.3.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/droolsjbpm-jbpm-5.0.0-877-g18e6d9d.zip"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-flow-builder-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-core-5.3.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/droolsjbpm-jbpm-5.0.0-877-g18e6d9d.zip"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-hornetq-5.3.0.Final.jar"/>
