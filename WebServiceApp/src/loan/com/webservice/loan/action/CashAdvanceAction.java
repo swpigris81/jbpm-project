@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jbpm.task.Task;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.webservice.common.action.BaseAction;
+import com.webservice.jbpm.service.IJbpmService;
 import com.webservice.loan.bean.CashAdvanceInfo;
 import com.webservice.loan.service.CashAdvanceService;
 import com.webservice.system.common.constants.Constants;
@@ -29,6 +31,8 @@ public class CashAdvanceAction extends BaseAction {
     private String currentUserName;
     /** 请款信息 **/
     private CashAdvanceInfo cashAdvanceInfo;
+    /** 流程图 **/
+    private IJbpmService jbpmService;
     /**
      * <p>Discription:[方法功能中文描述]</p>
      * @return CashAdvanceService cashAdvanceService.
@@ -110,6 +114,22 @@ public class CashAdvanceAction extends BaseAction {
     }
 
     /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return IJbpmService jbpmService.
+     */
+    public IJbpmService getJbpmService() {
+        return jbpmService;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param jbpmService The jbpmService to set.
+     */
+    public void setJbpmService(IJbpmService jbpmService) {
+        this.jbpmService = jbpmService;
+    }
+
+    /**
      * <p>Discription:[我的请款信息]</p>
      * @return 显示我发起的请款列表
      * @author:[创建者中文名字]
@@ -144,7 +164,12 @@ public class CashAdvanceAction extends BaseAction {
         }
         return null;
     }
-    
+    /**
+     * <p>Discription:[新增请款]</p>
+     * @return
+     * @author 大牙-小白
+     * @update 2012-9-3 大牙-小白 [变更描述]
+     */
     public String newRequest(){
         Map<String, Object> resultMap = new HashMap<String, Object>();
         // 定义TransactionDefinition并设置好事务的隔离级别和传播方式。
@@ -160,24 +185,42 @@ public class CashAdvanceAction extends BaseAction {
                     || "".equals(cashAdvanceInfo.getCashUserId()) || "".equals(cashAdvanceInfo.getCashUserName())){
                 resultMap.put("success", false);
                 resultMap.put("msg", "当前用户信息为空，请检查！");
+            }else if(cashAdvanceInfo.getCashAmount() == null){
+                resultMap.put("success", false);
+                resultMap.put("msg", "请款金额不能为空！");
             }else{
-                resultMap.put("success", true);
-                this.cashAdvanceService.saveMyRequestCash(cashAdvanceInfo);
                 if(Constants.CASH_STATUS_00.equals(cashAdvanceInfo.getCashStatus())){
+                    //当用户点击暂时保存时的操作
+                    this.cashAdvanceService.saveMyRequestCash(cashAdvanceInfo);
                     resultMap.put("msg", "请款信息已经保存成功！");
                 }else if(Constants.CASH_STATUS_01.equals(cashAdvanceInfo.getCashStatus())){
-                    resultMap.put("msg", "请款信息已经发起审核！");
-                    //启动流程
+                    //当用户点击提交时的操作
+                    Map<String, Object> param = new HashMap<String, Object>();
+                    param.put("cashAmount", cashAdvanceInfo.getCashAmount().doubleValue());
+                    //启动流程, 创建一个任务
+                    Task task = this.jbpmService.getFirstTask(param, Constants.PROCESS_LOAN_ID, Constants.PROCESS_LOAN_NAME);
+                    //将该任务分配给自己
                     
+                    cashAdvanceInfo.setProcessTaskId(task.getId());
+                    this.cashAdvanceService.saveMyRequestCash(cashAdvanceInfo);
+                    //填写完成请款单，完成该任务
+                    
+                    resultMap.put("msg", "请款信息已经发起审核！");
+                    resultMap.put("success", true);
                 }
             }
         }catch(Exception e){
+            e.printStackTrace();
             LOG.error(e.getMessage());
             status.setRollbackOnly();
             resultMap.put("success", false);
             resultMap.put("msg", "系统错误，错误代码："+e.getMessage());
         }finally{
-            this.transactionManager.commit(status);
+            if(status.isRollbackOnly()){
+                this.transactionManager.rollback(status);
+            }else{
+                this.transactionManager.commit(status);
+            }
             if(out != null){
                 out.print(getJsonString(resultMap));
                 out.flush();

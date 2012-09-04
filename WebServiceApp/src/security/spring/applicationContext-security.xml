@@ -22,6 +22,7 @@
 		<security:intercept-url pattern="/jsp/common/header.jsp" filters="none"/>
 		<security:intercept-url pattern="/index.jsp" filters="none"/>
 		<security:intercept-url pattern="/login.jsp" filters="none"/>
+		<security:intercept-url pattern="/WEB-INF/classes/cashRequest.bpmn" filters="none"/>
 		<!-- 主页 -->
 		<security:intercept-url pattern="/jsp/main.jsp" filters="none"/>
 		<!-- 测试jQuery主页 -->

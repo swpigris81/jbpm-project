@@ -380,7 +380,7 @@ function cashAdvance(){
 			},
 			failure: function(form, action) {//action.result.errorMessage
 				Ext.Msg.hide();
-				var msg = "系统消息发送失败，请检查您的网络连接或者联系管理员！";
+				var msg = "新增请款失败，请检查您的网络连接或者联系管理员！";
 				try{
 					var result = Ext.decode(action.response.responseText);
 					if(result.msg){

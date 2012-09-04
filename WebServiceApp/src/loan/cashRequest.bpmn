@@ -13,17 +13,32 @@
              xmlns:tns="http://www.jboss.org/drools">
 
   <itemDefinition id="_isAvailableItem" structureRef="Boolean" />
+  <itemDefinition id="_cashAmountItem" structureRef="java.lang.Double" />
+  <itemDefinition id="_cashCheckResultItem" structureRef="String" />
+  <itemDefinition id="_cashApprovalResultItem" structureRef="String" />
 
   <itemDefinition id="_3-isAvailableItem" structureRef="Boolean" />
+  <itemDefinition id="_3-cashAmountItem" structureRef="java.lang.Double" />
+  <itemDefinition id="_3-cashCheckResultItem" structureRef="String" />
+  <itemDefinition id="_3-cashApprovalResultItem" structureRef="String" />
 
   <itemDefinition id="_4-isAvailableItem" structureRef="Boolean" />
+  <itemDefinition id="_4-cashAmountItem" structureRef="java.lang.Double" />
+  <itemDefinition id="_4-cashCheckResultItem" structureRef="String" />
+  <itemDefinition id="_4-cashApprovalResultItem" structureRef="String" />
 
   <itemDefinition id="_5-isAvailableItem" structureRef="Boolean" />
+  <itemDefinition id="_5-cashAmountItem" structureRef="java.lang.Double" />
+  <itemDefinition id="_5-cashCheckResultItem" structureRef="String" />
+  <itemDefinition id="_5-cashApprovalResultItem" structureRef="String" />
 
   <process processType="Private" isExecutable="true" id="com.webservice.cashRequest" name="请款流程" tns:packageName="defaultPackage" >
 
     <!-- process variables -->
     <property id="isAvailable" itemSubjectRef="_isAvailableItem"/>
+    <property id="cashAmount" itemSubjectRef="_cashAmountItem"/>
+    <property id="cashCheckResult" itemSubjectRef="_cashCheckResultItem"/>
+    <property id="cashApprovalResult" itemSubjectRef="_cashApprovalResultItem"/>
 
     <!-- nodes -->
     <startEvent id="_1" name="StartProcess" />
@@ -54,7 +69,7 @@
       </dataOutputAssociation>
       <potentialOwner>
         <resourceAssignmentExpression>
-          <formalExpression>#{userId}</formalExpression>
+          <formalExpression></formalExpression>
         </resourceAssignmentExpression>
       </potentialOwner>
     </userTask>
@@ -138,6 +153,7 @@ else if(result == 1){
  	isAvailable = false;
  }
  kcontext.setVariable("isAvailable",isAvailable);
+ System.out.println("审核结果：" +result);
 
 </script>
     </scriptTask>
@@ -147,7 +163,8 @@ else if(result == 1){
     </scriptTask>
     <exclusiveGateway id="_9" name="结束" gatewayDirection="Converging" />
     <scriptTask id="_10" name="获取用户填写的金额" scriptFormat="http://www.java.com/java" >
-      <script>kcontext.setVariable("cashAmount", cashAmount);</script>
+      <script>kcontext.setVariable("cashAmount", cashAmount);
+System.out.println("您的请款金额是：" + cashAmount);</script>
     </scriptTask>
     <exclusiveGateway id="_11" name="开始" gatewayDirection="Converging" />
     <scriptTask id="_12" name="获取审批结果" scriptFormat="http://www.java.com/java" >
@@ -166,6 +183,7 @@ else if(result == 1){
  	isAvailable = false;
  }
  kcontext.setVariable("isAvailable",isAvailable);
+ System.out.println("审批结果是： " + result);
 
 </script>
     </scriptTask>
@@ -196,7 +214,7 @@ if(isAvailable &amp;&amp; cashAmount &lt; 1000){
     <sequenceFlow id="_8-_9" sourceRef="_8" targetRef="_9" />
     <sequenceFlow id="_13-_9" sourceRef="_13" targetRef="_9" name="审批通过" >
       <conditionExpression xsi:type="tFormalExpression" language="http://www.java.com/java" >if(isAvailable){
-	System.out.println("您请款【"+cashAmount+"】已经审批通过！")
+	System.out.println("您请款【"+cashAmount+"】已经审批通过！");
 	return true;
 }else{
 	return false;
@@ -207,6 +225,8 @@ if(isAvailable &amp;&amp; cashAmount &lt; 1000){
       <conditionExpression xsi:type="tFormalExpression" language="http://www.java.com/java" >//审核不通过则返回请款人
 if(!isAvailable){
 	return true;
+}else{
+	return false;
 }</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_1-_11" sourceRef="_1" targetRef="_11" />
@@ -240,7 +260,7 @@ if(!isAvailable){
         <dc:Bounds x="424" y="296" width="100" height="48" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_6" >
-        <dc:Bounds x="166" y="299" width="80" height="48" />
+        <dc:Bounds x="155" y="313" width="80" height="48" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_7" >
         <dc:Bounds x="284" y="295" width="48" height="48" />
@@ -282,10 +302,10 @@ if(!isAvailable){
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_4-_6" >
         <di:waypoint x="68" y="333" />
-        <di:waypoint x="206" y="323" />
+        <di:waypoint x="195" y="337" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_6-_7" >
-        <di:waypoint x="206" y="323" />
+        <di:waypoint x="195" y="337" />
         <di:waypoint x="308" y="319" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_7-_8" >

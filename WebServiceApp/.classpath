@@ -67,7 +67,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/core-3.2.3.v_686_R32x.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-compiler-5.4.0.Final.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-core-5.4.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-core-5.4.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/drools-distribution-5.4.0.Final/drools-distribution-5.4.0.Final/sources/drools-core-5.4.0.Final-sources.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-persistence-jpa-5.4.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/drools-distribution-5.4.0.Final/drools-distribution-5.4.0.Final/sources/drools-persistence-jpa-5.4.0.Final-sources.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dwr.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ecj-3.5.1.jar"/>
@@ -102,7 +102,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jsr94-1.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jstl.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jta-1.1.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/knowledge-api-5.4.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/knowledge-api-5.4.0.Final.jar" sourcepath="E:/selfstudy/工作流/JBPM5/源码/JBPM5.3/drools-distribution-5.4.0.Final/drools-distribution-5.4.0.Final/sources/knowledge-api-5.4.0.Final-sources.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/knowledge-internal-api-5.4.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mail-1.4.jar"/>
@@ -188,5 +188,12 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/javassist-3.16.1-GA.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/antlr-2.7.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/activemq-all-5.6.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-clips-5.4.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-decisiontables-5.4.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-jsr94-5.4.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-templates-5.4.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-verifier-5.4.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/antlr-3.3.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/antlr-runtime-3.3.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
