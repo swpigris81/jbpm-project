@@ -86,4 +86,8 @@ public class RoleService implements IRoleService {
     public List findRoleByName(String roleName){
         return this.roleDao.findRoleByName(roleName);
     }
+    
+    public List findAll(){
+        return this.roleDao.findAll();
+    }
 }

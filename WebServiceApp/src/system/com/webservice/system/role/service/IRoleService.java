@@ -53,4 +53,11 @@ public interface IRoleService {
      * @update: 2011-7-9 代超[变更描述]
      */
     public List findRoleByName(String roleName);
+    /**
+     * <p>Discription:[查询所有角色]</p>
+     * @return 所有角色列表
+     * @author 大牙-小白
+     * @update 2012-9-5 大牙-小白 [变更描述]
+     */
+    public List findAll();
 }

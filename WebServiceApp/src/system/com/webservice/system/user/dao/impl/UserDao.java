@@ -91,4 +91,14 @@ public class UserDao extends HibernateDaoSupport implements IUserDao {
             throw re;
         }
     }
+    
+    public List findAll(){
+        log.debug("find all user");
+        try {
+            return getHibernateTemplate().find("from UserInfo ");
+        } catch (RuntimeException re) {
+            log.error("find all failed", re);
+            throw re;
+        }
+    }
 }

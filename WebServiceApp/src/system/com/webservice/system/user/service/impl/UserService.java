@@ -105,4 +105,8 @@ public class UserService implements IUserService {
         String sql = "SELECT model.operater_id from supplier_role model where model.role_id = ?";
         return this.baseDao.queryBySQL(sql, new Object[]{roleId});
     }
+    
+    public List findAll(){
+        return this.userDao.findAll();
+    }
 }

@@ -47,11 +47,12 @@
 		<class>org.jbpm.task.User</class>
 		<properties>
 			<property name="hibernate.max_fetch_depth" value="3" />
-			<!-- <property name="hibernate.transaction.manager_lookup_class"
-				value="org.hibernate.transaction.BTMTransactionManagerLookup" /> -->
+			<!-- 使用atomikos框架时使用的类 -->
 			<property name="hibernate.transaction.manager_lookup_class"
 				value="com.atomikos.icatch.jta.hibernate3.TransactionManagerLookup" />
-			<property name="hibernate.transaction.factory_class" value="com.atomikos.icatch.jta.hibernate3.AtomikosJTATransactionFactory"/><!-- org.hibernate.transaction.JTATransactionFactory -->
+			<!-- 使用atomikos框架时，hibernate.transaction.factory_class不设置，使用自带的即可 -->
+			<!-- <property name="hibernate.transaction.factory_class" value="com.atomikos.icatch.jta.hibernate3.AtomikosJTATransactionFactory"/> --><!-- org.hibernate.transaction.JTATransactionFactory -->
+			<!-- 使用WebLogic服务器的时候可不适用atomikos框架，所有需要使用下面的类 -->
 			<!-- <property name="hibernate.transaction.manager_lookup_class"
 				value="org.hibernate.transaction.WeblogicTransactionManagerLookup" /> -->
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
@@ -71,7 +72,7 @@
 			<property name="hibernate.hbm2ddl.auto" value="none" />
 			<property name="hibernate.show_sql" value="true" />
 			<!-- <property name="hibernate.jndi.class" value="bitronix.tm.jndi.BitronixInitialContextFactory"/> -->
-			<property name="hibernate.query.factory_class" value="org.hibernate.hql.classic.ClassicQueryTranslatorFactory"/> 
+			<!-- <property name="hibernate.query.factory_class" value="org.hibernate.hql.classic.ClassicQueryTranslatorFactory"/>  -->
 		</properties>
 	</persistence-unit>
 	

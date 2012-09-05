@@ -1,5 +1,7 @@
 package com.webservice.jbpm.server.daemon;
 
+import java.util.List;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -22,10 +24,13 @@ import org.jbpm.task.service.TaskService;
 import org.jbpm.task.service.TaskServiceSession;
 import org.jbpm.task.service.mina.MinaTaskServer;
 
-import bitronix.tm.resource.jdbc.PoolingDataSource;
-
 import com.webservice.jbpm.jpamanager.MultipleUseJpaPersistenceContextManager;
 import com.webservice.jbpm.server.domain.UserInfoDomain;
+import com.webservice.system.common.helper.SpringHelper;
+import com.webservice.system.role.bean.RoleInfo;
+import com.webservice.system.role.service.IRoleService;
+import com.webservice.system.user.bean.UserInfo;
+import com.webservice.system.user.service.IUserService;
 
 
 /**
@@ -50,12 +55,19 @@ public class TaskServerDaemon {
     private DataSource ds;
     /** 环境参数 **/
     public static Environment env;
+    /** 用于查询所有用户 **/
+    private IUserService userService;
+    /** 用于查询所有角色 **/
+    private IRoleService roleService;
+    
     /**
      * <p>Discription:[初始化默认未启动]</p>
      * @coustructor 方法.
      */
-    public TaskServerDaemon() {
+    public TaskServerDaemon(){
         this.running = false;
+        this.userService = (IUserService)SpringHelper.getBean("userService");
+        this.roleService = (IRoleService)SpringHelper.getBean("roleService");
     }
     /**
      * 加载数据库
@@ -76,13 +88,21 @@ public class TaskServerDaemon {
         UserInfoDomain userInfo = new UserInfoDomain();
         taskService.setUserinfo( userInfo);
         //初始化用户
-        for (String userName : getDefaultUsers()) {
-            taskSession.addUser(new User(userName));
+        List<UserInfo> users = this.userService.findAll();
+        for(UserInfo user : users){
+            taskSession.addUser(new User(user.getUserName()));
         }
+        //for (String userName : getDefaultUsers()) {
+        //    taskSession.addUser(new User(userName));
+        //}
         //初始化用户组
-        for(String group : getDefaultGroups()){
-            taskSession.addGroup(new Group(group));
+        List<RoleInfo> groups = this.roleService.findAll();
+        for(RoleInfo role : groups){
+            taskSession.addGroup(new Group(role.getRoleName()));
         }
+        //for(String group : getDefaultGroups()){
+        //    taskSession.addGroup(new Group(group));
+        //}
         taskServer = new MinaTaskServer(taskService);
         thread = new Thread(taskServer);
         //Thread thread = new Thread(taskServer);
@@ -184,7 +204,7 @@ public class TaskServerDaemon {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     private String[] getDefaultUsers() {
-        return new String[]{"salaboy", "translator", "reviewer", "Administrator"};
+        return new String[]{"salaboy", "translator", "admin", "reviewer", "Administrator"};
     }
     /**
      * <p>Discription:[默认用户组]</p>
@@ -195,4 +215,33 @@ public class TaskServerDaemon {
     private String[] getDefaultGroups() {
         return new String[]{"cardCenter", "merCenter", "merReview", "cardCenter2", "cardReview"};
     }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return IUserService userService.
+     */
+    public IUserService getUserService() {
+        return userService;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param userService The userService to set.
+     */
+    public void setUserService(IUserService userService) {
+        this.userService = userService;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return IRoleService roleService.
+     */
+    public IRoleService getRoleService() {
+        return roleService;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param roleService The roleService to set.
+     */
+    public void setRoleService(IRoleService roleService) {
+        this.roleService = roleService;
+    }
+    
 }

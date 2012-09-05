@@ -49,4 +49,11 @@ public interface IUserDao {
      * @param entities
      */
     public void deleteAll(Collection entities);
+    /**
+     * <p>Discription:[查询所有用户]</p>
+     * @return 所有用户列表
+     * @author 大牙-小白
+     * @update 2012-9-5 大牙-小白 [变更描述]
+     */
+    public List findAll();
 }

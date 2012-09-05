@@ -7,6 +7,13 @@ import org.jbpm.task.Task;
 
 public interface IJbpmService {
     /**
+     * <p>Discription:[与JBPM服务端断开连接]</p>
+     * @author 大牙-小白
+     * @throws Exception 
+     * @update 2012-9-5 大牙-小白 [变更描述]
+     */
+    public void disconnectJbpmServer() throws Exception;
+    /**
      * <p>Discription:[启动流程，获取该流程的第一个任务]</p>
      * @param param 启动流程同时传入的参数
      * @param processId 流程图为一ID
@@ -20,14 +27,14 @@ public interface IJbpmService {
     /**
      * <p>Discription:[分配任务给指定用户]</p>
      * @param taskId 任务ID
-     * @param userId 分配前任务所属用户
-     * @param targetUserId 分配之后任务所属用户
-     * @param processId 流程图唯一ID
+     * @param userName 分配前任务所属用户
+     * @param targetUserName 分配之后任务所属用户
+     * @param processName 流程图
      * @throws Exception
      * @author 大牙-小白
      * @update 2012-9-4 大牙-小白 [变更描述]
      */
-    public void assignTaskToUser(String taskId, String userId, String targetUserId, String... processId) throws Exception;
+    public void assignTaskToUser(String taskId, String userName, String targetUserName, String... processName) throws Exception;
     /**
      * <p>Discription:[开始任务]</p>
      * @param userName 用户
