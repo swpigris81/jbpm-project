@@ -203,11 +203,13 @@ public class CashAdvanceAction extends BaseAction {
                     Task task = this.jbpmService.getFirstTask(param, Constants.PROCESS_LOAN_ID, Constants.PROCESS_LOAN_NAME);
                     //将该任务分配给自己
                     //task.setPeopleAssignments(peopleAssignments)
-                    this.jbpmService.assignTaskToUser(task.getId().toString(), null, cashAdvanceInfo.getCashUserId(), Constants.PROCESS_LOAN_ID);
+                    this.jbpmService.assignTaskToUser(task.getId().toString(), "Administrator", cashAdvanceInfo.getCashUserName(), Constants.PROCESS_LOAN_NAME);
                     cashAdvanceInfo.setProcessTaskId(task.getId());
                     this.cashAdvanceService.saveMyRequestCash(cashAdvanceInfo);
                     //填写完成请款单，完成该任务
                     
+                    //完成任务之后，断开服务端的连接
+                    this.jbpmService.disconnectJbpmServer();
                     resultMap.put("msg", "请款信息已经发起审核！");
                     resultMap.put("success", true);
                 }

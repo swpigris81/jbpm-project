@@ -28,6 +28,20 @@ public class JbpmServiceImpl implements IJbpmService {
      */
     private JbpmService jbpmClient = new JbpmService();
     /**
+     * <p>Discription:[与JBPM服务端断开连接]</p>
+     * @author 大牙-小白
+     * @throws Exception 
+     * @update 2012-9-5 大牙-小白 [变更描述]
+     */
+    public void disconnectJbpmServer() throws Exception{
+        try {
+            jbpmClient.stop();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+    /**
      * <p>Discription:[启动流程，获取该流程的第一个任务]</p>
      * @param param 启动流程同时传入的参数
      * @param processId 流程图唯一ID
@@ -75,20 +89,20 @@ public class JbpmServiceImpl implements IJbpmService {
     /**
      * <p>Discription:[分配任务给指定用户]</p>
      * @param taskId 任务ID
-     * @param userId 分配前任务所属用户
-     * @param targetUserId 分配之后任务所属用户
-     * @param processId 流程图唯一ID
+     * @param userName 分配前任务所属用户
+     * @param targetUserName 分配之后任务所属用户
+     * @param processName 流程图
      * @throws Exception
      * @author 大牙-小白
      * @update 2012-9-4 大牙-小白 [变更描述]
      */
-    public void assignTaskToUser(String taskId, String userId, String targetUserId, String... processId) throws Exception{
+    public void assignTaskToUser(String taskId, String userName, String targetUserName, String... processName) throws Exception{
         if(taskId == null || "".equals(taskId.trim())){
             return;
         }
         //保证processId至少存在一个, 否则使用默认流程图
-        if(processId != null && processId.length > 0 && !"".equals(processId[0].trim())){
-            jbpmClient.setProcess(processId);
+        if(processName != null && processName.length > 0 && !"".equals(processName[0].trim())){
+            jbpmClient.setProcess(processName);
         }
         jbpmClient.init();
         InitialContext ctx = null;
@@ -97,7 +111,7 @@ public class JbpmServiceImpl implements IJbpmService {
             ctx = new InitialContext();
             transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
             transactionManager.begin();
-            jbpmClient.assignTaskToUser(NumberUtils.toLong(taskId), userId, targetUserId);
+            jbpmClient.assignTaskToUser(NumberUtils.toLong(taskId), userName, targetUserName);
             transactionManager.commit();
         }catch(Exception e){
             transactionManager.rollback();

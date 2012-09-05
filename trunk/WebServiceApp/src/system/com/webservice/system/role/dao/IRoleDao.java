@@ -14,6 +14,13 @@ public interface IRoleDao {
      */
     public List findAllRole();
     /**
+     * <p>Discription:[查询所有角色]</p>
+     * @return 所有角色对象列表
+     * @author 大牙-小白
+     * @update 2012-9-5 大牙-小白 [变更描述]
+     */
+    public List findAll();
+    /**
      * <p>Discription:[通过用户ID查询该用户的角色]</p>
      * @param userId
      * @return

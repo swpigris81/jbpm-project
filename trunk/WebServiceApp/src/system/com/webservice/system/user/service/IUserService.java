@@ -70,4 +70,11 @@ public interface IUserService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public List getUserByRole(String roleId);
+    /**
+     * <p>Discription:[查询所有用户]</p>
+     * @return 所有用户列表
+     * @author 大牙-小白
+     * @update 2012-9-5 大牙-小白 [变更描述]
+     */
+    public List findAll();
 }

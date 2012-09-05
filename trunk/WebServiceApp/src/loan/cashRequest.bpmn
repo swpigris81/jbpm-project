@@ -89,7 +89,7 @@
       </dataOutputAssociation>
       <potentialOwner>
         <resourceAssignmentExpression>
-          <formalExpression>#{userId}</formalExpression>
+          <formalExpression>#{userName}</formalExpression>
         </resourceAssignmentExpression>
       </potentialOwner>
     </userTask>

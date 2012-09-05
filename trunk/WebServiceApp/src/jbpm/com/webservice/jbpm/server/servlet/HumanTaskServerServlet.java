@@ -1,11 +1,14 @@
 package com.webservice.jbpm.server.servlet;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.webservice.jbpm.server.daemon.TaskServerDaemon;
+import com.webservice.system.common.helper.SpringHelper;
 
 /**
  * <p>Description: [JBPM服务启动servlet]</p>
@@ -14,10 +17,14 @@ import com.webservice.jbpm.server.daemon.TaskServerDaemon;
  */
 public class HumanTaskServerServlet extends HttpServlet {
     private Log log = LogFactory.getLog(HumanTaskServerServlet.class);
-    private TaskServerDaemon taskServerDaemon = new TaskServerDaemon();
+    private TaskServerDaemon taskServerDaemon;
     
     public void init(){
         log.info("starting server...");
+        initSpringService();
+        if(taskServerDaemon == null){
+            taskServerDaemon = new TaskServerDaemon();
+        }
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 System.out.println("\n");
@@ -36,6 +43,9 @@ public class HumanTaskServerServlet extends HttpServlet {
     }
     
     public void destroy(){
+        if(taskServerDaemon == null){
+            taskServerDaemon = new TaskServerDaemon();
+        }
         log.info("stopping server...");
         try {
             taskServerDaemon.stopServer();
@@ -46,5 +56,17 @@ public class HumanTaskServerServlet extends HttpServlet {
         }
         log.info("server stoped");
         super.destroy();
+    }
+    /**
+     * <p>Discription:[初始化Spring 容器]</p>
+     * @author 大牙-小白
+     * @update 2012-9-5 大牙-小白 [变更描述]
+     */
+    private void initSpringService(){
+        log.info("初始化Spring applicationContext...");
+        ServletContext servletContext = this.getServletContext();
+        SpringHelper.setWac(WebApplicationContextUtils
+                .getRequiredWebApplicationContext(servletContext));
+        log.info("初始化Spring applicationContext完成");
     }
 }
