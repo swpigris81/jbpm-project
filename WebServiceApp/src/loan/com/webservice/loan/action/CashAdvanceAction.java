@@ -16,6 +16,8 @@ import com.webservice.jbpm.service.IJbpmService;
 import com.webservice.loan.bean.CashAdvanceInfo;
 import com.webservice.loan.service.CashAdvanceService;
 import com.webservice.system.common.constants.Constants;
+import com.webservice.system.role.bean.RoleInfo;
+import com.webservice.system.role.service.IRoleService;
 /**
  * <p>Description: [请款]</p>
  * @author  <a href="mailto: swpigris81@126.com">大牙-小白</a>
@@ -23,6 +25,7 @@ import com.webservice.system.common.constants.Constants;
  */
 public class CashAdvanceAction extends BaseAction {
     private CashAdvanceService cashAdvanceService;
+    private IRoleService roleService;
     /** 事务处理 */
     private DataSourceTransactionManager transactionManager;
     /** 当前用户ID **/
@@ -130,6 +133,22 @@ public class CashAdvanceAction extends BaseAction {
     }
 
     /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return IRoleService roleService.
+     */
+    public IRoleService getRoleService() {
+        return roleService;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param roleService The roleService to set.
+     */
+    public void setRoleService(IRoleService roleService) {
+        this.roleService = roleService;
+    }
+
+    /**
      * <p>Discription:[我的请款信息]</p>
      * @return 显示我发起的请款列表
      * @author:[创建者中文名字]
@@ -197,19 +216,40 @@ public class CashAdvanceAction extends BaseAction {
                     //当用户点击提交时的操作
                     Map<String, Object> param = new HashMap<String, Object>();
                     param.put("cashAmount", cashAdvanceInfo.getCashAmount().doubleValue());
+                    //设置填写请款单的用户
                     param.put("userId", cashAdvanceInfo.getCashUserId());
                     param.put("userName", cashAdvanceInfo.getCashUserName());
+                    //设置审核人所在组
+                    List group = this.roleService.findParentRoleByUserId(cashAdvanceInfo.getCashUserName());
+                    RoleInfo role = null;
+                    if(group != null && !group.isEmpty()){
+                        role = (RoleInfo) group.get(0);
+                        List checkGroup = this.roleService.findRoleById(role.getParentRoleId());
+                        if(checkGroup != null && !checkGroup.isEmpty()){
+                            role = (RoleInfo) checkGroup.get(0);
+                        }
+                        param.put("checkGroupName", role.getRoleName());
+                    }
+                    //设置审批人所在组
+                    if(role != null){
+                        List approveGroup = this.roleService.findRoleById(role.getParentRoleId());
+                        if(approveGroup != null && !approveGroup.isEmpty()){
+                            role = (RoleInfo) approveGroup.get(0);
+                        }
+                        param.put("approveGroupName", role.getRoleName());
+                    }
                     //启动流程, 创建一个任务
                     Task task = this.jbpmService.getFirstTask(param, Constants.PROCESS_LOAN_ID, Constants.PROCESS_LOAN_NAME);
                     //将该任务分配给自己
-                    //task.setPeopleAssignments(peopleAssignments)
                     this.jbpmService.assignTaskToUser(task.getId().toString(), "Administrator", cashAdvanceInfo.getCashUserName(), Constants.PROCESS_LOAN_NAME);
+                    //用户得到任务之后，需要开始该任务
+                    this.jbpmService.startTask(cashAdvanceInfo.getCashUserName(), null, task.getId().toString(), Constants.PROCESS_LOAN_NAME);
                     cashAdvanceInfo.setProcessTaskId(task.getId());
                     this.cashAdvanceService.saveMyRequestCash(cashAdvanceInfo);
                     //填写完成请款单，完成该任务
-                    
-                    //完成任务之后，断开服务端的连接
-                    this.jbpmService.disconnectJbpmServer();
+                    Map<String, Object> contentMap = new HashMap<String, Object>();
+                    contentMap.put("cashAmount", cashAdvanceInfo.getCashAmount().doubleValue());
+                    this.jbpmService.completeTask(cashAdvanceInfo.getCashUserName(), task.getId().toString(), contentMap, Constants.PROCESS_LOAN_NAME);
                     resultMap.put("msg", "请款信息已经发起审核！");
                     resultMap.put("success", true);
                 }
@@ -221,6 +261,13 @@ public class CashAdvanceAction extends BaseAction {
             resultMap.put("success", false);
             resultMap.put("msg", "系统错误，错误代码："+e.getMessage());
         }finally{
+            //完成任务之后，断开服务端的连接
+//            try {
+//                this.jbpmService.disconnectJbpmServer();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                status.setRollbackOnly();
+//            }
             if(status.isRollbackOnly()){
                 this.transactionManager.rollback(status);
             }else{

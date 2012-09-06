@@ -960,6 +960,10 @@ public class JbpmService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public void startTask(User user, List<String> groups, Long taskId) {
+        if(groups == null || groups.isEmpty()){
+            startTask(user, taskId);
+            return;
+        }
         System.out.println("Starting task " + taskId);
         BlockingTaskOperationResponseHandler operationResponseHandler = new BlockingTaskOperationResponseHandler();
         client.claim(taskId, user.getId(), groups, operationResponseHandler);

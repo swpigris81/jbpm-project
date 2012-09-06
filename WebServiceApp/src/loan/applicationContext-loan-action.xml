@@ -8,5 +8,6 @@
 	
 	<bean id="cashAdvanceAction" class="com.webservice.loan.action.CashAdvanceAction">
 		<property name="transactionManager" ref="transactionManager"></property>
+		<property name="roleService" ref="roleService"></property>
 	</bean>
 </beans>
