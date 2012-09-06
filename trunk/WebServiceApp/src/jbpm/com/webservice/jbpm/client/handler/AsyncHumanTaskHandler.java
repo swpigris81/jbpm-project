@@ -379,6 +379,7 @@ public class AsyncHumanTaskHandler implements WorkItemHandler {
                     client.getContent(contentId, getContentResponseHandler);
                 } else {
                     manager.completeWorkItem(workItemId, results);
+                    //session.getWorkItemManager().completeWorkItem(workItemId, results);
                 }
             } else {
                 manager.abortWorkItem(workItemId);

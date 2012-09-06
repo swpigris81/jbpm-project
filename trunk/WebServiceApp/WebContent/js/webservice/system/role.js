@@ -10,8 +10,9 @@ function roleManage(){
 		root : "roleList"
 	},[
 		{name:"roleId"},//唯一id
-		{name:"roleName"},//菜单名称
-		{name:"comment"}//菜单路径
+		{name:"roleName"},//角色名称
+		{name:"parentRoleId"},//上级角色ID
+		{name:"comment"}//备注
 	]);
 	
 	var proxyUrl = path+"/role/roleList.action?method=roleManageList";
@@ -39,6 +40,11 @@ function roleManage(){
 	},{
 		header:"角色名称",
 		dataIndex:"roleName",
+		width:150
+	},{
+		header:"上级角色",
+		dataIndex:"parentRoleId",
+		renderer:showParentRoleName,
 		width:150
 	},{
 		header:"备注",
@@ -98,6 +104,13 @@ function roleManage(){
 	 */
 	loadButtonRight(buttonRightStore, roleStore, roleGrid, "role_div");
 	/**
+	 * 显示上级角色名称
+	 * @param value 上级角色ID
+	 */
+	function showParentRoleName(value){
+		return getCodeNameFromStore(value, roleStore, "roleId", "roleName"); 
+	}
+	/**
 	 * 增加角色
 	 * @param {} url
 	 */
@@ -119,7 +132,7 @@ function roleManage(){
 				}
 			}
 		}];
-		showRoleWindow("addRoleWindow","添加角色信息",400, 200, roleForm, button);
+		showRoleWindow("addRoleWindow","添加角色信息",400, 250, roleForm, button);
 	}
 	/**
 	 * 编辑角色
@@ -149,7 +162,7 @@ function roleManage(){
 				}
 			}
 		}];
-		showRoleWindow("editRoleWindow","修改角色信息",400, 200, roleForm, button);
+		showRoleWindow("editRoleWindow","修改角色信息",400, 250, roleForm, button);
 		
 		roleForm.getForm().loadRecord(gridSelection[0]);
 	}
@@ -256,6 +269,30 @@ function roleManage(){
 						anchor:"90%",
 						fieldLabel:"角色名称",
 						maxLength:200,
+						allowBlank:isNull
+					}]
+				}]
+			},{
+				layout:"column",
+				border:false,
+				labelSeparator:'：',
+				items:[{
+					layout:"form",
+					columnWidth:.9,
+					height:50,
+					items:[{
+						xtype: 'combo',
+						name:"parentRoleId",
+						anchor:"90%",
+						fieldLabel:"上级角色",
+						maxLength:200,
+						editable:false,//false：不可编辑
+						triggerAction:"all",//避免选定了一个值之后，再选的时候只显示刚刚选择的那个值
+						valueField:"roleId",//将codeid设置为传递给后台的值
+						displayField:"roleName",
+						hiddenName:"parentRoleId",//这个值就是传递给后台获取的值
+						mode: "local",
+						store:roleStore,
 						allowBlank:isNull
 					}]
 				}]

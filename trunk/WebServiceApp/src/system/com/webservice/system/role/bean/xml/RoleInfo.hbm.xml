@@ -11,8 +11,13 @@
                 <comment>角色名称</comment>
             </column>
         </property>
+        <property name="parentRoleId" type="java.lang.String">
+            <column name="parent_role_id" length="32">
+                <comment>上级角色ID</comment>
+            </column>
+        </property>
         <property name="comment" type="java.lang.String">
-            <column name="comment" length="100">
+            <column name="comment" length="500">
                 <comment>注释</comment>
             </column>
         </property>

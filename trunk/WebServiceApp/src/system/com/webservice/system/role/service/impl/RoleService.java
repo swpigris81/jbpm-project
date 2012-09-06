@@ -87,7 +87,31 @@ public class RoleService implements IRoleService {
         return this.roleDao.findRoleByName(roleName);
     }
     
+    /**
+     * <p>Discription:[根据角色名称查询角色信息]</p>
+     * @param roleName
+     * @return
+     * @author: 代超
+     * @update: 2011-7-9 代超[变更描述]
+     */
+    public List findRoleById(String roleId){
+        return this.roleDao.findRoleById(roleId);
+    }
+    
     public List findAll(){
         return this.roleDao.findAll();
+    }
+    
+    /**
+     * <p>Discription:[根据用户ID查询用户所在组的上级角色]</p>
+     * @param userId
+     * @return
+     * @author 大牙-小白
+     * @update 2012-9-5 大牙-小白 [变更描述]
+     */
+    public List findParentRoleByUserId(String userId){
+        String sql = "select r from RoleInfo r, UserRole s where r.roleId = s.roleId and s.userId = ?";
+        List list = this.baseDao.queryByHQL(sql, new Object[]{userId});
+        return list;
     }
 }

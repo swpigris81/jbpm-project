@@ -33,7 +33,24 @@ public class RoleInfo {
         this.comment = comment;
     }
 
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String parentRoleId.
+     */
+    public String getParentRoleId() {
+        return parentRoleId;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param parentRoleId The parentRoleId to set.
+     */
+    public void setParentRoleId(String parentRoleId) {
+        this.parentRoleId = parentRoleId;
+    }
+
     private String roleId;
     private String roleName;
+    private String parentRoleId;
     private String comment;
 }

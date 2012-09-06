@@ -125,18 +125,18 @@ public class JbpmServiceImpl implements IJbpmService {
      * @param userName 用户
      * @param roleList 用户角色
      * @param taskId 任务ID
-     * @param processId 任务所在流程图名字地址
+     * @param processName 任务所在流程图名字地址
      * @throws Exception
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void startTask(String userName, List<String> roleList, String taskId, String... processId) throws Exception{
+    public void startTask(String userName, List<String> roleList, String taskId, String... processName) throws Exception{
         if(taskId == null || "".equals(taskId.trim())){
             return;
         }
         //保证processId至少存在一个, 否则使用默认流程图
-        if(processId != null && processId.length > 0 && !"".equals(processId[0].trim())){
-            jbpmClient.setProcess(processId);
+        if(processName != null && processName.length > 0 && !"".equals(processName[0].trim())){
+            jbpmClient.setProcess(processName);
         }
         jbpmClient.init();
         InitialContext ctx = null;
@@ -181,13 +181,13 @@ public class JbpmServiceImpl implements IJbpmService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void completeTask(String userName, String taskId, Map resultMap, String... processId) throws Exception{
+    public void completeTask(String userName, String taskId, Map resultMap, String... processName) throws Exception{
         if(taskId == null || "".equals(taskId.trim())){
             return;
         }
         //保证processId至少存在一个, 否则使用默认流程图
-        if(processId != null && processId.length > 0 && !"".equals(processId[0].trim())){
-            jbpmClient.setProcess(processId);
+        if(processName != null && processName.length > 0 && !"".equals(processName[0].trim())){
+            jbpmClient.setProcess(processName);
         }
         jbpmClient.init();
         InitialContext ctx = null;
