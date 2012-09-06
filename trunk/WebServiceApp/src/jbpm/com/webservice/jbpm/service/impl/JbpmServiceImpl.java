@@ -12,9 +12,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.task.Task;
 import org.jbpm.task.User;
-import org.jbpm.task.query.TaskSummary;
 
-import com.webservice.jbpm.client.service.JbpmService;
+import com.webservice.jbpm.client.service.JbpmSyncService;
 import com.webservice.jbpm.service.IJbpmService;
 /**
  * <p>Description: [工作流服务类]</p>
@@ -26,7 +25,7 @@ public class JbpmServiceImpl implements IJbpmService {
     /**
      * 工作流客户端
      */
-    private JbpmService jbpmClient = new JbpmService();
+    private JbpmSyncService jbpmClient = new JbpmSyncService();
     /**
      * <p>Discription:[与JBPM服务端断开连接]</p>
      * @author 大牙-小白
@@ -41,6 +40,21 @@ public class JbpmServiceImpl implements IJbpmService {
             throw e;
         }
     }
+    /**
+     * <p>Discription:[连接流程JBPM服务]</p>
+     * @throws Exception
+     * @author 大牙-小白
+     * @update 2012-9-6 大牙-小白 [变更描述]
+     */
+    public void connectJbpmServer() throws Exception{
+        try {
+            jbpmClient.connect();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+    
     /**
      * <p>Discription:[启动流程，获取该流程的第一个任务]</p>
      * @param param 启动流程同时传入的参数
@@ -75,6 +89,16 @@ public class JbpmServiceImpl implements IJbpmService {
             }
             Long taskId = jbpmClient.getTaskId();
             Task task = jbpmClient.getTaskById(taskId);
+//            List<TaskSummary> tsl = jbpmClient.getAssignedTasks(new User(param.get("userName").toString()));
+//            TaskSummary ts = null;
+//            if(tsl != null){
+//                ts = tsl.get(0);
+//            }
+//            Task task = null;
+//            if(ts != null){
+//                Long taskId = ts.getId();
+//                task = jbpmClient.getTaskById(taskId);
+//            }
             transactionManager.commit();
             return task;
         }catch(Exception e){

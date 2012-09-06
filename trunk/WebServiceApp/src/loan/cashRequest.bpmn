@@ -76,6 +76,13 @@
         <terminateEventDefinition/>
     </endEvent>
     <userTask id="_3" name="填写请款单" >
+      <extensionElements>
+        <tns:onExit-script scriptFormat="http://www.java.com/java">
+          <script>kcontext.setVariable("cashAmount", cashAmount);
+System.out.println("您的请款金额是：" + cashAmount);
+System.out.println("流程自动流转到：" + checkGroupName);</script>
+        </tns:onExit-script>
+      </extensionElements>
       <ioSpecification>
         <dataInput id="_3_TaskNameInput" name="TaskName" />
         <dataOutput id="_3_cashAmountOutput" name="cashAmount" />
@@ -192,11 +199,6 @@ else if(result == 1){
       <script>System.out.println("您请款 【"+cashAmount+"】已经审核通过！");</script>
     </scriptTask>
     <exclusiveGateway id="_9" name="结束" gatewayDirection="Converging" />
-    <scriptTask id="_10" name="获取用户填写的金额" scriptFormat="http://www.java.com/java" >
-      <script>kcontext.setVariable("cashAmount", cashAmount);
-System.out.println("您的请款金额是：" + cashAmount);
-System.out.println("流程自动流转到：" + checkGroupName);</script>
-    </scriptTask>
     <exclusiveGateway id="_11" name="开始" gatewayDirection="Converging" />
     <scriptTask id="_12" name="获取审批结果" scriptFormat="http://www.java.com/java" >
       <script>kcontext.setVariable("cashApprovalResult", cashApprovalResult);
@@ -223,7 +225,7 @@ else if(result == 1){
     <!-- connections -->
     <sequenceFlow id="_9-_2" sourceRef="_9" targetRef="_2" />
     <sequenceFlow id="_11-_3" sourceRef="_11" targetRef="_3" />
-    <sequenceFlow id="_10-_4" sourceRef="_10" targetRef="_4" />
+    <sequenceFlow id="_3-_4" sourceRef="_3" targetRef="_4" />
     <sequenceFlow id="_7-_5" sourceRef="_7" targetRef="_5" name="报审批人审批" >
       <conditionExpression xsi:type="tFormalExpression" language="http://www.java.com/java" >//如果审核通过并且请款金额超过1000元，则需要报审批人审批
 if(isAvailable &amp;&amp; cashAmount &gt;= 1000){
@@ -251,7 +253,6 @@ if(isAvailable &amp;&amp; cashAmount &lt; 1000){
 	return false;
 }</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="_3-_10" sourceRef="_3" targetRef="_10" />
     <sequenceFlow id="_7-_11" sourceRef="_7" targetRef="_11" name="审核驳回" >
       <conditionExpression xsi:type="tFormalExpression" language="http://www.java.com/java" >//审核不通过则返回请款人
 if(!isAvailable){
@@ -302,9 +303,6 @@ if(!isAvailable){
       <bpmndi:BPMNShape bpmnElement="_9" >
         <dc:Bounds x="598" y="383" width="48" height="48" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_10" >
-        <dc:Bounds x="32" y="229" width="80" height="48" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_11" >
         <dc:Bounds x="50" y="84" width="48" height="48" />
       </bpmndi:BPMNShape>
@@ -323,8 +321,8 @@ if(!isAvailable){
         <di:waypoint x="74" y="108" />
         <di:waypoint x="75" y="179" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_10-_4" >
-        <di:waypoint x="72" y="253" />
+      <bpmndi:BPMNEdge bpmnElement="_3-_4" >
+        <di:waypoint x="75" y="179" />
         <di:waypoint x="68" y="333" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_7-_5" >
@@ -351,10 +349,6 @@ if(!isAvailable){
         <di:waypoint x="470" y="106" />
         <di:waypoint x="626" y="101" />
         <di:waypoint x="622" y="407" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_3-_10" >
-        <di:waypoint x="75" y="179" />
-        <di:waypoint x="72" y="253" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_7-_11" >
         <di:waypoint x="308" y="319" />
