@@ -238,6 +238,13 @@ public class CashAdvanceAction extends BaseAction {
                         }
                         param.put("approveGroupName", role.getRoleName());
                     }
+                    //为避免之前已经连接上JBPM的服务，因此先关闭后连接
+                    try{
+                        jbpmService.disconnectJbpmServer();
+                    }catch(Exception e){
+                        LOG.warn("JBPM服务未连接，请先连接再断开.", e);
+                    }
+                    //jbpmService.connectJbpmServer();
                     //启动流程, 创建一个任务
                     Task task = this.jbpmService.getFirstTask(param, Constants.PROCESS_LOAN_ID, Constants.PROCESS_LOAN_NAME);
                     //将该任务分配给自己

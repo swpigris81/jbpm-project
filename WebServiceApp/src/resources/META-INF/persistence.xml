@@ -67,7 +67,7 @@
 			<property name="hibernate.connection.username" value="payment" />
 			<property name="hibernate.connection.password" value="123456" /> -->
 			
-			<property name="hibernate.connection.autocommit" value="false" />
+			<property name="hibernate.connection.autocommit" value="true" />
 			<!-- none|create|update|create-drop。此处仅仅可以使用none，若改为其他值，将导致数据库可能丢失的情况，慎重！ -->
 			<property name="hibernate.hbm2ddl.auto" value="none" />
 			<property name="hibernate.show_sql" value="true" />

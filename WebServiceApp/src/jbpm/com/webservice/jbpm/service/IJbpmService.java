@@ -13,6 +13,14 @@ public interface IJbpmService {
      * @update 2012-9-5 大牙-小白 [变更描述]
      */
     public void disconnectJbpmServer() throws Exception;
+    
+    /**
+     * <p>Discription:[连接流程JBPM服务]</p>
+     * @throws Exception
+     * @author 大牙-小白
+     * @update 2012-9-6 大牙-小白 [变更描述]
+     */
+    public void connectJbpmServer() throws Exception;
     /**
      * <p>Discription:[启动流程，获取该流程的第一个任务]</p>
      * @param param 启动流程同时传入的参数
