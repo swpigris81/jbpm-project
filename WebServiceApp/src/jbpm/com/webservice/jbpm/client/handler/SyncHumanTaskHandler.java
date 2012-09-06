@@ -291,7 +291,7 @@ public class SyncHumanTaskHandler implements WorkItemHandler {
         task.setDeadlines(HumanTaskHandlerHelper.setDeadlines(workItem, businessAdministrators));
         try {
             client.addTask(task, content);
-            System.out.println(task.getId());
+            logger.info("任务创建成功，新的任务ID：" + task.getId());
             this.taskId = task.getId();
         } catch (Exception e) {
             
