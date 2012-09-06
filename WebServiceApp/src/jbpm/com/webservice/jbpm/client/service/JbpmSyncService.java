@@ -368,6 +368,7 @@ public class JbpmSyncService {
         }
         StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
         humanTaskHandler = new SyncHumanTaskHandler(syncTaskService, ksession);
+//        humanTaskHandler.setLocal(true);
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
         
 //        System.setProperty("jbpm.usergroup.callback", "org.jbpm.task.service.DefaultUserGroupCallbackImpl");
@@ -1045,7 +1046,8 @@ public class JbpmSyncService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
+        wait(30000);
         syncTaskService.disconnect();
     }
     /**
