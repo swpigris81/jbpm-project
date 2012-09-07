@@ -178,9 +178,9 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/transactions-jdbc.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/transactions-jms-deprecated.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/transactions-jms.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/transactions-jta.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/transactions-osgi.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/transactions.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/transactions-jta.jar" sourcepath="E:/selfstudy/JTA/Atomikos/免费版/AtomikosTransactionsEssentials-3.8.0-bin.zip"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/transactions-osgi.jar" sourcepath="E:/selfstudy/JTA/Atomikos/免费版/AtomikosTransactionsEssentials-3.8.0-bin.zip"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/transactions.jar" sourcepath="E:/selfstudy/JTA/Atomikos/免费版/AtomikosTransactionsEssentials-3.8.0-bin.zip"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/axis2-core-2.1.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/test/catalina.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/shiro-all-1.2.1.jar" sourcepath="WebContent/WEB-INF/lib/shiro-root-1.2.1-source-release.zip"/>

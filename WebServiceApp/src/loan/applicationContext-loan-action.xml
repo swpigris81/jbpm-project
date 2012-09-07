@@ -10,5 +10,7 @@
 		<property name="transactionManager" ref="transactionManager"></property>
 		<property name="roleService" ref="roleService"></property>
 		<property name="springJTM" ref="springJTM"></property>
+		<property name="cashAdvanceService" ref="cashAdvanceService"></property>
+		<property name="cashTaskService" ref="cashTaskService"></property>
 	</bean>
 </beans>
