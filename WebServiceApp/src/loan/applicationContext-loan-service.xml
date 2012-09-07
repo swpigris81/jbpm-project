@@ -11,7 +11,7 @@
 		<property name="target">
 			<bean
 				class="com.webservice.loan.service.impl.CashAdvanceServiceImpl"
-				abstract="false" lazy-init="default" autowire="default" autowire="byName">
+				abstract="false" lazy-init="default" autowire="byName">
 			</bean>
 		</property>
 		<property name="transactionAttributes">
