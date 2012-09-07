@@ -16,7 +16,7 @@
 		</property>
 	</bean>
 	
-	
+	<!-- JNDI事务 -->
 	<bean id="atomikos" class="com.atomikos.icatch.jta.UserTransactionManager"  
 	    init-method="init" destroy-method="close">
 	   <property name="forceShutdown" value="false" />
