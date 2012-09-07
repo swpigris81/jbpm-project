@@ -6,7 +6,7 @@
 	<constant name="struts.action.extension" value="action"></constant>
 	
 	<include file="struts-jbpm.xml"></include>
-	<constant name="struts.enable.DynamicMethodInvocation" value="false"></constant>
+	<!-- <constant name="struts.enable.DynamicMethodInvocation" value="false"></constant> -->
 	<constant name="struts.devMode" value="false"></constant>
 	<constant name="struts.i18n.encoding" value="UTF-8" />
 	
