@@ -7,11 +7,11 @@
                 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd"
                 default-autowire="byName">
 	<!-- <bean id="cashAdvanceService" class="com.webservice.loan.service.impl.CashAdvanceServiceImpl"></bean> -->
-	<bean id="cashAdvanceService" parent="serviceProxy" autowire="byName">
+	<bean id="cashAdvanceService" parent="serviceProxy">
 		<property name="target">
 			<bean
 				class="com.webservice.loan.service.impl.CashAdvanceServiceImpl"
-				abstract="false" lazy-init="default" autowire="default">
+				abstract="false" lazy-init="default" autowire="default" autowire="byName">
 			</bean>
 		</property>
 		<property name="transactionAttributes">
@@ -24,5 +24,21 @@
 			</props>
 		</property>
 	</bean>
-	
+	<bean id="cashTaskService" parent="serviceProxy">
+		<property name="target">
+			<bean
+				class="com.webservice.loan.service.impl.CashTaskServiceImpl"
+				abstract="false" lazy-init="default" autowire="byName">
+			</bean>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="add*">PROPAGATION_REQUIRED</prop>
+				<prop key="del*">PROPAGATION_REQUIRED</prop>
+				<prop key="edit*">PROPAGATION_REQUIRED</prop>
+				<prop key="upd*">PROPAGATION_REQUIRED</prop>
+				<prop key="sa*">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+	</bean>
 </beans>
