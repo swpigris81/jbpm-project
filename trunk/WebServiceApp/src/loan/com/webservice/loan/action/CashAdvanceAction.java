@@ -348,12 +348,6 @@ public class CashAdvanceAction extends BaseAction {
             }else{
                 this.transactionManager.commit(status);
             }
-            //完成任务之后，断开服务端的连接
-//            try {
-//                //this.jbpmService.disconnectJbpmServer();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
             if(out != null){
                 out.print(getJsonString(resultMap));
                 out.flush();
