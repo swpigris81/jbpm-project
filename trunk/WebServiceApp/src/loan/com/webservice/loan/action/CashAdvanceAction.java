@@ -253,93 +253,12 @@ public class CashAdvanceAction extends BaseAction {
                 resultMap.put("success", false);
                 resultMap.put("msg", "请款金额不能为空！");
             }else{
-                if(Constants.CASH_STATUS_00.equals(cashAdvanceInfo.getCashStatus())){
-                    //当用户点击暂时保存时的操作
-                    this.cashAdvanceService.saveMyRequestCash(cashAdvanceInfo);
-                    resultMap.put("msg", "请款信息已经保存成功！");
-                }else if(Constants.CASH_STATUS_01.equals(cashAdvanceInfo.getCashStatus())){
-                    //transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
-                    //transactionManager.begin();
-                    springJTM.getUserTransaction().begin();
-                    
-                    //当用户点击提交时的操作
-                    Map<String, Object> param = new HashMap<String, Object>();
-                    param.put("cashAmount", cashAdvanceInfo.getCashAmount().doubleValue());
-                    //设置填写请款单的用户
-                    param.put("userId", cashAdvanceInfo.getCashUserId());
-                    param.put("userName", cashAdvanceInfo.getCashUserName());
-                    //设置审核人所在组
-                    List group = this.roleService.findParentRoleByUserId(cashAdvanceInfo.getCashUserName());
-                    RoleInfo role = null;
-                    if(group != null && !group.isEmpty()){
-                        role = (RoleInfo) group.get(0);
-                        List checkGroup = this.roleService.findRoleById(role.getParentRoleId());
-                        if(checkGroup != null && !checkGroup.isEmpty()){
-                            role = (RoleInfo) checkGroup.get(0);
-                        }
-                        param.put("checkGroupName", role.getRoleName());
-                    }
-                    //设置审批人所在组
-                    if(role != null){
-                        List approveGroup = this.roleService.findRoleById(role.getParentRoleId());
-                        if(approveGroup != null && !approveGroup.isEmpty()){
-                            role = (RoleInfo) approveGroup.get(0);
-                        }
-                        param.put("approveGroupName", role.getRoleName());
-                    }
-                    //为避免之前已经连接上JBPM的服务，因此先关闭后连接
-                    try{
-                        jbpmService.disconnectJbpmServer();
-                    }catch(Exception e){
-                        LOG.warn("JBPM服务未连接，请先连接再断开.", e);
-                    }
-                    //jbpmService.connectJbpmServer();
-                    //启动流程, 创建一个任务
-                    Task task = this.jbpmService.getFirstTask(param, Constants.PROCESS_LOAN_ID, Constants.PROCESS_LOAN_NAME);
-                    //将该任务分配给自己
-                    this.jbpmService.assignTaskToUser(task.getId().toString(), "Administrator", cashAdvanceInfo.getCashUserName(), Constants.PROCESS_LOAN_NAME);
-                    //用户得到任务之后，需要开始该任务
-                    this.jbpmService.startTask(cashAdvanceInfo.getCashUserName(), null, task.getId().toString(), Constants.PROCESS_LOAN_NAME);
-                    cashAdvanceInfo.setProcessTaskId(task.getId());
-                    this.cashAdvanceService.saveMyRequestCash(cashAdvanceInfo);
-                    //记录一下任务-请款流水
-                    CashTaskInfo info = new CashTaskInfo();
-                    info.setCashId(cashAdvanceInfo.getId());
-                    info.setTaskId(task.getId());
-                    info.setCashStatus(cashAdvanceInfo.getCashStatus());
-                    this.cashTaskService.save(info);
-                    
-                    //填写完成请款单，完成该任务
-                    Map<String, Object> contentMap = new HashMap<String, Object>();
-                    contentMap.put("cashAmount", cashAdvanceInfo.getCashAmount().doubleValue());
-                    this.jbpmService.completeTask(cashAdvanceInfo.getCashUserName(), task.getId().toString(), contentMap, Constants.PROCESS_LOAN_NAME);
-                    //记录一下任务-请款流水
-                    
-                    info = new CashTaskInfo();
-                    info.setCashId(cashAdvanceInfo.getId());
-                    info.setTaskId(jbpmService.getTaskId(Constants.PROCESS_LOAN_NAME));
-                    info.setCashStatus(cashAdvanceInfo.getCashStatus());
-                    this.cashTaskService.save(info);
-                    
-                    resultMap.put("msg", "请款信息已经发起审核！");
-                    resultMap.put("success", true);
-                    //transactionManager.commit();
-                    springJTM.getUserTransaction().commit();
-                }
+                resultMap = this.cashAdvanceService.addNewRequest(this.springJTM.getUserTransaction(), roleService, jbpmService, cashAdvanceInfo);
             }
         }catch(Exception e){
             e.printStackTrace();
             LOG.error(e.getMessage());
             status.setRollbackOnly();
-            try {
-                springJTM.getUserTransaction().rollback();
-            } catch (IllegalStateException e1) {
-                e1.printStackTrace();
-            } catch (SecurityException e1) {
-                e1.printStackTrace();
-            } catch (SystemException e1) {
-                e1.printStackTrace();
-            }
             resultMap.put("success", false);
             resultMap.put("msg", "系统错误，错误代码："+e.getMessage());
         }finally{
