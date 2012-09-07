@@ -6,8 +6,9 @@
                 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
                 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 	
-	<bean id="cashAdvanceAction" class="com.webservice.loan.action.CashAdvanceAction">
+	<bean id="cashAdvanceAction" class="com.webservice.loan.action.CashAdvanceAction" scope="prototype">
 		<property name="transactionManager" ref="transactionManager"></property>
 		<property name="roleService" ref="roleService"></property>
+		<property name="springJTM" ref="springJTM"></property>
 	</bean>
 </beans>

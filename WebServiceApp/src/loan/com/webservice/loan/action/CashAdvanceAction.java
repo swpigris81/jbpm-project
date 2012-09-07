@@ -5,16 +5,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.InitialContext;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
+
 import org.jbpm.task.Task;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.webservice.common.action.BaseAction;
 import com.webservice.jbpm.service.IJbpmService;
 import com.webservice.loan.bean.CashAdvanceInfo;
+import com.webservice.loan.bean.CashTaskInfo;
 import com.webservice.loan.service.CashAdvanceService;
+import com.webservice.loan.service.CashTaskService;
 import com.webservice.system.common.constants.Constants;
 import com.webservice.system.role.bean.RoleInfo;
 import com.webservice.system.role.service.IRoleService;
@@ -25,9 +33,12 @@ import com.webservice.system.role.service.IRoleService;
  */
 public class CashAdvanceAction extends BaseAction {
     private CashAdvanceService cashAdvanceService;
+    private CashTaskService cashTaskService;
     private IRoleService roleService;
     /** 事务处理 */
     private DataSourceTransactionManager transactionManager;
+    
+    private TransactionManager springJTM;
     /** 当前用户ID **/
     private String currentUserId;
     /** 当前用户 **/
@@ -149,6 +160,39 @@ public class CashAdvanceAction extends BaseAction {
     }
 
     /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return CashTaskService cashTaskService.
+     */
+    public CashTaskService getCashTaskService() {
+        return cashTaskService;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param cashTaskService The cashTaskService to set.
+     */
+    public void setCashTaskService(CashTaskService cashTaskService) {
+        this.cashTaskService = cashTaskService;
+    }
+
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return TransactionManager springJTM.
+     */
+    public TransactionManager getSpringJTM() {
+        return springJTM;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param springJTM The springJTM to set.
+     */
+    public void setSpringJTM(TransactionManager springJTM) {
+        this.springJTM = springJTM;
+    }
+
+    /**
      * <p>Discription:[我的请款信息]</p>
      * @return 显示我发起的请款列表
      * @author:[创建者中文名字]
@@ -198,6 +242,8 @@ public class CashAdvanceAction extends BaseAction {
         // 开始事务
         TransactionStatus status = transactionManager.getTransaction(definition);
         PrintWriter out = null;
+        InitialContext ctx = null;
+        UserTransaction transactionManager = null;
         try{
             out = super.getPrintWriter();
             if(cashAdvanceInfo == null || cashAdvanceInfo.getCashUserId() == null || cashAdvanceInfo.getCashUserName() == null
@@ -213,6 +259,11 @@ public class CashAdvanceAction extends BaseAction {
                     this.cashAdvanceService.saveMyRequestCash(cashAdvanceInfo);
                     resultMap.put("msg", "请款信息已经保存成功！");
                 }else if(Constants.CASH_STATUS_01.equals(cashAdvanceInfo.getCashStatus())){
+                    ctx = new InitialContext();
+                    //transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+                    //transactionManager.begin();
+                    springJTM.begin();
+                    
                     //当用户点击提交时的操作
                     Map<String, Object> param = new HashMap<String, Object>();
                     param.put("cashAmount", cashAdvanceInfo.getCashAmount().doubleValue());
@@ -253,33 +304,65 @@ public class CashAdvanceAction extends BaseAction {
                     this.jbpmService.startTask(cashAdvanceInfo.getCashUserName(), null, task.getId().toString(), Constants.PROCESS_LOAN_NAME);
                     cashAdvanceInfo.setProcessTaskId(task.getId());
                     this.cashAdvanceService.saveMyRequestCash(cashAdvanceInfo);
+                    //记录一下任务-请款流水
+                    CashTaskInfo info = new CashTaskInfo();
+                    info.setCashId(cashAdvanceInfo.getId());
+                    info.setTaskId(task.getId());
+                    info.setCashStatus(cashAdvanceInfo.getCashStatus());
+                    this.cashTaskService.save(info);
+                    
                     //填写完成请款单，完成该任务
                     Map<String, Object> contentMap = new HashMap<String, Object>();
                     contentMap.put("cashAmount", cashAdvanceInfo.getCashAmount().doubleValue());
                     this.jbpmService.completeTask(cashAdvanceInfo.getCashUserName(), task.getId().toString(), contentMap, Constants.PROCESS_LOAN_NAME);
+                    //记录一下任务-请款流水
+                    
+                    info = new CashTaskInfo();
+                    info.setCashId(cashAdvanceInfo.getId());
+                    info.setTaskId(jbpmService.getTaskId(Constants.PROCESS_LOAN_NAME));
+                    info.setCashStatus(cashAdvanceInfo.getCashStatus());
+                    this.cashTaskService.save(info);
+                    
                     resultMap.put("msg", "请款信息已经发起审核！");
                     resultMap.put("success", true);
+                    //transactionManager.commit();
+                    springJTM.commit();
                 }
             }
         }catch(Exception e){
             e.printStackTrace();
             LOG.error(e.getMessage());
             status.setRollbackOnly();
+//            if(transactionManager != null){
+//                try {
+//                    transactionManager.rollback();
+//                } catch(Exception e1){
+//                    LOG.error(e1.getMessage());
+//                }
+//            }
+            try {
+                springJTM.rollback();
+            } catch (IllegalStateException e1) {
+                e1.printStackTrace();
+            } catch (SecurityException e1) {
+                e1.printStackTrace();
+            } catch (SystemException e1) {
+                e1.printStackTrace();
+            }
             resultMap.put("success", false);
             resultMap.put("msg", "系统错误，错误代码："+e.getMessage());
         }finally{
-            //完成任务之后，断开服务端的连接
-//            try {
-//                this.jbpmService.disconnectJbpmServer();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                status.setRollbackOnly();
-//            }
             if(status.isRollbackOnly()){
                 this.transactionManager.rollback(status);
             }else{
                 this.transactionManager.commit(status);
             }
+            //完成任务之后，断开服务端的连接
+//            try {
+//                //this.jbpmService.disconnectJbpmServer();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
             if(out != null){
                 out.print(getJsonString(resultMap));
                 out.flush();
