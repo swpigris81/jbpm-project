@@ -243,8 +243,6 @@ public class CashAdvanceAction extends BaseAction {
         // 开始事务
         TransactionStatus status = transactionManager.getTransaction(definition);
         PrintWriter out = null;
-        InitialContext ctx = null;
-        UserTransaction transactionManager = null;
         try{
             out = super.getPrintWriter();
             if(cashAdvanceInfo == null || cashAdvanceInfo.getCashUserId() == null || cashAdvanceInfo.getCashUserName() == null
@@ -260,7 +258,6 @@ public class CashAdvanceAction extends BaseAction {
                     this.cashAdvanceService.saveMyRequestCash(cashAdvanceInfo);
                     resultMap.put("msg", "请款信息已经保存成功！");
                 }else if(Constants.CASH_STATUS_01.equals(cashAdvanceInfo.getCashStatus())){
-                    ctx = new InitialContext();
                     //transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
                     //transactionManager.begin();
                     springJTM.getUserTransaction().begin();
@@ -334,13 +331,6 @@ public class CashAdvanceAction extends BaseAction {
             e.printStackTrace();
             LOG.error(e.getMessage());
             status.setRollbackOnly();
-//            if(transactionManager != null){
-//                try {
-//                    transactionManager.rollback();
-//                } catch(Exception e1){
-//                    LOG.error(e1.getMessage());
-//                }
-//            }
             try {
                 springJTM.getUserTransaction().rollback();
             } catch (IllegalStateException e1) {
