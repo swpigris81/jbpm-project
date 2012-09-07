@@ -38,7 +38,7 @@ public class CashAdvanceAction extends BaseAction {
     /** 事务处理 */
     private DataSourceTransactionManager transactionManager;
     
-    private TransactionManager springJTM;
+    private JtaTransactionManager springJTM;
     /** 当前用户ID **/
     private String currentUserId;
     /** 当前用户 **/
@@ -176,11 +176,12 @@ public class CashAdvanceAction extends BaseAction {
     }
 
 
+    
     /**
      * <p>Discription:[方法功能中文描述]</p>
-     * @return TransactionManager springJTM.
+     * @return JtaTransactionManager springJTM.
      */
-    public TransactionManager getSpringJTM() {
+    public JtaTransactionManager getSpringJTM() {
         return springJTM;
     }
 
@@ -188,7 +189,7 @@ public class CashAdvanceAction extends BaseAction {
      * <p>Discription:[方法功能中文描述]</p>
      * @param springJTM The springJTM to set.
      */
-    public void setSpringJTM(TransactionManager springJTM) {
+    public void setSpringJTM(JtaTransactionManager springJTM) {
         this.springJTM = springJTM;
     }
 
@@ -262,7 +263,7 @@ public class CashAdvanceAction extends BaseAction {
                     ctx = new InitialContext();
                     //transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
                     //transactionManager.begin();
-                    springJTM.begin();
+                    springJTM.getUserTransaction().begin();
                     
                     //当用户点击提交时的操作
                     Map<String, Object> param = new HashMap<String, Object>();
@@ -326,7 +327,7 @@ public class CashAdvanceAction extends BaseAction {
                     resultMap.put("msg", "请款信息已经发起审核！");
                     resultMap.put("success", true);
                     //transactionManager.commit();
-                    springJTM.commit();
+                    springJTM.getUserTransaction().commit();
                 }
             }
         }catch(Exception e){
@@ -341,7 +342,7 @@ public class CashAdvanceAction extends BaseAction {
 //                }
 //            }
             try {
-                springJTM.rollback();
+                springJTM.getUserTransaction().rollback();
             } catch (IllegalStateException e1) {
                 e1.printStackTrace();
             } catch (SecurityException e1) {
