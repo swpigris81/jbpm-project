@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
@@ -25,7 +26,25 @@ public class JbpmServiceImpl implements IJbpmService {
     /**
      * 工作流客户端
      */
-    private JbpmSyncService jbpmClient = new JbpmSyncService();
+    private static JbpmSyncService jbpmClient;
+    
+    public void init(){
+        if(jbpmClient == null){
+            jbpmClient = JbpmSyncService.getInstance();
+        }
+    }
+    
+    public void destory() throws Exception{
+        log.info("销毁JBPMservice实例");
+        if(jbpmClient != null){
+            try {
+                jbpmClient.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw e;
+            }
+        }
+    }
     /**
      * <p>Discription:[与JBPM服务端断开连接]</p>
      * @author 大牙-小白
@@ -53,6 +72,22 @@ public class JbpmServiceImpl implements IJbpmService {
             log.error(e.getMessage(), e);
             throw e;
         }
+    }
+    
+    /**
+     * <p>Discription:[获取当前任务ID]</p>
+     * @return
+     * @author 大牙-小白
+     * @throws NamingException 
+     * @update 2012-9-6 大牙-小白 [变更描述]
+     */
+    public synchronized Long getTaskId(String ... processName) throws NamingException{
+        //保证processId至少存在一个, 否则使用默认流程图
+//        if(processName != null && processName.length > 0 && !"".equals(processName[0].trim())){
+//            jbpmClient.setProcess(processName);
+//        }
+//        jbpmClient.init();
+        return jbpmClient.getTaskId();
     }
     
     /**
@@ -226,6 +261,7 @@ public class JbpmServiceImpl implements IJbpmService {
             }else{
                 throw new Exception("当前系统中不存在ID为：" + taskId + " 的工作流任务，请联系系统管理员.");
             }
+            //log.info("aaaaaaaaaaaaaaaaaa"+jbpmClient.getTaskId());
             transactionManager.commit();
         }catch(Exception e){
             if(transactionManager != null){
@@ -244,6 +280,8 @@ public class JbpmServiceImpl implements IJbpmService {
             }
             log.error(e.getMessage(), e);
             throw e;
+        }finally{
+            log.info("aaaaaaaaaaaaaaaaaa"+jbpmClient.getTaskId());
         }
     }
 }

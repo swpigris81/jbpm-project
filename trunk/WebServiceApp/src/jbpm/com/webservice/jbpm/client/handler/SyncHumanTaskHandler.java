@@ -58,6 +58,8 @@ import org.jbpm.task.utils.OnErrorAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import sun.org.mozilla.javascript.internal.Synchronizer;
+
 /*
  * 
  */
@@ -75,7 +77,7 @@ public class SyncHumanTaskHandler implements WorkItemHandler {
     private OnErrorAction action;
     private boolean initialized = false;
     
-    private Long taskId;
+    public static Long taskId;
     private Map<TaskEventKey, EventResponseHandler> eventHandlers = new HashMap<TaskEventKey, EventResponseHandler>();
     
     private ContentMarshallerContext marshallerContext = new ContentMarshallerContext();
@@ -132,7 +134,7 @@ public class SyncHumanTaskHandler implements WorkItemHandler {
      * <p>Discription:[方法功能中文描述]</p>
      * @return Long taskId.
      */
-    public Long getTaskId() {
+    public synchronized Long getTaskId() {
         return taskId;
     }
 
@@ -140,8 +142,8 @@ public class SyncHumanTaskHandler implements WorkItemHandler {
      * <p>Discription:[方法功能中文描述]</p>
      * @param taskId The taskId to set.
      */
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
+    public synchronized void setTaskId(Long taskId) {
+        SyncHumanTaskHandler.taskId = taskId;
     }
 
     public void connect() {
@@ -292,7 +294,7 @@ public class SyncHumanTaskHandler implements WorkItemHandler {
         try {
             client.addTask(task, content);
             logger.info("任务创建成功，新的任务ID：" + task.getId());
-            this.taskId = task.getId();
+            SyncHumanTaskHandler.taskId = task.getId();
         } catch (Exception e) {
             
             if (action.equals(OnErrorAction.ABORT)) {
@@ -374,7 +376,7 @@ public class SyncHumanTaskHandler implements WorkItemHandler {
                     //Object result = ContentMarshallerHelper.unmarshall(task.getTaskData().getDocumentType(), content.getContent(), marshallerContext, session.getEnvironment());
                     results.put("Result", result);
                                         if (result!= null && result instanceof Map) {
-                                            Map<?, ?> map = (Map) result;
+                                            Map<?, ?> map = (Map<?, ?>) result;
                                             for (Map.Entry<?, ?> entry: map.entrySet()) {
                         if (entry.getKey() instanceof String) {
                                                     results.put((String) entry.getKey(), entry.getValue());

@@ -3,6 +3,8 @@ package com.webservice.jbpm.service;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.NamingException;
+
 import org.jbpm.task.Task;
 
 public interface IJbpmService {
@@ -21,6 +23,14 @@ public interface IJbpmService {
      * @update 2012-9-6 大牙-小白 [变更描述]
      */
     public void connectJbpmServer() throws Exception;
+    /**
+     * <p>Discription:[获取当前任务ID]</p>
+     * @return
+     * @author 大牙-小白
+     * @update 2012-9-6 大牙-小白 [变更描述]
+     */
+    public Long getTaskId(String ... processName) throws NamingException;
+    
     /**
      * <p>Discription:[启动流程，获取该流程的第一个任务]</p>
      * @param param 启动流程同时传入的参数
