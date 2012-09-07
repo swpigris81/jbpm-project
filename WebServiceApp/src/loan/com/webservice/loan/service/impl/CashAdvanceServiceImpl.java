@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.webservice.loan.bean.CashAdvanceInfo;
 import com.webservice.loan.dao.CashAdvanceDao;
+import com.webservice.loan.dao.CashTaskDao;
 import com.webservice.loan.service.CashAdvanceService;
 
 /** 
@@ -13,6 +14,7 @@ import com.webservice.loan.service.CashAdvanceService;
  */
 public class CashAdvanceServiceImpl implements CashAdvanceService {
     private CashAdvanceDao cashAdvanceDao;
+    private CashTaskDao cashTaskDao;
 
     /**
      * <p>Discription:[方法功能中文描述]</p>
@@ -29,6 +31,23 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
     public void setCashAdvanceDao(CashAdvanceDao cashAdvanceDao) {
         this.cashAdvanceDao = cashAdvanceDao;
     }
+    
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return CashTaskDao cashTaskDao.
+     */
+    public CashTaskDao getCashTaskDao() {
+        return cashTaskDao;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param cashTaskDao The cashTaskDao to set.
+     */
+    public void setCashTaskDao(CashTaskDao cashTaskDao) {
+        this.cashTaskDao = cashTaskDao;
+    }
+
     /**
      * <p>Discription:[获取指定条件发起的请款信息]</p>
      * @param info 指定条件
