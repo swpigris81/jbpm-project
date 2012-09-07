@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2011-6-5 15:28:30 by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.webservice.loan.bean.CashTaskInfo" table="tbl_webservice_cash_task">
+        <id name="id" type="java.lang.String">
+            <column name="id" />
+            <generator class="uuid.hex" />
+        </id>
+        <property name="cashId" type="java.lang.String">
+            <column name="cash_id" />
+        </property>
+        <property name="taskId" type="java.lang.Long">
+            <column name="task_id" />
+        </property>
+        <property name="cashStatus" type="java.lang.String">
+            <column name="cash_status" />
+        </property>
+    </class>
+</hibernate-mapping>
