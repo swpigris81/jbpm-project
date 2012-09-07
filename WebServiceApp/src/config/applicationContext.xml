@@ -146,6 +146,7 @@
 				<value>com/webservice/system/user/bean/xml/UserInfo.hbm.xml</value>
 				<!-- 请款 -->
 				<value>com/webservice/loan/bean/xml/CashAdvanceInfo.hbm.xml</value>
+				<value>com/webservice/loan/bean/xml/CashTaskInfo.hbm.xml</value>
 			</list>
 		</property>
 
