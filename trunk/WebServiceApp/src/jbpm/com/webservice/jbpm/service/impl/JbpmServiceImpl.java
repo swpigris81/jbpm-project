@@ -87,6 +87,7 @@ public class JbpmServiceImpl implements IJbpmService {
 //            jbpmClient.setProcess(processName);
 //        }
 //        jbpmClient.init();
+        JbpmSyncService jbpmClient = JbpmSyncService.getInstance();
         return jbpmClient.getTaskId();
     }
     
@@ -104,6 +105,7 @@ public class JbpmServiceImpl implements IJbpmService {
         if(processId == null || "".equals(processId.trim())){
             throw new Exception("流程图ID不能为空！");
         }
+        JbpmSyncService jbpmClient = JbpmSyncService.getInstance();
         //保证processId至少存在一个, 否则使用默认流程图
         if(processName != null && processName.length > 0 && !"".equals(processName[0].trim())){
             jbpmClient.setProcess(processName);
@@ -111,12 +113,12 @@ public class JbpmServiceImpl implements IJbpmService {
             throw new Exception("流程图不能为空！");
         }
         jbpmClient.init();
-        InitialContext ctx = null;
-        UserTransaction transactionManager = null;
+        //InitialContext ctx = null;
+        //UserTransaction transactionManager = null;
         try{
-            ctx = new InitialContext();
-            transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
-            transactionManager.begin();
+            //ctx = new InitialContext();
+            //transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+            //transactionManager.begin();
             if(param != null && !param.isEmpty()){
                 jbpmClient.startProcess(processId, param);
             }else{
@@ -124,24 +126,14 @@ public class JbpmServiceImpl implements IJbpmService {
             }
             Long taskId = jbpmClient.getTaskId();
             Task task = jbpmClient.getTaskById(taskId);
-//            List<TaskSummary> tsl = jbpmClient.getAssignedTasks(new User(param.get("userName").toString()));
-//            TaskSummary ts = null;
-//            if(tsl != null){
-//                ts = tsl.get(0);
-//            }
-//            Task task = null;
-//            if(ts != null){
-//                Long taskId = ts.getId();
-//                task = jbpmClient.getTaskById(taskId);
-//            }
-            transactionManager.commit();
+            //transactionManager.commit();
             return task;
         }catch(Exception e){
             e.printStackTrace();
             log.error(e.getMessage(), e);
-            if(transactionManager != null){
-                transactionManager.rollback();
-            }
+//            if(transactionManager != null){
+//                transactionManager.rollback();
+//            }
         }
         return null;
     }
@@ -159,21 +151,22 @@ public class JbpmServiceImpl implements IJbpmService {
         if(taskId == null || "".equals(taskId.trim())){
             return;
         }
+        JbpmSyncService jbpmClient = JbpmSyncService.getInstance();
         //保证processId至少存在一个, 否则使用默认流程图
         if(processName != null && processName.length > 0 && !"".equals(processName[0].trim())){
             jbpmClient.setProcess(processName);
         }
         jbpmClient.init();
-        InitialContext ctx = null;
-        UserTransaction transactionManager = null;
+        //InitialContext ctx = null;
+        //UserTransaction transactionManager = null;
         try{
-            ctx = new InitialContext();
-            transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
-            transactionManager.begin();
+            //ctx = new InitialContext();
+            //transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+            //transactionManager.begin();
             jbpmClient.assignTaskToUser(NumberUtils.toLong(taskId), userName, targetUserName);
-            transactionManager.commit();
+            //transactionManager.commit();
         }catch(Exception e){
-            transactionManager.rollback();
+            //transactionManager.rollback();
             log.error(e.getMessage(), e);
             throw e;
         }
@@ -193,39 +186,40 @@ public class JbpmServiceImpl implements IJbpmService {
         if(taskId == null || "".equals(taskId.trim())){
             return;
         }
+        JbpmSyncService jbpmClient = JbpmSyncService.getInstance();
         //保证processId至少存在一个, 否则使用默认流程图
         if(processName != null && processName.length > 0 && !"".equals(processName[0].trim())){
             jbpmClient.setProcess(processName);
         }
         jbpmClient.init();
-        InitialContext ctx = null;
-        UserTransaction transactionManager = null;
+        //InitialContext ctx = null;
+        //UserTransaction transactionManager = null;
         try{
-            ctx = new InitialContext();
-            transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
-            transactionManager.begin();
+//            ctx = new InitialContext();
+//            transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+//            transactionManager.begin();
             Task task = jbpmClient.getTaskById(NumberUtils.toLong(taskId));
             if(task != null){
                 jbpmClient.startTask(new User(userName), roleList, task.getId());
             }else{
                 throw new Exception("当前系统中不存在ID为：" + taskId + " 的工作流任务，请联系系统管理员.");
             }
-            transactionManager.commit();
+//            transactionManager.commit();
         }catch(Exception e){
-            if(transactionManager != null){
-                try {
-                    transactionManager.rollback();
-                } catch (IllegalStateException e1) {
-                    log.error(e1.getMessage(), e1);
-                    throw e1;
-                } catch (SecurityException e1) {
-                    log.error(e1.getMessage(), e1);
-                    throw e1;
-                } catch (SystemException e1) {
-                    log.error(e1.getMessage(), e1);
-                    throw e1;
-                }
-            }
+//            if(transactionManager != null){
+//                try {
+//                    transactionManager.rollback();
+//                } catch (IllegalStateException e1) {
+//                    log.error(e1.getMessage(), e1);
+//                    throw e1;
+//                } catch (SecurityException e1) {
+//                    log.error(e1.getMessage(), e1);
+//                    throw e1;
+//                } catch (SystemException e1) {
+//                    log.error(e1.getMessage(), e1);
+//                    throw e1;
+//                }
+//            }
             log.error(e.getMessage(), e);
             throw e;
         }
@@ -244,17 +238,18 @@ public class JbpmServiceImpl implements IJbpmService {
         if(taskId == null || "".equals(taskId.trim())){
             return;
         }
+        JbpmSyncService jbpmClient = JbpmSyncService.getInstance();
         //保证processId至少存在一个, 否则使用默认流程图
         if(processName != null && processName.length > 0 && !"".equals(processName[0].trim())){
             jbpmClient.setProcess(processName);
         }
         jbpmClient.init();
-        InitialContext ctx = null;
-        UserTransaction transactionManager = null;
+//        InitialContext ctx = null;
+//        UserTransaction transactionManager = null;
         try{
-            ctx = new InitialContext();
-            transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
-            transactionManager.begin();
+//            ctx = new InitialContext();
+//            transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+//            transactionManager.begin();
             Task task = jbpmClient.getTaskById(NumberUtils.toLong(taskId));
             if(task != null){
                 jbpmClient.completeTask(new User(userName), task.getId(), resultMap, null);
@@ -262,22 +257,22 @@ public class JbpmServiceImpl implements IJbpmService {
                 throw new Exception("当前系统中不存在ID为：" + taskId + " 的工作流任务，请联系系统管理员.");
             }
             //log.info("aaaaaaaaaaaaaaaaaa"+jbpmClient.getTaskId());
-            transactionManager.commit();
+            //transactionManager.commit();
         }catch(Exception e){
-            if(transactionManager != null){
-                try {
-                    transactionManager.rollback();
-                } catch (IllegalStateException e1) {
-                    log.error(e1.getMessage(), e1);
-                    throw e1;
-                } catch (SecurityException e1) {
-                    log.error(e1.getMessage(), e1);
-                    throw e1;
-                } catch (SystemException e1) {
-                    log.error(e1.getMessage(), e1);
-                    throw e1;
-                }
-            }
+//            if(transactionManager != null){
+//                try {
+//                    transactionManager.rollback();
+//                } catch (IllegalStateException e1) {
+//                    log.error(e1.getMessage(), e1);
+//                    throw e1;
+//                } catch (SecurityException e1) {
+//                    log.error(e1.getMessage(), e1);
+//                    throw e1;
+//                } catch (SystemException e1) {
+//                    log.error(e1.getMessage(), e1);
+//                    throw e1;
+//                }
+//            }
             log.error(e.getMessage(), e);
             throw e;
         }finally{
