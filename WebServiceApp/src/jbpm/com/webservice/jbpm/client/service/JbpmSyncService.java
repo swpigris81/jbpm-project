@@ -101,6 +101,10 @@ public class JbpmSyncService {
     private int port = 9123;
     /** session是否需要持久化 **/
     private boolean sessionPersistence = true;
+    /** 当前是否已经连接到服务端 **/
+    private static boolean isConnected = false;
+    /** 唯一实例 **/
+    public static JbpmSyncService jbpmSyncService;
     
     /** 查询数据库起始行 **/
     private final static String FIRST_RESULT = "start";
@@ -117,17 +121,9 @@ public class JbpmSyncService {
         syncTaskService = new SyncTaskServiceWrapper(client);
         this.hostIp = "127.0.0.1";
         this.port = 9123;
-        syncTaskService.connect("127.0.0.1", 9123);
-    }
-    /**
-     * <p>Discription:[初始化实体管理工厂以及会话]</p>
-     * @author:[创建者中文名字]
-     * @throws NamingException 
-     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
-     */
-    public void init() throws NamingException{
-        setUp();
-        start(process);
+//        if(!JbpmSyncService.isConnected){
+//            JbpmSyncService.isConnected = syncTaskService.connect("127.0.0.1", 9123);
+//        }
     }
     
     /**
@@ -140,8 +136,37 @@ public class JbpmSyncService {
         client = new TaskClient(new MinaTaskClientConnector("client 1",
                 new MinaTaskClientHandler(SystemEventListenerFactory.getSystemEventListener())));
         syncTaskService = new SyncTaskServiceWrapper(client);
-        syncTaskService.connect("127.0.0.1", 9123);
+//        if(!JbpmSyncService.isConnected){
+//            JbpmSyncService.isConnected = syncTaskService.connect(hostIp, port);
+//        }
     }
+    /**
+     * <p>Discription:[获取唯一实例]</p>
+     * @return
+     * @author 大牙-小白
+     * @update 2012-9-7 大牙-小白 [变更描述]
+     */
+    public static JbpmSyncService getInstance(){
+        if(jbpmSyncService == null){
+            jbpmSyncService = new JbpmSyncService();
+            if(!isConnected){
+                //isConnected = jbpmSyncService.connect();
+            }
+        }
+        return jbpmSyncService;
+    }
+    
+    /**
+     * <p>Discription:[初始化实体管理工厂以及会话]</p>
+     * @author:[创建者中文名字]
+     * @throws NamingException 
+     * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
+     */
+    public void init() throws NamingException{
+        setUp();
+        start(process);
+    }
+    
     /**
      * <p>Discription:[流程启动]</p>
      * @throws Exception
@@ -368,6 +393,7 @@ public class JbpmSyncService {
         }
         StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
         humanTaskHandler = new SyncHumanTaskHandler(syncTaskService, ksession);
+//        humanTaskHandler.connect();
 //        humanTaskHandler.setLocal(true);
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
         
@@ -889,8 +915,9 @@ public class JbpmSyncService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public long getTaskId(){
+    public synchronized long getTaskId(){
         return humanTaskHandler.getTaskId();
+//        return SyncHumanTaskHandler.taskId;
     }
     /**
      * <p>Discription:[根据任务编号查找任务]</p>
@@ -1047,7 +1074,7 @@ public class JbpmSyncService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public synchronized void stop() throws Exception {
-        wait(30000);
+        
         syncTaskService.disconnect();
     }
     /**
@@ -1055,8 +1082,8 @@ public class JbpmSyncService {
      * @author 大牙-小白
      * @update 2012-9-6 大牙-小白 [变更描述]
      */
-    public void connect(){
-        syncTaskService.connect(hostIp, port);
+    public boolean connect(){
+        return syncTaskService.connect(hostIp, port);
     }
     
     /**
@@ -1186,6 +1213,20 @@ public class JbpmSyncService {
      */
     public void setEmf(EntityManagerFactory emf) {
         this.emf = emf;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return boolean isConnected.
+     */
+    public boolean isConnected() {
+        return isConnected;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param isConnected The isConnected to set.
+     */
+    public void setConnected(boolean isConnected) {
+        JbpmSyncService.isConnected = isConnected;
     }
     
 }
