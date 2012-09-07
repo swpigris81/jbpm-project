@@ -1,8 +1,13 @@
 package com.webservice.loan.service;
 
 import java.util.List;
+import java.util.Map;
 
+import javax.transaction.UserTransaction;
+
+import com.webservice.jbpm.service.IJbpmService;
 import com.webservice.loan.bean.CashAdvanceInfo;
+import com.webservice.system.role.service.IRoleService;
 
 /** 
  * <p>Description: [描述该类概要功能介绍]</p>
@@ -35,4 +40,17 @@ public interface CashAdvanceService {
      * @update 2012-8-30 大牙-小白 [变更描述]
      */
     public void saveMyRequestCash(CashAdvanceInfo info);
+    /**
+     * <p>Discription:[新增请款]</p>
+     * @param userTransaction 事务
+     * @param roleService 角色服务
+     * @param jbpmService 流程服务
+     * @param cashAdvanceInfo 请款信息
+     * @return
+     * @throws Exception
+     * @author 大牙-小白
+     * @update 2012-9-7 大牙-小白 [变更描述]
+     */
+    public Map<String, Object> addNewRequest(UserTransaction userTransaction, 
+            IRoleService roleService,  IJbpmService jbpmService, CashAdvanceInfo cashAdvanceInfo) throws Exception;
 }
