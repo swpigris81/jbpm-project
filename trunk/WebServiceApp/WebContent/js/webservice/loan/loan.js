@@ -62,6 +62,42 @@ function cashAdvance(){
 			}
 		}
 	});
+	
+	/**
+	 * 待办任务数据集
+	 */
+	var cashTaskStore = new Ext.data.Store({
+		proxy:new Ext.data.HttpProxy({
+			url: path + "/loan/todoTaskCashAdvance.action?method=todoTask"
+		}),
+		reader:cashReader,
+		//倒叙排序
+		sortInfo:{field: 'cashDate', direction: 'DESC'},
+		listeners:{
+			"loadexception":function(loader, node, response){
+				try{
+					if(response.status == "200"){
+						try{
+							var re = Ext.decode(response.responseText);
+							if(re){
+								Ext.Msg.alert('错误提示',re.msg, function(btn){
+								});
+							}
+						}catch(e){
+							Ext.Msg.alert('错误提示',"系统错误！错误代码："+e, function(btn){
+							});
+						}
+					}else{
+						httpStatusCodeHandler(response.status);
+					}
+				}catch(e){
+					Ext.Msg.alert('错误提示',"系统错误！错误代码："+e, function(btn){
+					});
+				}
+			}
+		}
+	});
+	
 	//数据展现样式
 	var cashSM = new Ext.grid.CheckboxSelectionModel();
 	//展示样式

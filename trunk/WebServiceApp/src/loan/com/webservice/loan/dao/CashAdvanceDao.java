@@ -36,4 +36,12 @@ public interface CashAdvanceDao {
      * @update 2012-8-30 大牙-小白 [变更描述]
      */
     public void save(CashAdvanceInfo info);
+    /**
+     * <p>Discription:[批量查询请款信息]</p>
+     * @param cashIds 请款ID
+     * @return 请款信息
+     * @author 大牙-小白
+     * @update 2012-9-8 大牙-小白 [变更描述]
+     */
+    public List<CashAdvanceInfo> getCashInfoByIds(List<String> cashIds, int start, int limit);
 }

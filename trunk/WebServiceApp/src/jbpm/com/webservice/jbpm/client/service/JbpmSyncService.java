@@ -511,6 +511,19 @@ public class JbpmSyncService {
         return ((WorkflowProcessInstance) ksession.getProcessInstance(processInstanceId)).getVariable(name);
     }
     /**
+     * <p>Discription:[设置变量]</p>
+     * @param name 变量名
+     * @param value 值
+     * @param processInstanceId 流程ID
+     * @param ksession 会话
+     * @author 大牙-小白
+     * @update 2012-9-8 大牙-小白 [变更描述]
+     */
+    public void setVariableValue(String name, Object value, long processInstanceId, StatefulKnowledgeSession ksession) {
+        ((WorkflowProcessInstance) ksession.getProcessInstance(processInstanceId)).setVariable(name, value);
+    }
+    
+    /**
      * <p>Discription:[获取激活状态的节点]</p>
      * @param processInstanceId 流程ID
      * @param ksession 会话

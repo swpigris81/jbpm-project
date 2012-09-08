@@ -37,4 +37,28 @@ public class CashAdvanceDaoImpl extends BaseDao implements CashAdvanceDao {
         getHibernateTemplate().save(info);
         log.info("end save cashAdvanceInfo");
     }
+    
+    /**
+     * <p>Discription:[批量查询请款信息]</p>
+     * @param cashIds 请款ID
+     * @return 请款信息
+     * @author 大牙-小白
+     * @update 2012-9-8 大牙-小白 [变更描述]
+     */
+    public List<CashAdvanceInfo> getCashInfoByIds(List<String> cashIds, int start, int limit){
+        StringBuffer sql = new StringBuffer("from CashAdvanceInfo model where 1 = 1 ");
+        if(cashIds != null && !cashIds.isEmpty()){
+            sql.append(" and model.id in ( ");
+            for(int i=0,j=cashIds.size(); i< j; i++){
+                if(i == j -1){
+                    sql.append(" ? ");
+                }else{
+                    sql.append(" ?, ");
+                }
+            }
+            sql.append(" ) ");
+            return super.queryPageByHQL(sql.toString(), cashIds.toArray(), start, limit);
+        }
+        return super.queryPageByHQL(sql.toString(), new Object[]{}, start, limit);
+    }
 }

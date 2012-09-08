@@ -20,11 +20,26 @@ public interface CashAdvanceService {
      * @param info 指定条件
      * @param start 分页开始
      * @param limit 每页显示数
-     * @return
+     * @return 请款列表
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public List<CashAdvanceInfo> getMyRequestCash(CashAdvanceInfo info, int start, int limit);
+    /**
+     * <p>Discription:[获取本人的待办请款任务(已翻页)]</p>
+     * @param userTransaction 流程事务
+     * @param jbpmService 流程服务
+     * @param roleService 角色服务
+     * @param info 本人信息
+     * @param start 分页起始数
+     * @param limit 每页显示数
+     * @return 请款列表（{cashList : infoList, totalCount : count}）
+     * @author 大牙-小白
+     * @throws Exception 
+     * @update 2012-9-8 大牙-小白 [变更描述]
+     */
+    public Map<String, Object> getTodoRequestCash(UserTransaction userTransaction, IRoleService roleService, IJbpmService jbpmService, CashAdvanceInfo info, int start, int limit) throws Exception;
+    
     /**
      * <p>Discription:[获取指定条件请款数(一般用于分页)]</p>
      * @param info 指定条件

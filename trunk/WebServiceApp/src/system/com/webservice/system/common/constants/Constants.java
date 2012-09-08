@@ -45,4 +45,8 @@ public class Constants {
      * 请款流程图名字
      */
     public static String PROCESS_LOAN_NAME = "cashRequest.bpmn"; 
+    /**
+     * 系统默认用户
+     */
+    public static String ADMINISTRATOR = "Administrator";
 }

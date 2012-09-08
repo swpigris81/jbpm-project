@@ -260,6 +260,7 @@ where
     t.taskData.status in ('Created', 'Ready', 'Reserved', 'InProgress', 'Suspended') and
 
     t.taskData.expirationTime is null
+    order by t.taskData.createdOn desc
           </query>
           <!-- hint name="org.hibernate.timeout" value="200"/ -->
       </named-query>

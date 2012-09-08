@@ -103,7 +103,7 @@ public class RoleService implements IRoleService {
     }
     
     /**
-     * <p>Discription:[根据用户ID查询用户所在组的上级角色]</p>
+     * <p>Discription:[根据用户ID查询用户所在组的角色]</p>
      * @param userId
      * @return
      * @author 大牙-小白
