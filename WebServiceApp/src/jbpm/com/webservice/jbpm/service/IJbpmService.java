@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.naming.NamingException;
 
 import org.jbpm.task.Task;
+import org.jbpm.task.query.TaskSummary;
 
 public interface IJbpmService {
     /**
@@ -75,4 +76,27 @@ public interface IJbpmService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public void completeTask(String userName, String taskId, Map resultMap, String... processId) throws Exception;
+    /**
+     * <p>Discription:[获取待办任务]</p>
+     * @param user 用户
+     * @param group 用户组
+     * @param processName 流程图名字
+     * @return 待办任务
+     * @throws Exception
+     * @author 大牙-小白
+     * @update 2012-9-8 大牙-小白 [变更描述]
+     */
+    public List<TaskSummary> getAssignedTaskByUserOrGroup(String user, List<String> group, String... processName) throws Exception;
+    /**
+     * <p>Discription:[获取流程中的变量]</p>
+     * @param name 变量名称
+     * @param processSessionId 流程回话ID
+     * @param processInstanceId 流程ID
+     * @param processName 流程图
+     * @return 变量值
+     * @throws Exception
+     * @author 大牙-小白
+     * @update 2012-9-8 大牙-小白 [变更描述]
+     */
+    public Object getInstanceVariable(String name, int processSessionId, long processInstanceId, String... processName) throws Exception;
 }

@@ -22,6 +22,7 @@
   <itemDefinition id="_checkGroupNameItem" structureRef="String" />
   <itemDefinition id="_approveGroupIdItem" structureRef="String" />
   <itemDefinition id="_approveGroupNameItem" structureRef="String" />
+  <itemDefinition id="_cashIdItem" structureRef="String" />
 
   <itemDefinition id="_3-isAvailableItem" structureRef="Boolean" />
   <itemDefinition id="_3-cashAmountItem" structureRef="java.lang.Double" />
@@ -33,6 +34,7 @@
   <itemDefinition id="_3-checkGroupNameItem" structureRef="String" />
   <itemDefinition id="_3-approveGroupIdItem" structureRef="String" />
   <itemDefinition id="_3-approveGroupNameItem" structureRef="String" />
+  <itemDefinition id="_3-cashIdItem" structureRef="String" />
 
   <itemDefinition id="_4-isAvailableItem" structureRef="Boolean" />
   <itemDefinition id="_4-cashAmountItem" structureRef="java.lang.Double" />
@@ -44,6 +46,7 @@
   <itemDefinition id="_4-checkGroupNameItem" structureRef="String" />
   <itemDefinition id="_4-approveGroupIdItem" structureRef="String" />
   <itemDefinition id="_4-approveGroupNameItem" structureRef="String" />
+  <itemDefinition id="_4-cashIdItem" structureRef="String" />
 
   <itemDefinition id="_5-isAvailableItem" structureRef="Boolean" />
   <itemDefinition id="_5-cashAmountItem" structureRef="java.lang.Double" />
@@ -55,6 +58,7 @@
   <itemDefinition id="_5-checkGroupNameItem" structureRef="String" />
   <itemDefinition id="_5-approveGroupIdItem" structureRef="String" />
   <itemDefinition id="_5-approveGroupNameItem" structureRef="String" />
+  <itemDefinition id="_5-cashIdItem" structureRef="String" />
 
   <process processType="Private" isExecutable="true" id="com.webservice.cashRequest" name="请款流程" tns:packageName="defaultPackage" >
 
@@ -69,6 +73,7 @@
     <property id="checkGroupName" itemSubjectRef="_checkGroupNameItem"/>
     <property id="approveGroupId" itemSubjectRef="_approveGroupIdItem"/>
     <property id="approveGroupName" itemSubjectRef="_approveGroupNameItem"/>
+    <property id="cashId" itemSubjectRef="_cashIdItem"/>
 
     <!-- nodes -->
     <startEvent id="_1" name="StartProcess" />
@@ -79,17 +84,21 @@
       <extensionElements>
         <tns:onExit-script scriptFormat="http://www.java.com/java">
           <script>kcontext.setVariable("cashAmount", cashAmount);
+kcontext.setVariable("cashId", cashId);
+System.out.println("您的请款编号是：" + cashId);
 System.out.println("您的请款金额是：" + cashAmount);
 System.out.println("流程自动流转到：" + checkGroupName);</script>
         </tns:onExit-script>
       </extensionElements>
       <ioSpecification>
         <dataInput id="_3_TaskNameInput" name="TaskName" />
+        <dataOutput id="_3_cashIdOutput" name="cashId" />
         <dataOutput id="_3_cashAmountOutput" name="cashAmount" />
         <inputSet>
           <dataInputRefs>_3_TaskNameInput</dataInputRefs>
         </inputSet>
         <outputSet>
+          <dataOutputRefs>_3_cashIdOutput</dataOutputRefs>
           <dataOutputRefs>_3_cashAmountOutput</dataOutputRefs>
         </outputSet>
       </ioSpecification>
@@ -100,6 +109,10 @@ System.out.println("流程自动流转到：" + checkGroupName);</script>
           <to xsi:type="tFormalExpression">_3_TaskNameInput</to>
         </assignment>
       </dataInputAssociation>
+      <dataOutputAssociation>
+        <sourceRef>_3_cashIdOutput</sourceRef>
+        <targetRef>cashId</targetRef>
+      </dataOutputAssociation>
       <dataOutputAssociation>
         <sourceRef>_3_cashAmountOutput</sourceRef>
         <targetRef>cashAmount</targetRef>

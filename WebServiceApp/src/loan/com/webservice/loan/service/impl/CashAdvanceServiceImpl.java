@@ -1,16 +1,16 @@
 package com.webservice.loan.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.task.Task;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.jbpm.task.query.TaskSummary;
 
 import com.webservice.jbpm.service.IJbpmService;
 import com.webservice.loan.bean.CashAdvanceInfo;
@@ -143,7 +143,7 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
                 //启动流程, 创建一个任务
                 Task task = jbpmService.getFirstTask(param, Constants.PROCESS_LOAN_ID, Constants.PROCESS_LOAN_NAME);
                 //将该任务分配给自己
-                jbpmService.assignTaskToUser(task.getId().toString(), "Administrator", cashAdvanceInfo.getCashUserName(), Constants.PROCESS_LOAN_NAME);
+                jbpmService.assignTaskToUser(task.getId().toString(), Constants.ADMINISTRATOR, cashAdvanceInfo.getCashUserName(), Constants.PROCESS_LOAN_NAME);
                 //用户得到任务之后，需要开始该任务
                 jbpmService.startTask(cashAdvanceInfo.getCashUserName(), null, task.getId().toString(), Constants.PROCESS_LOAN_NAME);
                 cashAdvanceInfo.setProcessTaskId(task.getId());
@@ -158,6 +158,7 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
                 //填写完成请款单，完成该任务
                 Map<String, Object> contentMap = new HashMap<String, Object>();
                 contentMap.put("cashAmount", cashAdvanceInfo.getCashAmount().doubleValue());
+                contentMap.put("cashId", cashAdvanceInfo.getId());
                 jbpmService.completeTask(cashAdvanceInfo.getCashUserName(), task.getId().toString(), contentMap, Constants.PROCESS_LOAN_NAME);
                 //记录一下任务-请款流水
                 
@@ -179,6 +180,50 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
                 e1.printStackTrace();
                 throw e1;
             }
+        }
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, Object> getTodoRequestCash(UserTransaction userTransaction, IRoleService roleService, IJbpmService jbpmService,
+            CashAdvanceInfo info, int start, int limit) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        try{
+            userTransaction.begin();
+            //检查当前用户的角色
+            List<RoleInfo> roles = roleService.findParentRoleByUserId(info.getCashUserId());
+            RoleInfo userRole = null;
+            if(roles != null && !roles.isEmpty()){
+                userRole = roles.get(0);
+            }
+            List<String> groups = new ArrayList<String>();
+            if(userRole != null){
+                groups.add(userRole.getRoleName());
+            }
+            List<TaskSummary> taskList = jbpmService.getAssignedTaskByUserOrGroup(info.getCashUserName(), groups, Constants.PROCESS_LOAN_NAME);
+            List<String> cashIdList = new ArrayList<String>();
+            Map<String, Long> tempCashTask = new HashMap<String, Long>();
+            if(taskList != null){
+                for(TaskSummary ts : taskList){
+                    String cashId = String.valueOf(jbpmService.getInstanceVariable("cashId", ts.getProcessSessionId(), ts.getProcessInstanceId(), Constants.PROCESS_LOAN_NAME));
+                    cashIdList.add(cashId);
+                    tempCashTask.put(cashId, ts.getId());
+                }
+            }
+            List<CashAdvanceInfo> infoList = this.cashAdvanceDao.getCashInfoByIds(cashIdList, start, limit);
+            List<CashAdvanceInfo> cashInfoList = new ArrayList<CashAdvanceInfo>();
+            for(CashAdvanceInfo ci : infoList){
+                ci.setProcessTaskId(tempCashTask.get(ci.getId()));
+                cashInfoList.add(ci);
+            }
+            List<CashAdvanceInfo> list = this.cashAdvanceDao.getCashInfoByIds(cashIdList, -1, -1);
+            resultMap.put("cashList", cashInfoList);
+            resultMap.put("totalCount", list.size());
+            userTransaction.commit();
+        }catch(Exception e){
+            userTransaction.rollback();
+            log.error(e.getMessage(), e);
+            throw e;
         }
         return resultMap;
     }

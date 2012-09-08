@@ -275,4 +275,36 @@ public class CashAdvanceAction extends BaseAction {
         }
         return null;
     }
+    /**
+     * <p>Discription:[获取待办请款任务]</p>
+     * @return
+     * @author 大牙-小白
+     * @update 2012-9-8 大牙-小白 [变更描述]
+     */
+    public String todoTask(){
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        PrintWriter out = null;
+        try{
+            out = super.getPrintWriter();
+            if(cashAdvanceInfo == null || cashAdvanceInfo.getCashUserId() == null || cashAdvanceInfo.getCashUserName() == null
+                    || "".equals(cashAdvanceInfo.getCashUserId()) || "".equals(cashAdvanceInfo.getCashUserName())){
+                resultMap.put("success", false);
+                resultMap.put("msg", "当前用户信息为空，请检查！");
+            }else{
+                resultMap = this.cashAdvanceService.getTodoRequestCash(this.springJTM.getUserTransaction(), roleService, jbpmService, cashAdvanceInfo, start, limit);
+                resultMap.put("success", true);
+            }
+        }catch(Exception e){
+            LOG.error(e.getMessage());
+            resultMap.put("success", false);
+            resultMap.put("msg", "系统错误，错误代码："+e.getMessage());
+        }finally{
+            if(out != null){
+                out.print(getJsonString(resultMap));
+                out.flush();
+                out.close();
+            }
+        }
+        return null;
+    }
 }

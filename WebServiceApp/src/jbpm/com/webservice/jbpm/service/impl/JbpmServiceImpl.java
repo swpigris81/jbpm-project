@@ -3,16 +3,14 @@ package com.webservice.jbpm.service.impl;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.task.Task;
 import org.jbpm.task.User;
+import org.jbpm.task.query.TaskSummary;
 
 import com.webservice.jbpm.client.service.JbpmSyncService;
 import com.webservice.jbpm.service.IJbpmService;
@@ -277,6 +275,40 @@ public class JbpmServiceImpl implements IJbpmService {
             throw e;
         }finally{
             log.info("aaaaaaaaaaaaaaaaaa"+jbpmClient.getTaskId());
+        }
+    }
+    
+    public List<TaskSummary> getAssignedTaskByUserOrGroup(String user, List<String> group, String... processName) throws Exception{
+        //保证processId至少存在一个, 否则使用默认流程图
+        if(processName != null && processName.length > 0 && !"".equals(processName[0].trim())){
+            jbpmClient.setProcess(processName);
+        }
+        jbpmClient.init();
+        try{
+            List<TaskSummary> list = null;
+            if(group != null && !group.isEmpty()){
+                list = jbpmClient.getAssignedTasks(new User(user));
+            }else{
+                list = jbpmClient.getAssignedTasks(new User(user), group);
+            }
+            return list;
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+    
+    public Object getInstanceVariable(String name, int processSessionId, long processInstanceId, String... processName) throws Exception{
+        //保证processId至少存在一个, 否则使用默认流程图
+        if(processName != null && processName.length > 0 && !"".equals(processName[0].trim())){
+            jbpmClient.setProcess(processName);
+        }
+        jbpmClient.init();
+        try{
+            return jbpmClient.getVariableValue(name, processInstanceId, jbpmClient.getKSession(jbpmClient.getSessionInfo(processSessionId)));
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+            throw e;
         }
     }
 }
