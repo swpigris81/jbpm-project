@@ -311,4 +311,29 @@ public class JbpmServiceImpl implements IJbpmService {
             throw e;
         }
     }
+    
+    /**
+     * <p>Discription:[设置流程变量]</p>
+     * @param name 变量名称
+     * @param value 值
+     * @param processSessionId 会话ID
+     * @param processInstanceId 流程ID
+     * @param processName 流程图
+     * @throws Exception
+     * @author 大牙-小白
+     * @update 2012-9-8 大牙-小白 [变更描述]
+     */
+    public void setInstanceVariable(String name, Object value, int processSessionId, long processInstanceId, String... processName) throws Exception{
+        //保证processId至少存在一个, 否则使用默认流程图
+        if(processName != null && processName.length > 0 && !"".equals(processName[0].trim())){
+            jbpmClient.setProcess(processName);
+        }
+        jbpmClient.init();
+        try{
+            jbpmClient.setVariableValue(name, value, processInstanceId, jbpmClient.getKSession(jbpmClient.getSessionInfo(processSessionId)));
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+            throw e;
+        }
+    }
 }

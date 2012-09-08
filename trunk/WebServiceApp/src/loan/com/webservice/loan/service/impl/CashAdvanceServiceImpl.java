@@ -155,18 +155,20 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
                 info.setCashStatus(cashAdvanceInfo.getCashStatus());
                 this.cashTaskDao.save(info);
                 
+                //插入流程变量
+                jbpmService.setInstanceVariable("cashId", cashAdvanceInfo.getId(), task.getTaskData().getProcessSessionId(), task.getTaskData().getProcessInstanceId(), Constants.PROCESS_LOAN_NAME);
                 //填写完成请款单，完成该任务
                 Map<String, Object> contentMap = new HashMap<String, Object>();
                 contentMap.put("cashAmount", cashAdvanceInfo.getCashAmount().doubleValue());
                 contentMap.put("cashId", cashAdvanceInfo.getId());
                 jbpmService.completeTask(cashAdvanceInfo.getCashUserName(), task.getId().toString(), contentMap, Constants.PROCESS_LOAN_NAME);
-                //记录一下任务-请款流水
                 
-                info = new CashTaskInfo();
-                info.setCashId(cashAdvanceInfo.getId());
-                info.setTaskId(jbpmService.getTaskId(Constants.PROCESS_LOAN_NAME));
-                info.setCashStatus(cashAdvanceInfo.getCashStatus());
-                cashTaskDao.save(info);
+//                //记录一下任务-请款流水
+//                info = new CashTaskInfo();
+//                info.setCashId(cashAdvanceInfo.getId());
+//                info.setTaskId(jbpmService.getTaskId(Constants.PROCESS_LOAN_NAME));
+//                info.setCashStatus(cashAdvanceInfo.getCashStatus());
+//                cashTaskDao.save(info);
                 
                 resultMap.put("msg", "请款信息已经发起审核！");
                 resultMap.put("success", true);
