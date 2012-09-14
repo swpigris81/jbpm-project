@@ -115,7 +115,9 @@ function cashAdvance(){
 		hideable:false
 	},{
 		header:"任务编号",
-		dataIndex:"processTaskId"
+		dataIndex:"processTaskId",
+		hidden:true,
+		hideable:false
 	},{
 		header:"卡号",
 		dataIndex:"cardId",
