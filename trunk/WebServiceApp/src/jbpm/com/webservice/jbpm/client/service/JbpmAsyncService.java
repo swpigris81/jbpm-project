@@ -1,7 +1,9 @@
 package com.webservice.jbpm.client.service;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,8 @@ import org.jbpm.persistence.ProcessPersistenceContextManager;
 import org.jbpm.process.audit.JPAProcessInstanceDbLog;
 import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
 import org.jbpm.process.audit.NodeInstanceLog;
+import org.jbpm.task.AccessType;
+import org.jbpm.task.AsyncTaskService;
 import org.jbpm.task.Content;
 import org.jbpm.task.Task;
 import org.jbpm.task.TaskData;
@@ -60,14 +64,17 @@ import org.jbpm.task.service.SyncTaskServiceWrapper;
 import org.jbpm.task.service.TaskClient;
 import org.jbpm.task.service.TaskServiceSession;
 import org.jbpm.task.service.local.LocalHumanTaskService;
-import org.jbpm.task.service.mina.MinaTaskClientConnector;
-import org.jbpm.task.service.mina.MinaTaskClientHandler;
+import org.jbpm.task.service.responsehandlers.BlockingGetContentResponseHandler;
+import org.jbpm.task.service.responsehandlers.BlockingGetTaskResponseHandler;
+import org.jbpm.task.service.responsehandlers.BlockingTaskOperationResponseHandler;
+import org.jbpm.task.service.responsehandlers.BlockingTaskSummaryResponseHandler;
+import org.jbpm.task.utils.ContentMarshallerContext;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 
 import bitronix.tm.TransactionManagerServices;
 
-import com.webservice.jbpm.client.handler.SyncHumanTaskHandler;
+import com.webservice.jbpm.client.handler.AsyncMinaHumanTaskWorkItemHandler;
 import com.webservice.jbpm.process.audit.JPAFixProcessInstanceDbLog;
 import com.webservice.jbpm.server.daemon.TaskServerDaemon;
 
@@ -76,8 +83,8 @@ import com.webservice.jbpm.server.daemon.TaskServerDaemon;
  * @author  <a href="mailto: swpigris81@126.com">大牙-小白</a>
  * @version v0.1
  */
-public class JbpmSyncService {
-    private Log log = LogFactory.getLog(JbpmSyncService.class);
+public class JbpmAsyncService {
+    private Log log = LogFactory.getLog(JbpmAsyncService.class);
     
     private static final long DEFAULT_WAIT_TIME = 5000;
     private TaskClient client;
@@ -88,8 +95,9 @@ public class JbpmSyncService {
     private org.jbpm.task.service.TaskService taskService;
     private StatefulKnowledgeSession ksession;
     private ProcessInstance processInstance;
-    private SyncHumanTaskHandler humanTaskHandler;
-    
+    private AsyncMinaHumanTaskWorkItemHandler humanWorkHandler;
+    private AsyncTaskService  taskClient;
+    protected ContentMarshallerContext marshallerContext = new ContentMarshallerContext();
     private String[] process;
     private String hostIp = "127.0.0.1";
     private int port = 9123;
@@ -98,7 +106,7 @@ public class JbpmSyncService {
     /** 当前是否已经连接到服务端 **/
     private boolean isConnected = false;
     /** 唯一实例 **/
-    public static JbpmSyncService jbpmSyncService;
+    public static JbpmAsyncService jbpmSyncService;
     
     /** 查询数据库起始行 **/
     private final static String FIRST_RESULT = "start";
@@ -109,11 +117,11 @@ public class JbpmSyncService {
      * <p>Discription:[获取JBPM客户端，使用默认的服务器端IP和端口]</p>
      * @coustructor 方法.
      */
-    public JbpmSyncService(){
+    public JbpmAsyncService(){
         //humanWorkHandler = new AsyncMinaHTWorkItemHandler(ksession);
-        client = new TaskClient(new MinaTaskClientConnector("client 1",
-                new MinaTaskClientHandler(SystemEventListenerFactory.getSystemEventListener())));
-        syncTaskService = new SyncTaskServiceWrapper(client);
+//        client = new TaskClient(new MinaTaskClientConnector("client 1",
+//                new MinaTaskClientHandler(SystemEventListenerFactory.getSystemEventListener())));
+//        syncTaskService = new SyncTaskServiceWrapper(client);
         this.hostIp = "127.0.0.1";
         this.port = 9123;
 //        if(!JbpmSyncService.isConnected){
@@ -125,12 +133,12 @@ public class JbpmSyncService {
      * <p>Discription:[获取JBPM客户端，初始化服务器端IP和端口]</p>
      * @coustructor 方法.
      */
-    public JbpmSyncService(String hostIp, int port){
+    public JbpmAsyncService(String hostIp, int port){
         this.hostIp = hostIp;
         this.port = port;
-        client = new TaskClient(new MinaTaskClientConnector("client 1",
-                new MinaTaskClientHandler(SystemEventListenerFactory.getSystemEventListener())));
-        syncTaskService = new SyncTaskServiceWrapper(client);
+//        client = new TaskClient(new MinaTaskClientConnector("client 1",
+//                new MinaTaskClientHandler(SystemEventListenerFactory.getSystemEventListener())));
+//        syncTaskService = new SyncTaskServiceWrapper(client);
         //JbpmSyncService.isConnected = syncTaskService.connect(hostIp, port);
     }
     /**
@@ -139,12 +147,9 @@ public class JbpmSyncService {
      * @author 大牙-小白
      * @update 2012-9-7 大牙-小白 [变更描述]
      */
-    public static JbpmSyncService getInstance(){
+    public static JbpmAsyncService getInstance(){
         if(jbpmSyncService == null){
-            jbpmSyncService = new JbpmSyncService();
-        }
-        if(!jbpmSyncService.isConnected()){
-            jbpmSyncService.connect();
+            jbpmSyncService = new JbpmAsyncService();
         }
         return jbpmSyncService;
     }
@@ -387,11 +392,13 @@ public class JbpmSyncService {
             kbase = createKnowledgeBase(process);
         }
         StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        humanTaskHandler = new SyncHumanTaskHandler(syncTaskService, ksession);
+        humanWorkHandler = new AsyncMinaHumanTaskWorkItemHandler(ksession);
+        taskClient = humanWorkHandler.getClient();
+        //humanTaskHandler = new SyncHumanTaskHandler(syncTaskService, ksession);
 //        humanTaskHandler.connect();
 //        humanTaskHandler.setLocal(true);
         //ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
-        ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
+        ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanWorkHandler);
 //        System.setProperty("jbpm.usergroup.callback", "org.jbpm.task.service.DefaultUserGroupCallbackImpl");
         //humanWorkHandler.
     }
@@ -959,7 +966,9 @@ public class JbpmSyncService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public Task getTaskById(long taskId){
-        Task task = syncTaskService.getTask(taskId);
+        BlockingGetTaskResponseHandler handlerT = new BlockingGetTaskResponseHandler();
+        taskClient.getTask(taskId, handlerT);
+        Task task = handlerT.getTask();
         return task;
     }
     /**
@@ -972,7 +981,9 @@ public class JbpmSyncService {
      */
     public void assignTaskToUser(Long taskId, String srcUserId, String targetUserId){
         log.info("assigning task from "+ srcUserId +" to new user : " + targetUserId);
-        syncTaskService.delegate(taskId, srcUserId, targetUserId);
+        BlockingTaskOperationResponseHandler operationResponseHandler = new BlockingTaskOperationResponseHandler();
+        taskClient.delegate(taskId, srcUserId, targetUserId, operationResponseHandler);
+        operationResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
         log.info("assigning task from "+ srcUserId +" to new user : " + targetUserId);
     }
     
@@ -984,7 +995,11 @@ public class JbpmSyncService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public List<TaskSummary> getAssignedTasks(User user) {
-        return syncTaskService.getTasksAssignedAsPotentialOwner(user.getId(), "en-UK");
+        BlockingTaskSummaryResponseHandler taskSummaryResponseHandler = new BlockingTaskSummaryResponseHandler();
+        taskClient.getTasksAssignedAsPotentialOwner(user.getId(), "en-UK", taskSummaryResponseHandler);
+        taskSummaryResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
+        List<TaskSummary> tasks = taskSummaryResponseHandler.getResults();
+        return tasks;
     }
     /**
      * <p>Discription:[领取指定group的用户认为]</p>
@@ -995,12 +1010,11 @@ public class JbpmSyncService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public List<TaskSummary> getAssignedTasks(User user, List<String> groups) {
-//        BlockingTaskSummaryResponseHandler taskSummaryResponseHandler = new BlockingTaskSummaryResponseHandler();
-//        client.getTasksAssignedAsPotentialOwner(user.getId(), groups, "en-UK", taskSummaryResponseHandler);
-//        taskSummaryResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
-//        List<TaskSummary> tasks = taskSummaryResponseHandler.getResults();
-        return syncTaskService.getTasksAssignedAsPotentialOwner(user.getId(), groups, "en-UK");
-//        return tasks;
+        BlockingTaskSummaryResponseHandler taskSummaryResponseHandler = new BlockingTaskSummaryResponseHandler();
+        taskClient.getTasksAssignedAsPotentialOwner(user.getId(), groups, "en-UK", taskSummaryResponseHandler);
+        taskSummaryResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
+        List<TaskSummary> tasks = taskSummaryResponseHandler.getResults();
+        return tasks;
     }
     
     /**
@@ -1012,7 +1026,9 @@ public class JbpmSyncService {
      */
     public void startTask(User user, Long taskId) {
         System.out.println("Starting task " + taskId);
-        syncTaskService.start(taskId, user.getId());
+        BlockingTaskOperationResponseHandler operationResponseHandler = new BlockingTaskOperationResponseHandler();
+        taskClient.start(taskId, user.getId(), operationResponseHandler);
+        operationResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
         System.out.println("Started task " + taskId);
     }
     /**
@@ -1024,11 +1040,15 @@ public class JbpmSyncService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public void startTask(User user, List<String> groups, Long taskId) {
-        if(groups != null && !groups.isEmpty()){
-            syncTaskService.claim(taskId, user.getId(), groups);
+        if(groups == null || groups.isEmpty()){
+            startTask(user, taskId);
+            return;
         }
         System.out.println("Starting task " + taskId);
-        startTask(user, taskId);
+        BlockingTaskOperationResponseHandler operationResponseHandler = new BlockingTaskOperationResponseHandler();
+        taskClient.claim(taskId, user.getId(), groups, operationResponseHandler);
+        taskClient.start(taskId, user.getId(), operationResponseHandler);
+        operationResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
         System.out.println("Started task " + taskId);
     }
     
@@ -1041,7 +1061,9 @@ public class JbpmSyncService {
      */
     public void completeTask(User user, Long taskId) {
         log.info("Completing task " + taskId);
-        syncTaskService.complete(taskId, user.getId(), null);
+        BlockingTaskOperationResponseHandler operationResponseHandler = new BlockingTaskOperationResponseHandler();
+        taskClient.complete(taskId, user.getId(), null, operationResponseHandler);
+        operationResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
         log.info("Completed task " + taskId);
     }
     
@@ -1055,7 +1077,9 @@ public class JbpmSyncService {
      */
     public void completeTask(User user, Long taskId, ContentData contentData) {
         log.info("Completing task " + taskId);
-        syncTaskService.complete(taskId, user.getId(), contentData);
+        BlockingTaskOperationResponseHandler operationResponseHandler = new BlockingTaskOperationResponseHandler();
+        taskClient.complete(taskId, user.getId(), contentData, operationResponseHandler);
+        operationResponseHandler.waitTillDone(DEFAULT_WAIT_TIME);
         log.info("Completed task " + taskId);
     }
     
@@ -1071,7 +1095,31 @@ public class JbpmSyncService {
      */
     public void completeTask(User user, Long taskId, Map data, String notUse) throws Exception {
         log.info("Completing task " + taskId);
-        syncTaskService.completeWithResults(taskId, user.getId(), data);
+        ContentData contentData = null;
+        
+        //contentData = ContentMarshallerHelper.marshal(data, this.humanWorkHandler.getMarshallerContext(), ksession.getEnvironment());
+        
+        if(data != null && !data.isEmpty()){
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out;
+            try{
+                out = new ObjectOutputStream(bos);
+                out.writeObject(data);
+                out.close();
+                contentData = new ContentData();
+                contentData.setContent(bos.toByteArray());
+                contentData.setAccessType(AccessType.Inline);
+            }catch(Exception e){
+                log.error(e.getMessage(), e);
+                throw e;
+            }finally{
+                if(bos != null){
+                    bos.close();
+                }
+            }
+        }
+        
+        completeTask(user, taskId, contentData);
         log.info("Completed task " + taskId);
     }
     
@@ -1083,9 +1131,13 @@ public class JbpmSyncService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public Object getTaskContentInput(Long taskId) {
-        Task task2 = syncTaskService.getTask(taskId);
+        BlockingGetTaskResponseHandler handlerT = new BlockingGetTaskResponseHandler();
+        taskClient.getTask(taskId, handlerT);
+        Task task2 = handlerT.getTask();
         TaskData taskData = task2.getTaskData();
-        Content content = syncTaskService.getContent(taskData.getDocumentContentId());
+        BlockingGetContentResponseHandler handlerC = new BlockingGetContentResponseHandler();
+        taskClient.getContent(taskData.getDocumentContentId(), handlerC);
+        Content content = handlerC.getContent();
         ByteArrayInputStream bais = new ByteArrayInputStream(
                 content.getContent());
         try {
@@ -1110,9 +1162,8 @@ public class JbpmSyncService {
      * @author:[创建者中文名字]
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public synchronized void stop() throws Exception {
-        
-        syncTaskService.disconnect();
+    public void stop() throws Exception {
+        taskClient.disconnect();
     }
     /**
      * <p>Discription:[连接JBPM流程服务]</p>
@@ -1120,7 +1171,7 @@ public class JbpmSyncService {
      * @update 2012-9-6 大牙-小白 [变更描述]
      */
     public boolean connect(){
-        boolean conned = syncTaskService.connect(hostIp, port);
+        boolean conned = taskClient.connect(hostIp, port);
         setConnected(conned);
         return conned;
     }

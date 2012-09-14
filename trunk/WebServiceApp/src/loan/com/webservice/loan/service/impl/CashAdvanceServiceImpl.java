@@ -141,13 +141,15 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
                 }
                 
                 //启动流程, 创建一个任务
-                Task task = jbpmService.getFirstTask(param, Constants.PROCESS_LOAN_ID, Constants.PROCESS_LOAN_NAME);
+                Task task = jbpmService.getFirstTask(cashAdvanceInfo.getCashUserName(), param, Constants.PROCESS_LOAN_ID, Constants.PROCESS_LOAN_NAME);
                 //将该任务分配给自己
                 jbpmService.assignTaskToUser(task.getId().toString(), Constants.ADMINISTRATOR, cashAdvanceInfo.getCashUserName(), Constants.PROCESS_LOAN_NAME);
                 //用户得到任务之后，需要开始该任务
                 jbpmService.startTask(cashAdvanceInfo.getCashUserName(), null, task.getId().toString(), Constants.PROCESS_LOAN_NAME);
                 cashAdvanceInfo.setProcessTaskId(task.getId());
                 saveMyRequestCash(cashAdvanceInfo);
+                //插入流程变量
+                jbpmService.setInstanceVariableForNewTask("cashId", cashAdvanceInfo.getId());
                 //记录一下任务-请款流水
                 CashTaskInfo info = new CashTaskInfo();
                 info.setCashId(cashAdvanceInfo.getId());
@@ -155,8 +157,6 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
                 info.setCashStatus(cashAdvanceInfo.getCashStatus());
                 this.cashTaskDao.save(info);
                 
-                //插入流程变量
-                jbpmService.setInstanceVariable("cashId", cashAdvanceInfo.getId(), task.getTaskData().getProcessSessionId(), task.getTaskData().getProcessInstanceId(), Constants.PROCESS_LOAN_NAME);
                 //填写完成请款单，完成该任务
                 Map<String, Object> contentMap = new HashMap<String, Object>();
                 contentMap.put("cashAmount", cashAdvanceInfo.getCashAmount().doubleValue());
@@ -193,7 +193,7 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
         try{
             userTransaction.begin();
             //检查当前用户的角色
-            List<RoleInfo> roles = roleService.findParentRoleByUserId(info.getCashUserId());
+            List<RoleInfo> roles = roleService.findParentRoleByUserId(info.getCashUserName());
             RoleInfo userRole = null;
             if(roles != null && !roles.isEmpty()){
                 userRole = roles.get(0);

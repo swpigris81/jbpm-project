@@ -96,7 +96,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-hornetq-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-jms-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-human-task-mina-5.3.0.Final.jar" sourcepath="D:/Program Files/Workspace/jbpm"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-persistence-jpa-5.3.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-persistence-jpa-5.3.0.Final.jar" sourcepath="D:/Program Files/Workspace/jbpm"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-workitems-5.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jdom-1.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jsr94-1.1.jar"/>

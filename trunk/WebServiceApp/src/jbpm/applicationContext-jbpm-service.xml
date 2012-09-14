@@ -12,6 +12,11 @@
 			<bean
 				class="com.webservice.jbpm.service.impl.JbpmServiceImpl" scope="prototype"
 				abstract="false" lazy-init="default" init-method="init" destroy-method="destory">
+				<property name="processName">
+					<array>
+						<value>cashRequest.bpmn</value>
+					</array>
+				</property>
 			</bean>
 		</property>
 	</bean>
