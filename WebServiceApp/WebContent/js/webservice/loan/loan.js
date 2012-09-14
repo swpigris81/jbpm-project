@@ -236,7 +236,7 @@ function cashAdvance(){
 				baseParams.limit = 50;
 				baseParams["cashAdvanceInfo.cashUserName"] = userName;
 				baseParams["cashAdvanceInfo.cashUserId"] = userId;
-				cashDataStore.baseParams = baseParams;
+				cashTaskStore.baseParams = params;
 				loadCashDataStore();
 			}
 		},{
@@ -248,7 +248,7 @@ function cashAdvance(){
 				baseParams.limit = 50;
 				baseParams["cashAdvanceInfo.cashUserName"] = userName;
 				baseParams["cashAdvanceInfo.cashUserId"] = userId;
-				cashDataStore.baseParams = baseParams;
+				cashTaskStore.baseParams = baseParams;
 			}
 		}]
 	});
@@ -397,6 +397,12 @@ function cashAdvance(){
 		cashDataStore.load({
 			params:params
 		});
+		loadTodoTask();
+	}
+	function loadTodoTask(){
+		cashTaskStore.load({
+			params:params
+		});
 	}
 	
 	/**
@@ -412,12 +418,6 @@ function cashAdvance(){
 	}
 	loadStoreParams();
 	/**
-	 * 加载待办任务
-	 */
-	cashTaskStore.load({
-		params:params
-	});
-	/**
 	 * 按钮存储器，尚未执行查询
 	 */
 	var buttonRightStore = buttonRight();
@@ -426,7 +426,10 @@ function cashAdvance(){
 	 * see buttonRight.js
 	 * loadButtonRight(buttonStore, mainDataStore, dataGrid, pageDiv, params)
 	 */
-	loadButtonRight(buttonRightStore, cashDataStore, reqPanel, "myRequest");//"loan_div"
+	loadButtonRight(buttonRightStore, cashDataStore, reqPanel, "myRequest", null, null, function(){
+		//加载待办任务
+		loadTodoTask();
+	});
 	/**
 	 * 加载请款下拉框
 	 */
