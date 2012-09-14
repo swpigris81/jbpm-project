@@ -231,7 +231,7 @@ function cashAdvance(){
 		buttons:[{
 			text:"查询",
 			handler:function(){
-				var baseParams = searchPanel.getForm().getValues();
+				var baseParams = searchTodoPanel.getForm().getValues();
 				baseParams.start = 0;
 				baseParams.limit = 50;
 				baseParams["cashAdvanceInfo.cashUserName"] = userName;
@@ -242,7 +242,7 @@ function cashAdvance(){
 		},{
 			text:"重置",
 			handler:function(){
-				searchPanel.form.reset();
+				searchTodoPanel.form.reset();
 				var baseParams = {};
 				baseParams.start = 0;
 				baseParams.limit = 50;
