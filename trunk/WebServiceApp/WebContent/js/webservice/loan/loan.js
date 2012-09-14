@@ -408,6 +408,7 @@ function cashAdvance(){
 		params["cashAdvanceInfo.cashUserName"] = userName;
 		params["cashAdvanceInfo.cashUserId"] = userId;
 		cashDataStore.baseParams = params;
+		cashTaskStore.baseParams = params;
 	}
 	loadStoreParams();
 	/**
