@@ -42,7 +42,7 @@ public interface IJbpmService {
      * @author 大牙-小白
      * @update 2012-9-3 大牙-小白 [变更描述]
      */
-    public Task getFirstTask(Map<String, Object> param, String processId, String... processName) throws Exception;
+    public Task getFirstTask(String userName, Map<String, Object> param, String processId, String... processName) throws Exception;
     /**
      * <p>Discription:[分配任务给指定用户]</p>
      * @param taskId 任务ID
@@ -111,4 +111,14 @@ public interface IJbpmService {
      * @update 2012-9-8 大牙-小白 [变更描述]
      */
     public void setInstanceVariable(String name, Object value, int processSessionId, long processInstanceId, String... processName) throws Exception;
+    
+    /**
+     * <p>Discription:[设置流程变量，该流程是刚刚启动的新流程]</p>
+     * @param name 变量名称
+     * @param value 值
+     * @throws Exception
+     * @author 大牙-小白
+     * @update 2012-9-14 大牙-小白 [变更描述]
+     */
+    public void setInstanceVariableForNewTask(String name, Object value) throws Exception;
 }

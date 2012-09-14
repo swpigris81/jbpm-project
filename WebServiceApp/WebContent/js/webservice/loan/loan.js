@@ -114,6 +114,9 @@ function cashAdvance(){
 		hidden:true,
 		hideable:false
 	},{
+		header:"任务编号",
+		dataIndex:"processTaskId"
+	},{
 		header:"卡号",
 		dataIndex:"cardId",
 		hidden:true,
@@ -301,7 +304,7 @@ function cashAdvance(){
 		plugins: [new Ext.ux.ColumnWidthCalculator()],
 		frame:true,
 		autoShow:true,
-		store:cashDataStore,
+		store:cashTaskStore,
 		cm:cashCM,
 		sm:getCashSM(),
 		//renderTo:"channel_main_div",
@@ -310,7 +313,7 @@ function cashAdvance(){
 		stripeRows: true,
 		bbar:new Ext.PagingToolbar({
 			pageSize:50,//每页显示数
-			store:cashDataStore,
+			store:cashTaskStore,
 			displayInfo:true,
 			displayMsg:"显示{0}-{1}条记录，共{2}条记录",
 			nextText:"下一页",
@@ -341,16 +344,16 @@ function cashAdvance(){
 		listeners :{
 			"tabchange":function(thiz, tab){
 				if(Ext.get("todoRequest").getHeight() > 0){
-					var gtbar = todoPanel.getTopToolbar();
-					var tbar = new Ext.Toolbar();;
-					if(gtbar){
-						todoPanel.tbar.update("");
-						tbar.render(todoPanel.tbar);
-					}
-					
-					tbar.add({
-						text:"ads"
-					});
+//					var gtbar = todoPanel.getTopToolbar();
+//					var tbar = new Ext.Toolbar();;
+//					if(gtbar){
+//						todoPanel.tbar.update("");
+//						tbar.render(todoPanel.tbar);
+//					}
+//					
+//					tbar.add({
+//						text:"ads"
+//					});
 					todoPanel.setHeight(Ext.get("todoRequest").getHeight());
 					todoPanel.render();
 				}
@@ -379,7 +382,11 @@ function cashAdvance(){
 		height:Ext.get("todoRequest").getHeight(),
 		renderTo:"todoRequest",
 		items:[searchTodoPanel, cashTodoGrid],
-		tbar:[]
+		tbar:[{
+			text:"通过"
+		},"-",{
+			text:"驳回"
+		}]
 	});
 	
 	/**
@@ -390,6 +397,7 @@ function cashAdvance(){
 			params:params
 		});
 	}
+	
 	/**
 	 * 加载数据参数
 	 */
@@ -401,6 +409,12 @@ function cashAdvance(){
 		cashDataStore.baseParams = params;
 	}
 	loadStoreParams();
+	/**
+	 * 加载待办任务
+	 */
+	cashTaskStore.load({
+		params:params
+	});
 	/**
 	 * 按钮存储器，尚未执行查询
 	 */

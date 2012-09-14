@@ -110,7 +110,7 @@ public class RoleService implements IRoleService {
      * @update 2012-9-5 大牙-小白 [变更描述]
      */
     public List findParentRoleByUserId(String userId){
-        String sql = "select r from RoleInfo r, UserRole s where r.roleId = s.roleId and s.userId = ?";
+        String sql = "select distinct r from RoleInfo r, UserRole s where r.roleId = s.roleId and s.userId = ?";
         List list = this.baseDao.queryByHQL(sql, new Object[]{userId});
         return list;
     }
