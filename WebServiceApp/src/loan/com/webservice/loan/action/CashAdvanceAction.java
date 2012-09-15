@@ -421,6 +421,11 @@ public class CashAdvanceAction extends BaseAction {
             }else{
                 this.transactionManager.commit(status);
             }
+            try {
+                jbpmService.disconnectJbpmServer();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             if(out != null){
                 out.print(getJsonString(resultMap));
                 out.flush();
