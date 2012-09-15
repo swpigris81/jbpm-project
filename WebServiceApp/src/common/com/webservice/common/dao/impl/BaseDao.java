@@ -33,6 +33,10 @@ public class BaseDao extends HibernateDaoSupport implements IBaseDao {
     protected void initDao() {
         //do nothing
     }
+    
+    public Object findById(Class entityClass, String id){
+        return getHibernateTemplate().get(entityClass, id);
+    }
 
     @Override
     public List queryByHQL(final String hql, final Object[] params) {
