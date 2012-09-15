@@ -47,6 +47,18 @@ public class CashAdvanceAction extends BaseAction {
     private CashAdvanceInfo cashAdvanceInfo;
     /** 流程图 **/
     private IJbpmService jbpmService;
+    
+    /** 请款任务ID **/
+    private String taskIds;
+    /** 请款ID **/
+    private String loanIds;
+    /** 处理类型：00-审核驳回，01-审核通过，10-审批驳回，11-审核后通过 **/
+    private String doType;
+    /** 审核意见 **/
+    private String checkResult;
+    /** 审批意见 **/
+    private String approveResult;
+    
     /**
      * <p>Discription:[方法功能中文描述]</p>
      * @return CashAdvanceService cashAdvanceService.
@@ -194,6 +206,86 @@ public class CashAdvanceAction extends BaseAction {
     }
 
     /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String taskIds.
+     */
+    public String getTaskIds() {
+        return taskIds;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param taskIds The taskIds to set.
+     */
+    public void setTaskIds(String taskIds) {
+        this.taskIds = taskIds;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String loanIds.
+     */
+    public String getLoanIds() {
+        return loanIds;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param loanIds The loanIds to set.
+     */
+    public void setLoanIds(String loanIds) {
+        this.loanIds = loanIds;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String doType.
+     */
+    public String getDoType() {
+        return doType;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param doType The doType to set.
+     */
+    public void setDoType(String doType) {
+        this.doType = doType;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String checkResult.
+     */
+    public String getCheckResult() {
+        return checkResult;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param checkResult The checkResult to set.
+     */
+    public void setCheckResult(String checkResult) {
+        this.checkResult = checkResult;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String approveResult.
+     */
+    public String getApproveResult() {
+        return approveResult;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param approveResult The approveResult to set.
+     */
+    public void setApproveResult(String approveResult) {
+        this.approveResult = approveResult;
+    }
+
+    /**
      * <p>Discription:[我的请款信息]</p>
      * @return 显示我发起的请款列表
      * @author:[创建者中文名字]
@@ -283,6 +375,12 @@ public class CashAdvanceAction extends BaseAction {
      */
     public String todoTask(){
         Map<String, Object> resultMap = new HashMap<String, Object>();
+        // 定义TransactionDefinition并设置好事务的隔离级别和传播方式。
+        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+        // 代价最大、可靠性最高的隔离级别，所有的事务都是按顺序一个接一个地执行
+        definition.setIsolationLevel(TransactionDefinition.ISOLATION_SERIALIZABLE);
+        // 开始事务
+        TransactionStatus status = transactionManager.getTransaction(definition);
         PrintWriter out = null;
         try{
             out = super.getPrintWriter();
@@ -296,9 +394,57 @@ public class CashAdvanceAction extends BaseAction {
             }
         }catch(Exception e){
             LOG.error(e.getMessage());
+            status.setRollbackOnly();
             resultMap.put("success", false);
             resultMap.put("msg", "系统错误，错误代码："+e.getMessage());
         }finally{
+            if(status.isRollbackOnly()){
+                this.transactionManager.rollback(status);
+            }else{
+                this.transactionManager.commit(status);
+            }
+            if(out != null){
+                out.print(getJsonString(resultMap));
+                out.flush();
+                out.close();
+            }
+        }
+        return null;
+    }
+    /**
+     * <p>Discription:[通过或者驳回请款请求]</p>
+     * @return
+     * @author 大牙-小白
+     * @update 2012-9-15 大牙-小白 [变更描述]
+     */
+    public String doRequestTask(){
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        // 定义TransactionDefinition并设置好事务的隔离级别和传播方式。
+        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+        // 代价最大、可靠性最高的隔离级别，所有的事务都是按顺序一个接一个地执行
+        definition.setIsolationLevel(TransactionDefinition.ISOLATION_SERIALIZABLE);
+        // 开始事务
+        TransactionStatus status = transactionManager.getTransaction(definition);
+        PrintWriter out = null;
+        try{
+            out = super.getPrintWriter();
+            if(this.taskIds == null || "".equals(taskIds) || this.loanIds == null || "".equals(loanIds)){
+                resultMap.put("success", false);
+                resultMap.put("msg", "请选择需要处理的请款请求！");
+            }else{
+                this.cashAdvanceService.doRequest(this.springJTM.getUserTransaction(), roleService, jbpmService, taskIds, loanIds, currentUserId, currentUserName, doType, checkResult, approveResult);
+            }
+        }catch(Exception e){
+            LOG.error(e.getMessage(), e);
+            status.setRollbackOnly();
+            resultMap.put("success", false);
+            resultMap.put("msg", e.getMessage());
+        }finally{
+            if(status.isRollbackOnly()){
+                this.transactionManager.rollback(status);
+            }else{
+                this.transactionManager.commit(status);
+            }
             if(out != null){
                 out.print(getJsonString(resultMap));
                 out.flush();

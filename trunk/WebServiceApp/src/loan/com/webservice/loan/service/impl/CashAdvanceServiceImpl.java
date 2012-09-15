@@ -1,12 +1,14 @@
 package com.webservice.loan.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.transaction.UserTransaction;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.task.Task;
@@ -225,6 +227,80 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
                 resultMap.put("totalCount", 0);
             }
             userTransaction.commit();
+        }catch(Exception e){
+            userTransaction.rollback();
+            log.error(e.getMessage(), e);
+            throw e;
+        }
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, Object> doRequest(UserTransaction userTransaction,
+            IRoleService roleService, IJbpmService jbpmService, String taskIds,
+            String loanIds, String userId, String userName, String doType, String checkResult, String approveResult)
+            throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        try{
+            userTransaction.begin();
+            if(taskIds != null && !"".equals(taskIds.trim()) && loanIds!= null && !"".equals(loanIds.trim())){
+                String []taskArray = taskIds.split(",");
+                String []loanArray = loanIds.split(",");
+                for(int i=0; i<taskArray.length; i++){
+                    String taskId = taskArray[i];
+                    String loanId = loanArray[i];
+                    //检查当前用户的角色
+                    List<RoleInfo> roles = roleService.findParentRoleByUserId(userName);
+                    RoleInfo userRole = null;
+                    if(roles != null && !roles.isEmpty()){
+                        userRole = roles.get(0);
+                    }
+                    List<String> groups = new ArrayList<String>();
+                    if(userRole != null){
+                        groups.add(userRole.getRoleName());
+                    }
+                    jbpmService.startTask(userName, groups, taskId, Constants.PROCESS_LOAN_NAME);
+                    Map<String, Object> contentMap = new HashMap<String, Object>();
+                    
+                    CashAdvanceInfo info = cashAdvanceDao.findById(loanId);
+                    info.setCashCheckDate(new Date());
+                    info.setCashCheckUserId(userId);
+                    info.setCashCheckUserName(userName);
+                    if("00".equals(doType)){
+                        contentMap.put("cashCheckResult", "0");
+                        info.setCashCheckResult("0");
+                        info.setCashStatus(Constants.CASH_STATUS_03);
+                    }else if("01".equals(doType)){
+                        contentMap.put("cashCheckResult", "1");
+                        info.setCashCheckResult("1");
+                        info.setCashStatus(Constants.CASH_STATUS_02);
+                    }else if("10".equals(doType)){
+                        contentMap.put("cashApprovalResult", "0");
+                        info.setCashCheckResult("0");
+                        info.setCashStatus(Constants.CASH_STATUS_06);
+                    }else if("11".equals(doType)){
+                        contentMap.put("cashApprovalResult", "1");
+                        info.setCashCheckResult("1");
+                        info.setCashStatus(Constants.CASH_STATUS_05);
+                    }
+                    jbpmService.completeTask(userName, taskId, contentMap, Constants.PROCESS_LOAN_NAME);
+                    cashAdvanceDao.update(info);
+                    //审核通过之后再次更新状态为：发起审批
+                    if(Constants.CASH_STATUS_02.equals(info.getCashStatus())){
+                        info.setCashStatus(Constants.CASH_STATUS_04);
+                        cashAdvanceDao.update(info);
+                    }
+                    //记录一下任务-请款流水
+                    CashTaskInfo taskInfo = new CashTaskInfo();
+                    taskInfo.setCashId(loanId);
+                    taskInfo.setTaskId(NumberUtils.toLong(taskId));
+                    taskInfo.setCashStatus(info.getCashStatus());
+                    this.cashTaskDao.save(taskInfo);
+                }
+            }else{
+                resultMap.put("success", false);
+                resultMap.put("msg", "所选请款任务为空！");
+            }
         }catch(Exception e){
             userTransaction.rollback();
             log.error(e.getMessage(), e);

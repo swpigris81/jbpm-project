@@ -384,11 +384,23 @@ function cashAdvance(){
 		renderTo:"todoRequest",
 		items:[searchTodoPanel, cashTodoGrid],
 		tbar:[{
-			text:"通过"
+			text:"通过",
+			iconCls:"table_gear",
+			tooltip:"通过请款申请",
+			handler:function(){
+				doWithRequest("1");
+			}
 		},"-",{
-			text:"驳回"
+			text:"驳回",
+			iconCls:"table_gear",
+			tooltip:"驳回请款申请",
+			handler:function(){
+				doWithRequest("0");
+			}
 		}]
 	});
+	
+	
 	
 	/**
 	 * 加载数据
@@ -536,6 +548,75 @@ function cashAdvance(){
 		})
 		return requestForm;
 	}
+	
+	/**
+	 * 处理请款请求
+	 * @param taskIds
+	 */
+	function doWithRequest(type){
+		var gridSelectionModel = cashTodoGrid.getSelectionModel();
+		var gridSelection = gridSelectionModel.getSelections();
+		if(gridSelection.length < 1){
+			Ext.MessageBox.alert('提示','请至少选择一条请款信息！');
+		    return false;
+		}
+		var taskArray = new Array();
+		var loanArray = new Array();
+		for(var i=0; i<gridSelection.length; i++){
+			taskArray.push(gridSelection[i].get("processTaskId"));
+			loanArray.push(gridSelection[i].get("id"));
+		}
+		if(gridSelection[0].get("cashStatus") == "01"){
+			//审核
+			type = "0"+ type;
+		}else{
+			//审批
+			type = "1"+ type;
+		}
+		var taskIds = taskArray.join(",");
+		var loanIds = loanArray.join(",");
+		Ext.MessageBox.show({
+			msg:"正在处理您的任务，请稍候...",
+			progressText:"正在处理您的任务，请稍候...",
+			width:300,
+			wait:true,
+			waitConfig: {interval:200},
+			icon:Ext.Msg.INFO
+		});
+		Ext.Ajax.request({
+			params:{taskIds:taskIds, loanIds:loanIds, doType:type, currentUserId:userId, currentUserName:userName},
+			timeout:60000,
+			url: path + "/loan/doRequestTaskCashAdvance.action?method=doRequestTask",
+			success:function(response,options){
+				Ext.MessageBox.hide();
+				try{
+					var msg = Ext.util.JSON.decode(response.responseText);
+					if(msg && msg.msg){
+						Ext.Msg.alert("提示信息",msg.msg);
+					}else{
+						Ext.Msg.alert("提示信息","已成功处理您的任务！");
+						cashTaskStore.reload();
+					}
+				}catch(e){
+					Ext.Msg.alert("提示信息","系统错误，错误原因：" + e);
+				}
+			},failure:function(response,options){
+				Ext.Msg.hide();
+				try{
+					var msg = Ext.util.JSON.decode(response.responseText);
+					if(msg && msg.msg){
+						Ext.Msg.alert("提示信息",msg.msg);
+					}else{
+						Ext.Msg.alert("提示信息","处理您的任务已失败！");
+					}
+				}catch(e){
+					Ext.Msg.alert("提示信息","系统错误，错误原因：" + e);
+				}
+				return;
+			}
+		});
+	}
+	
 	/**
 	 * 保存请款
 	 * @param windowId

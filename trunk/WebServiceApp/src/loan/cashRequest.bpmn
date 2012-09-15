@@ -188,10 +188,11 @@ System.out.println("流程自动流转到：" + checkGroupName);</script>
       </dataOutputAssociation>
     </userTask>
     <scriptTask id="_6" name="获取审核人审核结果" scriptFormat="http://www.java.com/java" >
-      <script>kcontext.setVariable("cashCheckResult", cashCheckResult);
+      <script> System.out.println("审核结果：");
+kcontext.setVariable("cashCheckResult", cashCheckResult);
 
 int result = java.lang.Integer.parseInt(cashCheckResult);
-
+ System.out.println("审核结果：" +result);
 if (result == 0){
 	//审核驳回
  	isAvailable = false;

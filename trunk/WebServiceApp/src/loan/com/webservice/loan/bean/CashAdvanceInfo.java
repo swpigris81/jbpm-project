@@ -32,6 +32,8 @@ public class CashAdvanceInfo {
     private Date cashCheckDate;
     /** 审核结果 0-驳回，1-通过 **/
     private String cashCheckResult;
+    /** 审核意见 **/
+    private String cashCheckRemark;
     /** 审批人 **/
     private String cashApprovalUserId;
     /** 审批人 **/
@@ -40,6 +42,8 @@ public class CashAdvanceInfo {
     private Date cashApprovalDate;
     /** 审批结果 0-驳回，1-通过 **/
     private String cashApprovalResult;
+    /** 审批意见 **/
+    private String cashApprovalRemark;
     /** 流程任务ID **/
     private Long processTaskId;
     /** 当前请款状态（00-申请请款，01-发起审核，02-审核通过，03-审核驳回，04-发起审批，05-审批通过，06-审批驳回） **/
@@ -295,5 +299,33 @@ public class CashAdvanceInfo {
      */
     public void setCashStatus(String cashStatus) {
         this.cashStatus = cashStatus;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String cashCheckRemark.
+     */
+    public String getCashCheckRemark() {
+        return cashCheckRemark;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param cashCheckRemark The cashCheckRemark to set.
+     */
+    public void setCashCheckRemark(String cashCheckRemark) {
+        this.cashCheckRemark = cashCheckRemark;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String cashApprovalRemark.
+     */
+    public String getCashApprovalRemark() {
+        return cashApprovalRemark;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param cashApprovalRemark The cashApprovalRemark to set.
+     */
+    public void setCashApprovalRemark(String cashApprovalRemark) {
+        this.cashApprovalRemark = cashApprovalRemark;
     }
 }

@@ -41,6 +41,9 @@
         <property name="cashCheckResult" type="java.lang.String">
             <column name="cash_check_result" />
         </property>
+        <property name="cashCheckRemark" type="java.lang.String">
+            <column name="cash_check_remark" />
+        </property>
         <property name="cashApprovalUserId" type="java.lang.String">
             <column name="cash_approval_user_id" />
         </property>
@@ -52,6 +55,9 @@
         </property>
         <property name="cashApprovalResult" type="java.lang.String">
             <column name="cash_approval_result" />
+        </property>
+        <property name="cashApprovalRemark" type="java.lang.String">
+            <column name="cash_approval_remark" />
         </property>
         <property name="processTaskId" type="java.lang.Long">
             <column name="process_task_id" />

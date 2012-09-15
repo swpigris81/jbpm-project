@@ -39,6 +39,27 @@ public class CashAdvanceDaoImpl extends BaseDao implements CashAdvanceDao {
     }
     
     /**
+     * <p>Discription:[更新请款]</p>
+     * @param info 请款信息
+     * @author 大牙-小白
+     * @update 2012-8-30 大牙-小白 [变更描述]
+     */
+    public void update(CashAdvanceInfo info){
+        log.info("begin update cashAdvanceInfo");
+        getHibernateTemplate().update(info);
+        log.info("end update cashAdvanceInfo");
+    }
+    /**
+     * <p>Discription:[以主键查询]</p>
+     * @param id 请款ID
+     * @return 请款信息
+     * @author 大牙-小白
+     * @update 2012-9-15 大牙-小白 [变更描述]
+     */
+    public CashAdvanceInfo findById(String id){
+        return (CashAdvanceInfo)super.findById(CashAdvanceInfo.class, id);
+    }
+    /**
      * <p>Discription:[批量查询请款信息]</p>
      * @param cashIds 请款ID
      * @return 请款信息
