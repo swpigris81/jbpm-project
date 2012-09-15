@@ -259,6 +259,8 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
                     if(userRole != null){
                         groups.add(userRole.getRoleName());
                     }
+                    //将该任务分配给自己
+                    jbpmService.assignTaskToUser(taskId, Constants.ADMINISTRATOR, userName, Constants.PROCESS_LOAN_NAME);
                     jbpmService.startTask(userName, groups, taskId, Constants.PROCESS_LOAN_NAME);
                     Map<String, Object> contentMap = new HashMap<String, Object>();
                     
