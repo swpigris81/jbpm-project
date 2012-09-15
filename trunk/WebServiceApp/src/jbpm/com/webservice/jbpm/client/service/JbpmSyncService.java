@@ -1115,8 +1115,12 @@ public class JbpmSyncService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public synchronized void stop() throws Exception {
-        
-        syncTaskService.disconnect();
+        //wait for 1 min
+        if(isConnected()){
+            wait(DEFAULT_WAIT_TIME * 12);
+            syncTaskService.disconnect();
+            setConnected(false);
+        }
     }
     /**
      * <p>Discription:[连接JBPM流程服务]</p>

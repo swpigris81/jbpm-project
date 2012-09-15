@@ -71,6 +71,7 @@ public class JbpmServiceImpl implements IJbpmService {
      */
     public void disconnectJbpmServer() throws Exception{
         try {
+            log.info("与JBPM服务断开连接");
             jbpmClient.stop();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
