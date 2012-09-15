@@ -205,22 +205,25 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
             List<TaskSummary> taskList = jbpmService.getAssignedTaskByUserOrGroup(info.getCashUserName(), groups, Constants.PROCESS_LOAN_NAME);
             List<String> cashIdList = new ArrayList<String>();
             Map<String, Long> tempCashTask = new HashMap<String, Long>();
-            if(taskList != null){
+            if(taskList != null && !taskList.isEmpty()){
                 for(TaskSummary ts : taskList){
                     String cashId = String.valueOf(jbpmService.getInstanceVariable("cashId", ts.getProcessSessionId(), ts.getProcessInstanceId(), Constants.PROCESS_LOAN_NAME));
                     cashIdList.add(cashId);
                     tempCashTask.put(cashId, ts.getId());
                 }
+                List<CashAdvanceInfo> infoList = this.cashAdvanceDao.getCashInfoByIds(cashIdList, start, limit);
+                List<CashAdvanceInfo> cashInfoList = new ArrayList<CashAdvanceInfo>();
+                for(CashAdvanceInfo ci : infoList){
+                    ci.setProcessTaskId(tempCashTask.get(ci.getId()));
+                    cashInfoList.add(ci);
+                }
+                List<CashAdvanceInfo> list = this.cashAdvanceDao.getCashInfoByIds(cashIdList, -1, -1);
+                resultMap.put("cashList", cashInfoList);
+                resultMap.put("totalCount", list.size());
+            }else{
+                resultMap.put("cashList", new ArrayList());
+                resultMap.put("totalCount", 0);
             }
-            List<CashAdvanceInfo> infoList = this.cashAdvanceDao.getCashInfoByIds(cashIdList, start, limit);
-            List<CashAdvanceInfo> cashInfoList = new ArrayList<CashAdvanceInfo>();
-            for(CashAdvanceInfo ci : infoList){
-                ci.setProcessTaskId(tempCashTask.get(ci.getId()));
-                cashInfoList.add(ci);
-            }
-            List<CashAdvanceInfo> list = this.cashAdvanceDao.getCashInfoByIds(cashIdList, -1, -1);
-            resultMap.put("cashList", cashInfoList);
-            resultMap.put("totalCount", list.size());
             userTransaction.commit();
         }catch(Exception e){
             userTransaction.rollback();
