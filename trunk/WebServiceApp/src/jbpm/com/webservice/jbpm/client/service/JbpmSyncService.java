@@ -504,7 +504,11 @@ public class JbpmSyncService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public Object getVariableValue(String name, long processInstanceId) {
-        return ((WorkflowProcessInstance) ksession.getProcessInstance(processInstanceId)).getVariable(name);
+        try{
+            return ((WorkflowProcessInstance) ksession.getProcessInstance(processInstanceId)).getVariable(name);
+        }catch(NullPointerException e){
+            return null;
+        }
     }
     
     /**

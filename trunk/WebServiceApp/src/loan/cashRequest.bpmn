@@ -124,6 +124,11 @@ System.out.println("流程自动流转到：" + checkGroupName);</script>
       </potentialOwner>
     </userTask>
     <userTask id="_4" name="审核人审核" >
+      <extensionElements>
+        <tns:onExit-script scriptFormat="http://www.java.com/java">
+          <script>System.out.println("asdasdasdasdasdad");</script>
+        </tns:onExit-script>
+      </extensionElements>
       <ioSpecification>
         <dataInput id="_4_TaskNameInput" name="TaskName" />
         <dataInput id="_4_GroupIdInput" name="GroupId" />
@@ -188,8 +193,7 @@ System.out.println("流程自动流转到：" + checkGroupName);</script>
       </dataOutputAssociation>
     </userTask>
     <scriptTask id="_6" name="获取审核人审核结果" scriptFormat="http://www.java.com/java" >
-      <script> System.out.println("审核结果：");
-kcontext.setVariable("cashCheckResult", cashCheckResult);
+      <script>kcontext.setVariable("cashCheckResult", cashCheckResult);
 
 int result = java.lang.Integer.parseInt(cashCheckResult);
  System.out.println("审核结果：" +result);

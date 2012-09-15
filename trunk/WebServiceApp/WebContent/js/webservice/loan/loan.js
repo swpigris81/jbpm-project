@@ -397,6 +397,13 @@ function cashAdvance(){
 			handler:function(){
 				doWithRequest("0");
 			}
+		},"-",{
+			text:"再发起",
+			iconCls:"table_gear",
+			tooltip:"再发起已被驳回的请款申请",
+			handler:function(){
+				doWithRequest("99");
+			}
 		}]
 	});
 	
@@ -548,7 +555,6 @@ function cashAdvance(){
 		})
 		return requestForm;
 	}
-	
 	/**
 	 * 处理请款请求
 	 * @param taskIds
@@ -563,16 +569,70 @@ function cashAdvance(){
 		var taskArray = new Array();
 		var loanArray = new Array();
 		for(var i=0; i<gridSelection.length; i++){
+			var status = gridSelection[i].get("cashStatus");
+			if(type == "99"){
+				//再发起请求
+				if(status != "03" && status != "06"){
+					Ext.MessageBox.alert('提示','只能处理审核驳回或者是审批驳回的请款请求！');
+					return false;
+				}
+			}else{
+				//通过或者驳回
+				if(status != "01" && status != "02"){
+					Ext.MessageBox.alert('提示','只能处理发起审核或者是审核通过的请款请求！');
+					return false;
+				}
+			}
 			taskArray.push(gridSelection[i].get("processTaskId"));
 			loanArray.push(gridSelection[i].get("id"));
 		}
+		
+		if(type == "0"){
+			//驳回
+			Ext.Msg.prompt("系统提示", "请输入驳回请款原因：", function(btn, text){
+				if(btn == "ok"){
+					type = setDoType(gridSelection, type);
+					sendRequest(taskArray, loanArray, type, text);
+				}
+			}, null, true);
+		}else if(type == "1"){
+			//通过
+			Ext.Msg.prompt("系统提示", "请输入审批意见：", function(btn, text){
+				if(btn == "ok"){
+					type = setDoType(gridSelection, type);
+					sendRequest(taskArray, loanArray, type, text);
+				}
+			}, null, true);
+		}else if(type == "99"){
+			//再发起
+			Ext.Msg.prompt("系统提示", "请输入再请款原因：", function(btn, text){
+				if(btn == "ok"){
+					type = setDoType(gridSelection, type);
+					sendRequest(taskArray, loanArray, type, text);
+				}
+			}, null, true);
+		}
+	}
+	/**
+	 * 设置type
+	 * @param gridSelection
+	 * @returns
+	 */
+	function setDoType(gridSelection, type){
 		if(gridSelection[0].get("cashStatus") == "01"){
 			//审核
 			type = "0"+ type;
-		}else{
+		}else if(gridSelection[0].get("cashStatus") == "02"){
 			//审批
 			type = "1"+ type;
 		}
+		return type;
+	}
+	
+	/**
+	 * 发起请求
+	 */
+	function sendRequest(taskArray, loanArray, type, text){
 		var taskIds = taskArray.join(",");
 		var loanIds = loanArray.join(",");
 		Ext.MessageBox.show({
@@ -584,7 +644,7 @@ function cashAdvance(){
 			icon:Ext.Msg.INFO
 		});
 		Ext.Ajax.request({
-			params:{taskIds:taskIds, loanIds:loanIds, doType:type, currentUserId:userId, currentUserName:userName},
+			params:{taskIds:taskIds, loanIds:loanIds, doType:type, currentUserId:userId, currentUserName:userName, reason: text},
 			timeout:60000,
 			url: path + "/loan/doRequestTaskCashAdvance.action?method=doRequestTask",
 			success:function(response,options){
