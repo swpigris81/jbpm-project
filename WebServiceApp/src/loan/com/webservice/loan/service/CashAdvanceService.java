@@ -80,12 +80,13 @@ public interface CashAdvanceService {
      * @param doType 处理类型，00-审核驳回，01-审核通过，10-审批驳回，11-审核后通过
      * @param checkResult 审核意见
      * @param approveResult 审批意见
+     * @param reason 意见或者是原因
      * @return 处理结果{success:true,msg:"处理通过"}
      * @throws Exception
      * @author 大牙-小白
      * @update 2012-9-15 大牙-小白 [变更描述]
      */
     public Map<String, Object> doRequest(UserTransaction userTransaction, 
-            IRoleService roleService,  IJbpmService jbpmService, String taskIds, String loanIds, String userId, String userName, String doType, String checkResult, String approveResult) throws Exception;
+            IRoleService roleService,  IJbpmService jbpmService, String taskIds, String loanIds, String userId, String userName, String doType, String checkResult, String approveResult, String reason) throws Exception;
 
 }

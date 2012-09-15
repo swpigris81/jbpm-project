@@ -238,7 +238,7 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
     @Override
     public Map<String, Object> doRequest(UserTransaction userTransaction,
             IRoleService roleService, IJbpmService jbpmService, String taskIds,
-            String loanIds, String userId, String userName, String doType, String checkResult, String approveResult)
+            String loanIds, String userId, String userName, String doType, String checkResult, String approveResult, String reason)
             throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         try{
@@ -266,32 +266,46 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
                     
                     CashAdvanceInfo info = cashAdvanceDao.findById(loanId);
                     info.setCashCheckDate(new Date());
-                    info.setCashCheckUserId(userId);
-                    info.setCashCheckUserName(userName);
+                    
                     if("00".equals(doType)){
                         contentMap.put("cashCheckResult", "0");
                         info.setCashCheckResult("0");
                         info.setCashStatus(Constants.CASH_STATUS_03);
+                        info.setCashCheckRemark(reason);
+                        info.setCashCheckUserId(userId);
+                        info.setCashCheckUserName(userName);
                     }else if("01".equals(doType)){
                         contentMap.put("cashCheckResult", "1");
                         info.setCashCheckResult("1");
                         info.setCashStatus(Constants.CASH_STATUS_02);
+                        info.setCashCheckRemark(reason);
+                        info.setCashCheckUserId(userId);
+                        info.setCashCheckUserName(userName);
                     }else if("10".equals(doType)){
                         contentMap.put("cashApprovalResult", "0");
-                        info.setCashCheckResult("0");
+                        info.setCashApprovalResult("0");
                         info.setCashStatus(Constants.CASH_STATUS_06);
+                        info.setCashApprovalRemark(reason);
+                        info.setCashApprovalUserId(userId);
+                        info.setCashApprovalUserName(userName);
                     }else if("11".equals(doType)){
                         contentMap.put("cashApprovalResult", "1");
-                        info.setCashCheckResult("1");
+                        info.setCashApprovalResult("1");
                         info.setCashStatus(Constants.CASH_STATUS_05);
+                        info.setCashApprovalRemark(reason);
+                        info.setCashApprovalUserId(userId);
+                        info.setCashApprovalUserName(userName);
+                    }else if("99".equals(doType)){
+                        //再次发起请求
+                        info.setCashCheckResult(null);
+                        info.setCashApprovalResult(null);
+                        info.setCashStatus(Constants.CASH_STATUS_01);
+                        info.setCashReason(reason);
+                        contentMap.put("cashAmount", info.getCashAmount().doubleValue());
+                        contentMap.put("cashId", info.getId());
                     }
                     jbpmService.completeTask(userName, taskId, contentMap, Constants.PROCESS_LOAN_NAME);
                     cashAdvanceDao.update(info);
-                    //审核通过之后再次更新状态为：发起审批
-                    if(Constants.CASH_STATUS_02.equals(info.getCashStatus())){
-                        info.setCashStatus(Constants.CASH_STATUS_04);
-                        cashAdvanceDao.update(info);
-                    }
                     //记录一下任务-请款流水
                     CashTaskInfo taskInfo = new CashTaskInfo();
                     taskInfo.setCashId(loanId);

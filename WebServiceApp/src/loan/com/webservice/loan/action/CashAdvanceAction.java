@@ -58,6 +58,8 @@ public class CashAdvanceAction extends BaseAction {
     private String checkResult;
     /** 审批意见 **/
     private String approveResult;
+    /** 处理意见或者是原因 **/
+    private String reason;
     
     /**
      * <p>Discription:[方法功能中文描述]</p>
@@ -286,6 +288,22 @@ public class CashAdvanceAction extends BaseAction {
     }
 
     /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String reason.
+     */
+    public String getReason() {
+        return reason;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param reason The reason to set.
+     */
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    /**
      * <p>Discription:[我的请款信息]</p>
      * @return 显示我发起的请款列表
      * @author:[创建者中文名字]
@@ -432,7 +450,7 @@ public class CashAdvanceAction extends BaseAction {
                 resultMap.put("success", false);
                 resultMap.put("msg", "请选择需要处理的请款请求！");
             }else{
-                this.cashAdvanceService.doRequest(this.springJTM.getUserTransaction(), roleService, jbpmService, taskIds, loanIds, currentUserId, currentUserName, doType, checkResult, approveResult);
+                this.cashAdvanceService.doRequest(this.springJTM.getUserTransaction(), roleService, jbpmService, taskIds, loanIds, currentUserId, currentUserName, doType, checkResult, approveResult, reason);
             }
         }catch(Exception e){
             LOG.error(e.getMessage(), e);
