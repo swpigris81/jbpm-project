@@ -45,6 +45,7 @@ public class JbpmServiceImpl implements IJbpmService {
     }
 
     public void init() throws NamingException{
+        log.info(processName);
         if(jbpmClient == null){
             jbpmClient = JbpmSyncService.getInstance();
         }
