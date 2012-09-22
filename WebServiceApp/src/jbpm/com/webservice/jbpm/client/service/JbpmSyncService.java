@@ -234,6 +234,8 @@ public class JbpmSyncService {
                 kbuilder.add(new ClassPathResource("ProcessTask.bpmn"), ResourceType.BPMN2);
             }else{
                 for (String p: process) {
+                    log.info(p);
+                    log.info(new ClassPathResource(p));
                     //kbuilder.add(ResourceFactory.newClassPathResource(p), ResourceType.BPMN2);
                     kbuilder.add(new ClassPathResource(p), ResourceType.BPMN2);
                     //kbuilder.add(ResourceFactory.newClassPathResource(p), ResourceType.BPMN2);

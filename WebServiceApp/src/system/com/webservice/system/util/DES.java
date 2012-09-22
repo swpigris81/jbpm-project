@@ -150,7 +150,7 @@ public class DES {
 
     public static void main(String args[]) throws Exception {
         // 加密源数据
-        String encryptorString = "812877";
+        String encryptorString = "13563368";
 
         DES des = new DES();
 
