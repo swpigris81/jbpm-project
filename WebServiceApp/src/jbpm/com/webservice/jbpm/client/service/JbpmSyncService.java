@@ -423,7 +423,7 @@ public class JbpmSyncService {
         try {
             startProcess("com.webservice.process.task", params);
         }
-        catch (IllegalArgumentException ex) {
+        catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
         }
     }
@@ -432,16 +432,25 @@ public class JbpmSyncService {
      * <p>Discription:[启动流程]</p>
      * @param taskId 要启动的流程的ID
      * @param params
-     * @throws RuntimeException
      * @author:[创建者中文名字]
+     * @throws Exception 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void startProcess(String processId, Map<String, Object> params) throws RuntimeException {
+    public void startProcess(String processId, Map<String, Object> params) throws Exception {
         try {
             setProcessInstance(ksession.startProcess( processId, params ));
         }
-        catch (IllegalArgumentException ex) {
-            throw new RuntimeException(ex.getMessage());
+        catch (Exception ex) {
+        	ex.printStackTrace();
+            if(ex.getMessage().indexOf("Already connected. Disconnect first.") > -1){
+            	try {
+					syncTaskService.disconnect();
+					startProcess(processId, params);
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw e;
+				}
+            }
         }
     }
     /**
