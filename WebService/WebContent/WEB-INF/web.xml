@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+  <display-name>WebServiceApp</display-name>
+  <!-- tomcat上JNDI的数据源配置引用（若发布到其他平台，此处可以省略） -->
+  <!-- <resource-ref>
+    <description>This is a database connection</description>
+    <res-ref-name>jdbc/jbpm-ds</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref> -->
+  <!-- 系统编码配置 -->
+  <filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+  	<!-- Spring配置文件路径 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/classes/applicationContext.xml<!-- ,/WEB-INF/classes/applicationContext-shiro.xml -->
+		</param-value>
+	</context-param>
+	<!-- JBPM5.3用以启动一个工作流线程 -->
+	<!-- <servlet>
+  		<servlet-name>jbpm5.3</servlet-name>
+  		<servlet-class>com.webservice.jbpm.server.servlet.HumanTaskServerServlet</servlet-class>
+  		<load-on-startup>2</load-on-startup>
+  	</servlet> -->
+	<!-- Hibernate缓存配置 -->
+	<filter>
+		<filter-name>OpenSessionInViewFilter</filter-name>
+		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+		<init-param>
+			<param-name>singleSession</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>flushMode</param-name>
+			<param-value>AUTO</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>OpenSessionInViewFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- 集成Apache Shiro安全框架 -->
+	<!-- <filter>
+		<filter-name>ShiroFilter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<init-param>
+	        <param-name>targetFilterLifecycle</param-name>
+	        <param-value>true</param-value>
+	    </init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>ShiroFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping> -->
+	<!-- 集成Spring -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+	<!-- SpringSecurity session 监听器 -->
+	<listener>
+		<listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+	</listener>
+	<!-- SpringSecurity3配置 -->
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- 自定义Servlet配置 -->
+	<servlet>
+		<servlet-name>dwr</servlet-name>
+		<servlet-class>org.directwebremoting.servlet.DwrServlet</servlet-class>
+		<init-param>
+			<description>调试DWR,发布系统时应将其设为false</description>
+			<param-name>debug</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<description>使用服务器推技术(反转AJAX)</description>
+	      	<param-name>activeReverseAjaxEnabled</param-name>
+	      	<param-value>true</param-value>
+	  	</init-param>
+	  	<init-param>
+	      	<param-name>crossDomainSessionSecurity</param-name>
+	      	<param-value>false</param-value>
+	  	</init-param>
+	  	<init-param>
+			<param-name>maxWaitAfterWrite</param-name>
+			<param-value>100</param-value>
+	  	</init-param>
+	  	<init-param>
+	  		<param-name>config</param-name>
+	  		<param-value>/WEB-INF/classes/dwr.xml</param-value>
+	  	</init-param>
+	  	<init-param>
+	  		<param-name>initApplicationScopeCreatorsAtStartup</param-name>
+	  		<param-value>true</param-value>
+	  	</init-param>
+	  	<init-param>
+	  		<description>对dwr scriptSession 自定义管理</description>
+	  		<param-name>org.directwebremoting.extend.ScriptSessionManager</param-name>
+	  		<param-value>com.webservice.system.util.dwr.DwrScriptSessionManagerUtil</param-value>
+	  	</init-param>
+	  	<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>dwr</servlet-name>
+		<url-pattern>/dwr/*</url-pattern>
+	</servlet-mapping>
+	<!-- 初始化Spring上下文 -->
+	<servlet>
+		<servlet-name>SpringHelperInit</servlet-name>
+		<servlet-class>com.webservice.common.init.SpringInitServlet</servlet-class>
+		<load-on-startup>0</load-on-startup>
+		<description>初始化Spring上下文</description>
+	</servlet>
+	<!-- 初始化JBPM4的用户角色 -->
+	<!-- 
+	<servlet>
+		<servlet-name>JBPM4</servlet-name>
+		<servlet-class>com.webservice.jbpm4.init.JbpmUserGroupInitServlet</servlet-class>
+		<load-on-startup>100</load-on-startup>
+		<description>初始化JBPM4的用户角色</description>
+	</servlet>
+	-->
+	<!-- 集成Struts2 -->
+	<filter>
+		<filter-name>struts2</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>struts2</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- 避免内存泄漏 -->
+	<filter>
+		<filter-name>struts-cleanup</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>struts-cleanup</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- Spring刷新Interceptor防止内存泄漏 -->
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	<!-- 会话超时设置（分钟） -->
+	<session-config>
+		<session-timeout>480</session-timeout>
+	</session-config>
+	<welcome-file-list>
+	  <welcome-file>login.jsp</welcome-file>
+	  <welcome-file>index.html</welcome-file>
+	  <welcome-file>index.htm</welcome-file>
+	  <welcome-file>index.jsp</welcome-file>
+	  <welcome-file>default.html</welcome-file>
+	  <welcome-file>default.htm</welcome-file>
+	  <welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>
