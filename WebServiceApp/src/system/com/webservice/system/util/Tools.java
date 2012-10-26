@@ -456,7 +456,33 @@ public class Tools {
         }
         return c.getTime();
     }
-    
+    /**
+     * <p><strong>Description:</strong> 获取指定日期的上周一以及上周日的日期</p>
+     * @param date 指定日期
+     * @return 上周一，上周日的日期
+     * @throws ParseException
+     * @author <a href="mailto: dai_chao@huateng.com">代超</a>
+     * @update 日期: 2012-9-26
+     */
+    public static Date[] getLastWeekDate(Date date) throws ParseException{
+        Date [] d = new Date[2];
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        //上一周
+        cal.add(Calendar.WEEK_OF_YEAR, -1);
+        //上周的第一天(美国时间是周日，应该改为周一，所有增加一天)
+        int firtDayOfWeek = cal.getFirstDayOfWeek();
+        //上周的第一天(周一)
+        cal.set(Calendar.DAY_OF_WEEK, firtDayOfWeek);
+        cal.add(Calendar.DAY_OF_YEAR, 1);
+        d[0] = cal.getTime();
+        //上周的最后一天(美国时间是周六，应该增加一天)
+        cal.set(Calendar.DAY_OF_WEEK, 7);
+        //上周的最后一天(周日)
+        cal.add(Calendar.DAY_OF_YEAR, 1);
+        d[1] = cal.getTime();
+        return d;
+    }
     /**
      * <p>Discription:[判断某日期是否周末]</p>
      * @param date
@@ -651,6 +677,60 @@ public class Tools {
             throw e;
         }
         return cron;
+    }
+    
+    
+    /**
+     * <p><strong>Description:</strong> 判断起始时间与结束时间之间是否相差diff月</p>
+     * @param from 起始时间
+     * @param to 结束时间
+     * @param diff N月
+     * @return 是/否
+     * @throws ParseException
+     * @author <a href="mailto: dai_chao@huateng.com">代超</a>
+     * @update 日期: 2012-9-28
+     */
+    public static boolean getDifferBetweenTwoDate(String from, String to, int diff) throws ParseException{
+        boolean bool = false;
+        Calendar calFrom = Calendar.getInstance();
+        calFrom.setTime(StringToDate(from));
+        Calendar calTo = Calendar.getInstance();
+        calTo.setTime(StringToDate(to));
+        if(calTo.getTime().before(calFrom.getTime())){
+            //如果结束时间在开始时间之前
+            return false;
+        }
+        //起始时间加上N月
+        calFrom.add(Calendar.MONTH, diff);
+        //如果起始时间加上N月之后比结束时间大，则true，否则false
+        if(calFrom.getTime().before(calTo.getTime())){
+            bool = false;
+        }else{
+            bool = true;
+        }
+        return bool;
+    }
+    
+    /**
+     * <p><strong>Description:</strong> 判断开始日期是否在结束日期之后</p>
+     * @param from 开始日期
+     * @param to 结束日期
+     * @return 如果开始日期在结束日期之后，返回false，否则true
+     * @throws ParseException
+     * @author <a href="mailto: dai_chao@huateng.com">代超</a>
+     * @update 日期: 2012-9-28
+     */
+    public static boolean compareToDate(String from, String to) throws ParseException{
+        Calendar calFrom = Calendar.getInstance();
+        calFrom.setTime(StringToDate(from));
+        Calendar calTo = Calendar.getInstance();
+        calTo.setTime(StringToDate(to));
+        if(calTo.getTime().before(calFrom.getTime())){
+            //如果结束时间在开始时间之前
+            return false;
+        }else{
+            return true;
+        }
     }
     
     public static void iLoveBaby() throws ParseException{
