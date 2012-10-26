@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<process key="loan" name="loan" xmlns="http://jbpm.org/4.4/jpdl">
+   <start g="75,20,48,48" name="start1">
+      <transition g="-81,-22" name="to 填写请款单" to="填写请款单"/>
+   </start>
+   <task assignee="#{userName}" g="51,132,92,52" name="填写请款单">
+      <transition g="-81,-22" name="to 审核人审核" to="审核人审核"/>
+   </task>
+   <task candidate-groups="#{checkGroup}" g="51,264,92,52" name="审核人审核">
+      <transition g="188,288;187,239;189,157:-20,-18" name="审核驳回" to="填写请款单"/>
+      <transition g="96,366:-31,-21" name="审核通过" to="exclusive1"/>
+   </task>
+   <decision g="199,344,48,48" name="exclusive1">
+   <handler class="com.webservice.loan.decision.handler.LoanHandler" />
+      <transition g="-16,-15" name="no" to="end1"/>
+      <transition g="-81,-22" name="yes" to="审批人审批"/>
+   </decision>
+   <end g="199,463,48,48" name="end1" ends="execution" state="completed"/>
+   <task candidate-groups="#{approveGroup}" g="441,346,92,52" name="审批人审批">
+      <transition g="487,162:-81,-22" name="审批驳回" to="填写请款单"/>
+      <transition g="-50,-22" name="审批通过" to="end2"/>
+   </task>
+   <end g="465,465,48,48" name="end2" ends="execution" state="completed"/>
+</process>
