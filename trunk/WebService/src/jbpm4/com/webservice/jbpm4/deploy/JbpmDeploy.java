@@ -1,5 +1,9 @@
 package com.webservice.jbpm4.deploy;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.zip.ZipInputStream;
+
 import org.jbpm.api.Configuration;
 import org.jbpm.api.ProcessEngine;
 import org.jbpm.api.RepositoryService;
@@ -32,7 +36,14 @@ public class JbpmDeploy {
         HistoryService historyService = processEngine.getHistoryService();
         ManagementService managementService = processEngine.getManagementService();
         */
-        String deploymentid = repositoryService.createDeployment().addResourceFromClasspath("com/webservice/jbpm4/jpdl/loan.jpdl.xml").deploy();
+        //String deploymentid = repositoryService.createDeployment().addResourceFromClasspath("com/webservice/jbpm4/jpdl/loan.jpdl.xml").deploy();
+        ZipInputStream zis = null;
+        try {
+            zis = new ZipInputStream(new FileInputStream("D:/loan.zip"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        String deploymentid = repositoryService.createDeployment().addResourcesFromZipInputStream(zis).deploy();
         System.out.println(deploymentid);
         JbpmDeploy.deployId = deploymentid;
     }

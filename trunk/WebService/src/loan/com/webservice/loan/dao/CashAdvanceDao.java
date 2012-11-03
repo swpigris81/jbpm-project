@@ -38,6 +38,22 @@ public interface CashAdvanceDao {
     public void save(CashAdvanceInfo info);
     
     /**
+     * <p>Discription:[新增/修改请款]</p>
+     * @param info 请款信息
+     * @author 大牙-小白
+     * @update 2012-8-30 大牙-小白 [变更描述]
+     */
+    public void saveOrUpdate(CashAdvanceInfo info);
+    
+    /**
+     * <p>Discription:[删除请款信息]</p>
+     * @param idArray
+     * @author:大牙
+     * @update:2012-10-29
+     */
+    public void deleteReuqestCash(String idArray);
+    
+    /**
      * <p>Discription:[更新请款]</p>
      * @param info 请款信息
      * @author 大牙-小白

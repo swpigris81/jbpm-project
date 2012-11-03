@@ -202,7 +202,7 @@ public class BaseDao extends HibernateDaoSupport implements IBaseDao {
         return (Integer) getHibernateTemplate().execute(new HibernateCallback<Integer>(){
             @Override
             public Integer doInHibernate(Session session) throws HibernateException, SQLException {
-                log.info("excute by hql: " + sql);
+                log.info("excute by sql: " + sql);
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
                 if (parameter != null && parameter.length > 0) {
                     for (int i = 0; i < parameter.length; i++) {
@@ -210,6 +210,23 @@ public class BaseDao extends HibernateDaoSupport implements IBaseDao {
                     }
                 }
                 return new Integer(sqlQuery.executeUpdate());
+            }
+            
+        });
+    }
+    
+    public Integer excuteByHQL(final String hql, final Object parameter[]) {
+        return (Integer) getHibernateTemplate().execute(new HibernateCallback<Integer>(){
+            @Override
+            public Integer doInHibernate(Session session) throws HibernateException, SQLException {
+                log.info("excute by hql: " + hql);
+                Query query = session.createQuery(hql);
+                if (parameter != null && parameter.length > 0) {
+                    for (int i = 0; i < parameter.length; i++) {
+                        query.setParameter(i, parameter[i]);
+                    }
+                }
+                return new Integer(query.executeUpdate());
             }
             
         });

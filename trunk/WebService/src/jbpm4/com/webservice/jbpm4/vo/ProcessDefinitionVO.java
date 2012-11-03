@@ -11,6 +11,14 @@ public class ProcessDefinitionVO {
      */
     private String id;
     /**
+     * 流程部署ID
+     */
+    private String deploymentId;
+    /**
+     * 流程KEY
+     */
+    private String key;
+    /**
      * 流程定义名称
      */
     private String name;
@@ -18,6 +26,10 @@ public class ProcessDefinitionVO {
      * 流程定义版本
      */
     private String version;
+    /**
+     * 描述
+     */
+    private String description;
     /**
      * <p>Discription:[方法功能中文描述]</p>
      * @return String id.
@@ -60,6 +72,47 @@ public class ProcessDefinitionVO {
     public void setVersion(String version) {
         this.version = version;
     }
-    
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String key.
+     */
+    public String getKey() {
+        return key;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param key The key to set.
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String description.
+     */
+    public String getDescription() {
+        return description;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param description The description to set.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String deploymentId.
+     */
+    public String getDeploymentId() {
+        return deploymentId;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param deploymentId The deploymentId to set.
+     */
+    public void setDeploymentId(String deploymentId) {
+        this.deploymentId = deploymentId;
+    }
     
 }

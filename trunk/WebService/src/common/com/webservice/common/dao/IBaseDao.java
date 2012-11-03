@@ -70,6 +70,15 @@ public interface IBaseDao {
      */
     public Integer excuteBySQL(final String sql, final Object parameter[]);
     /**
+     * <p>Discription:[执行HQL的insert/update/delete]</p>
+     * @param hql hql语句
+     * @param parameter 参数
+     * @return
+     * @author:大牙
+     * @update:2012-10-29
+     */
+    public Integer excuteByHQL(final String hql, final Object parameter[]);
+    /**
      * <p>Discription:[调用jdbc执行复杂sql的查询]</p>
      * @param sql sql语句
      * @param start 分页查询起始

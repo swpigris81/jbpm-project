@@ -8,6 +8,12 @@
 <script type="text/javascript" src="<%=path%>/js/util/dataStore.js"></script>
 <script type="text/javascript" src="<%=path%>/js/ext-2.2.1/source/plugins/autocolumn/TaskQueue.js"></script>
 <script type="text/javascript" src="<%=path%>/js/ext-2.2.1/source/plugins/autocolumn/ColumnWidthCalculator.js"></script>
+
+<!-- Ext上传组件必须css以及js插件 begin -->
+<link href="<%=path %>/css/file-upload.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="<%=path %>/js/ext-2.2.1/source/ux/FileUploadField.js"></script>
+<!-- Ext上传组件必须css以及js插件 end -->
+
 <script type="text/javascript" src="<%=path%>/js/webservice/loan/loan.js"></script>
 <title>请款</title>
 </head>

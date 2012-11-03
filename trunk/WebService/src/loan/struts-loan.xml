@@ -20,5 +20,16 @@
 			 <result name="success">/jsp/webservice/loan/loan.jsp</result>
 			 <result name="input">/index.jsp</result>
 		</action>
+		<action name="deployLoanAction" class="com.webservice.loan.action.CashAdvanceAction" method="deployLoan">
+			<interceptor-ref name="fileUpload">
+				<!-- 只允许XML格式上传 -->
+				<param name="allowedTypes">text/xml</param>
+				<param name="maximumSize">2097152</param>
+			</interceptor-ref>
+			<param name="savePath">/temp</param>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result name="success">/jsp/webservice/loan/loan.jsp</result>
+			<result name="input">/index.jsp</result>
+		</action>
 	</package>
 </struts>

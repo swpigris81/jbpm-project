@@ -33,14 +33,25 @@ function cashAdvance(){
 	 */
 	var processReader = new Ext.data.JsonReader({
 		totalProperty : "totalCount",
-		root : "cashList"
+		root : "processList"
 	},[
 	   {name:"id"},
+	   {name:"deploymentId"},
+	   {name:"key"},
 	   {name:"name"},
-	   {name:"version"}
+	   {name:"version"},
+	   {name:"description"}
 	]);
-	
-	var processStore = new Ext.data.Store();
+	/**
+	 * 流程数据存储
+	 */
+	var processStore = new Ext.data.Store({
+		proxy:new Ext.data.HttpProxy({
+			url: path + "/loan/processListCashAdvance.action?method=processList"
+		}),
+		reader:processReader,
+		baseParams:{start:0, limit:50}
+	});
 	
 	/**
 	 * 渠道信息数据集
@@ -119,6 +130,34 @@ function cashAdvance(){
 		var cashSM = new Ext.grid.CheckboxSelectionModel();
 		return cashSM
 	}
+	/**
+	 * 流程展现
+	 */
+	var processCM = new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), getCashSM(), {
+		header:"流程编号",
+		dataIndex:"id",
+		width:70
+	},{
+		header:"流程部署编号",
+		dataIndex:"deploymentId",
+		width:90
+	},{
+		header:"流程关键字",
+		dataIndex:"key",
+		width:70
+	},{
+		header:"流程名称",
+		dataIndex:"name",
+		width:70
+	},{
+		header:"流程版本",
+		dataIndex:"version",
+		width:70
+	},{
+		header:"流程描述",
+		dataIndex:"description",
+		width:70
+	}]);
 	
 	/**
 	 * 请款展示样式
@@ -520,17 +559,292 @@ function cashAdvance(){
 		showAllWindow("addLoanRequestWindow", "新增请款", 500, 300, reqForm, null, buttons);
 	};
 	/**
+	 * 修改请款
+	 */
+	this.editLoanRequest = function(url, grid, callback){
+		var selectGrid;
+		if(grid){
+			selectGrid = grid;
+		}else{
+			selectGrid = cashGrid;
+		}
+		var gridSelectionModel = selectGrid.getSelectionModel();
+		var gridSelection = gridSelectionModel.getSelections();
+		if(gridSelection.length != 1){
+			Ext.MessageBox.alert('提示','请选择一条请款信息！');
+		    return false;
+		}
+		if(gridSelection[0].get("cashStatus") != "00" && gridSelection[0].get("cashStatus") != "03" && gridSelection[0].get("cashStatus") != "06"){
+			Ext.MessageBox.alert('提示','您只能修改处于【申请请款】,【审核驳回】,【审批驳回】的请款信息！');
+		    return false;
+		}
+		if(gridSelection[0].get("cashCheckDate") && !callback){
+			Ext.MessageBox.alert('提示','当前请款信息不能被修改，只能通过【我的待办任务】进行再发起！');
+		    return false;
+		}
+		var reqForm = getLoanRequestForm(url, false, false);
+		var buttons = [{
+			text:"暂时保存",
+			handler:function(){
+				if(reqForm.form.isValid()){
+					//00-申请请款
+					reqForm.form.findField("cashAdvanceInfo.cashStatus").setValue("00");
+					saveLoadRequest("editLoanRequestWindow", reqForm);
+				}
+			}
+		},{
+			text:"直接提交",
+			handler:function(){
+				if(reqForm.form.isValid()){
+					//01-发起审核
+					reqForm.form.findField("cashAdvanceInfo.cashStatus").setValue("01");
+					if(callback){
+						reqForm.form.findField("cashAdvanceInfo.cashStatus").setValue("00");
+					}
+					saveLoadRequest("editLoanRequestWindow", reqForm, callback);
+				}
+			}
+		},{
+			text:"取消请款",
+			handler:function(){
+				var w = Ext.getCmp("editLoanRequestWindow");
+				if(w){
+					w.close();
+				}
+			}
+		}];
+		showAllWindow("editLoanRequestWindow", "修改请款", 500, 300, reqForm, null, buttons);
+		setFormValues(reqForm, gridSelection);
+	};
+	/**
+	 * 修改表单值
+	 * @param reqForm
+	 * @param gridSelection
+	 */
+	function setFormValues(reqForm, gridSelection){
+		reqForm.form.findField("cashAdvanceInfo.cardId").setValue(gridSelection[0].get("cardId"));
+		reqForm.form.findField("cashAdvanceInfo.id").setValue(gridSelection[0].get("id"));
+		reqForm.form.findField("cashAdvanceInfo.cashAmount").setValue(gridSelection[0].get("cashAmount"));
+		reqForm.form.findField("cashAdvanceInfo.cashUserName").setValue(gridSelection[0].get("cashUserName"));
+		var cashDate = gridSelection[0].get("cashDate");
+		if(cashDate){
+			cashDate = cashDate.replace(/-/g, "/");
+			cashDate = new Date(cashDate);
+			reqForm.form.findField("cashAdvanceInfo.cashDate").setValue(cashDate.format('Y-m-d'));
+		}
+		//reqForm.form.findField("cashAdvanceInfo.cashDate").setValue(gridSelection[0].get("cashDate"));
+		reqForm.form.findField("cashAdvanceInfo.cashUserId").setValue(gridSelection[0].get("cashUserId"));
+		reqForm.form.findField("cashAdvanceInfo.cashReason").setValue(gridSelection[0].get("cashReason"));
+		reqForm.form.findField("cashAdvanceInfo.cashRemark").setValue(gridSelection[0].get("cashRemark"));
+		reqForm.form.findField("cashAdvanceInfo.cashCheckUserId").setValue(gridSelection[0].get("cashCheckUserId"));
+		reqForm.form.findField("cashAdvanceInfo.cashCheckUserName").setValue(gridSelection[0].get("cashCheckUserName"));
+		reqForm.form.findField("cashAdvanceInfo.cashCheckDate").setValue(gridSelection[0].get("cashCheckDate"));
+		reqForm.form.findField("cashAdvanceInfo.cashCheckResult").setValue(gridSelection[0].get("cashCheckResult"));
+		reqForm.form.findField("cashAdvanceInfo.cashApprovalUserId").setValue(gridSelection[0].get("cashApprovalUserId"));
+		reqForm.form.findField("cashAdvanceInfo.cashApprovalUserName").setValue(gridSelection[0].get("cashApprovalUserName"));
+		reqForm.form.findField("cashAdvanceInfo.cashApprovalDate").setValue(gridSelection[0].get("cashApprovalDate"));
+		reqForm.form.findField("cashAdvanceInfo.cashApprovalResult").setValue(gridSelection[0].get("cashApprovalResult"));
+		reqForm.form.findField("cashAdvanceInfo.processTaskId").setValue(gridSelection[0].get("processTaskId"));
+	}
+	
+	/**
+	 * 删除请款
+	 */
+	this.delLoanRequest = function(url){
+		var gridSelectionModel = cashGrid.getSelectionModel();
+		var gridSelection = gridSelectionModel.getSelections();
+		if(gridSelection.length < 1){
+			Ext.MessageBox.alert('提示','请至少选择一条请款信息！');
+		    return false;
+		}
+		var idArray = new Array();
+		for(var i=0; i<gridSelection.length; i++){
+			if(gridSelection[i].get("cashStatus") != "00"){
+				Ext.MessageBox.alert('提示','您只能删除处于【申请请款】的请款信息！');
+			    return false;
+			}
+			idArray.push(gridSelection[i].get("id"));
+		}
+		var idStr = idArray.join(",");
+		Ext.Msg.confirm("系统提示", "确定要删除您的请款信息？删除之后无法恢复！", function(btn){
+			if(btn == 'yes' || btn == "ok"){
+				Ext.Ajax.request({
+					params:{loanIds:idStr},
+					timeout:60000,
+					url: url,
+					success:function(response,options){
+						Ext.MessageBox.hide();
+						try{
+							var msg = Ext.util.JSON.decode(response.responseText);
+							if(msg && msg.msg){
+								Ext.Msg.alert("提示信息",msg.msg);
+								loadCashDataStore();
+							}else{
+								Ext.Msg.alert("提示信息","已成功删除您的请款信息！");
+								loadCashDataStore();
+							}
+						}catch(e){
+							Ext.Msg.alert("提示信息","系统错误，错误原因：" + e);
+						}
+					},failure:function(response,options){
+						Ext.Msg.hide();
+						try{
+							var msg = Ext.util.JSON.decode(response.responseText);
+							if(msg && msg.msg){
+								Ext.Msg.alert("提示信息",msg.msg);
+							}else{
+								Ext.Msg.alert("提示信息","删除您的请款信息已失败！");
+							}
+						}catch(e){
+							Ext.Msg.alert("提示信息","系统错误，错误原因：" + e);
+						}
+						return;
+					}
+				});
+			}
+		});
+	};
+	/**
 	 * 部署请款流程
 	 */
 	this.deployLoan = function(url){
-		
+		var processSM = getCashSM();
+		var processGrid = getProcessGrid(processStore, processCM, processSM, url);
+		showAllWindow("deployLoanWindow", "部署请款流程", 500, 300, processGrid, null, null);
+		Ext.getCmp("unDeployProcess").hide();
+		processStore.load();
 	};
 	/**
 	 * 卸载请款流程
 	 */
 	this.unDeployLoan = function(url){
-		
+		var processSM = getCashSM();
+		var processGrid = getProcessGrid(processStore, processCM, processSM, url);
+		showAllWindow("unDeployLoanWindow", "卸载请款流程", 500, 300, processGrid, null, null);
+		Ext.getCmp("deployNewProcess").hide();
+		processStore.load();
 	};
+	/**
+	 * 流程表格
+	 * @param dataStore
+	 * @param processCM
+	 * @param processSM
+	 * @returns {Ext.grid.GridPanel}
+	 */
+	function getProcessGrid(dataStore, processCM, processSM, url){
+		var processGrid = new Ext.grid.GridPanel({
+			collapsible:false,//是否可以展开
+			animCollapse:true,//展开时是否有动画效果
+			autoScroll:true,
+			loadMask:true,//载入遮罩动画（默认）
+			view: new Ext.grid.GridView({ forceFit:true }),
+			//plugins: [new Ext.ux.ColumnWidthCalculator()],
+			frame:true,
+			autoShow:true,
+			store:dataStore,
+			cm:processCM,
+			sm:processSM,
+			viewConfig:{forceFit:true},//若父容器的layout为fit，那么强制本grid充满该父容器
+			split: true,
+			stripeRows: true,
+			bbar:new Ext.PagingToolbar({
+				pageSize:50,//每页显示数
+				store:dataStore,
+				displayInfo:true,
+				displayMsg:"显示{0}-{1}条记录，共{2}条记录",
+				nextText:"下一页",
+				prevText:"上一页",
+				emptyMsg:"无相关记录"
+			}),
+			tbar:[{
+				text:"部署新流程",
+				id:"deployNewProcess",
+				handler:function(){
+					var form = getUploadProcessForm(url);
+					var button = [{
+						text:"确定部署",
+						handler:function(){
+							if(form.form.isValid()){
+								doDeployProcess(form, "deployNewProcessWindow");
+							}
+						}
+					},{
+						text:"取消部署",
+						handler:function(){
+							var w = Ext.getCmp("deployNewProcessWindow");
+							if(w){
+								w.close();
+							}
+						}
+					}];
+					showAllWindow("deployNewProcessWindow", "请选择流程文件(仅支持XML格式)", 500, 110, form, null, button);
+				}
+			},"-",{
+				text:"卸载流程",
+				id:"unDeployProcess",
+				handler:function(){
+					var gridSelectionModel = processGrid.getSelectionModel();
+					var gridSelection = gridSelectionModel.getSelections();
+					if(gridSelection.length < 1){
+						Ext.MessageBox.alert('提示','请至少选择一条流程信息！');
+					    return false;
+					}
+					var processArray = new Array();
+					for(var i=0; i<gridSelection.length; i++){
+						processArray.push(gridSelection[i].get("deploymentId"));
+					}
+					var processId = processArray.join(",");
+					Ext.Msg.confirm("系统提示", "确认要卸载所选流程？卸载之后流程相关信息将被删除，无法恢复！", function(btn){
+						if(btn == "ok" || btn == "yes"){
+							doUnDeployProcess(url, processId);
+						}
+					});
+				}
+			}]
+		});
+		return processGrid;
+	}
+	/**
+	 * 部署流程，上传流程图
+	 * @param url
+	 */
+	function getUploadProcessForm(url){
+		var importForm = new Ext.form.FormPanel({
+			url:url,
+			autoScroll:true,
+			labelAlign: 'right',
+			labelWidth:50,
+			frame:true,
+			waitMsgTarget:true,
+			fileUpload: true,
+			defaults: {
+	            msgTarget: 'side'
+	        },
+			items:[{
+				xtype: 'fileuploadfield',
+	            id: 'form-file',
+	            width:250,
+	            emptyText: '请选择请款流程文件（仅支持XML格式文件）',
+	            fieldLabel: '文件',
+	            name: 'process',
+	            allowBlank:false,
+	            buttonCfg: {
+	                text: '选择文件'
+	            },
+	            listeners:{
+	            	"fileselected":function(fb,v){
+	            		var extName = v.substr(v.lastIndexOf(".")+1);
+	            		if(extName!="XML" && extName != "xml"){
+	            			Ext.Msg.alert("提示信息","请您选择XML格式文件！");
+	            			importForm.getForm().reset();
+	            			return;
+	            		}
+	            	}
+	            }
+			}]
+		});
+		return importForm;
+	}
 	
 	/**
 	 * 新增/修改/详细表单
@@ -641,12 +955,18 @@ function cashAdvance(){
 			}, null, true);
 		}else if(type == "99"){
 			//再发起
-			Ext.Msg.prompt("系统提示", "请输入再请款原因：", function(btn, text){
-				if(btn == "ok"){
-					type = setDoType(gridSelection, type);
-					sendRequest(taskArray, loanArray, type, text);
-				}
-			}, null, true);
+			if(gridSelection.length != 1){
+				Ext.MessageBox.alert('提示','只能选择一条请款信息再发起！');
+			    return false;
+			}
+			if(gridSelection[0].get("cashUserId") != userId){
+				Ext.MessageBox.alert('提示','不能再发起别人的请款请求！');
+			    return false;
+			}
+			var url = path + "/loan/editRequestCashAdvance.action?method=editRequest";
+			editLoanRequest(url, cashTodoGrid, function(){
+				sendRequest(taskArray, loanArray, type, "");
+			});
 		}
 	}
 	/**
@@ -663,6 +983,106 @@ function cashAdvance(){
 			type = "1"+ type;
 		}
 		return type;
+	}
+	/**
+	 * 执行卸载部署
+	 */
+	function doUnDeployProcess(url, processId){
+		Ext.MessageBox.show({
+			msg:"正在卸载请款流程，请稍候...",
+			progressText:"正在卸载请款流程，请稍候...",
+			width:300,
+			wait:true,
+			waitConfig: {interval:200},
+			icon:Ext.Msg.INFO
+		});
+		Ext.Ajax.request({
+			params:{processId: processId},
+			timeout:60000,
+			url: url,
+			success:function(response,options){
+				Ext.MessageBox.hide();
+				try{
+					var msg = Ext.util.JSON.decode(response.responseText);
+					if(msg && msg.msg){
+						Ext.Msg.alert("提示信息",msg.msg);
+					}else{
+						Ext.Msg.alert("提示信息","已成功卸载请款流程！");
+					}
+					processStore.reload();
+				}catch(e){
+					Ext.Msg.alert("提示信息","系统错误，错误原因：" + e);
+				}
+			},failure:function(response,options){
+				Ext.Msg.hide();
+				try{
+					var msg = Ext.util.JSON.decode(response.responseText);
+					if(msg && msg.msg){
+						Ext.Msg.alert("提示信息",msg.msg);
+					}else{
+						Ext.Msg.alert("提示信息","卸载请款流程已失败！");
+					}
+				}catch(e){
+					Ext.Msg.alert("提示信息","系统错误，错误原因：" + e);
+				}
+				return;
+			}
+		});
+	}
+	/**
+	 * 上传文件，执行部署
+	 */
+	function doDeployProcess(form, windowId){
+		Ext.MessageBox.show({
+			msg:"正在部署请款流程，请稍候...",
+			progressText:"正在部署请款流程，请稍候...",
+			width:300,
+			wait:true,
+			waitConfig: {interval:200},
+			icon:Ext.Msg.INFO
+		});
+		form.getForm().submit({
+			timeout:60000,
+			success: function(form, action) {
+				Ext.Msg.hide();
+				try{
+					var result = Ext.decode(action.response.responseText);
+					if(result && result.success){
+						var msg = "请款流程部署成功！";
+						if(result.msg){
+							msg = result.msg;
+						}
+						Ext.Msg.alert('系统提示信息', msg, function(btn, text) {
+							if (btn == 'ok') {
+								Ext.getCmp(windowId).close();
+								processStore.reload();
+							}
+						});
+					}else if(!result.success){
+						var msg = "请款流程部署失败！";
+						if(result.msg){
+							msg = result.msg;
+						}
+						Ext.Msg.alert('系统提示信息', msg);
+					}
+				}catch(e){
+					Ext.Msg.alert('系统提示信息', "系统错误：" + e);
+				}
+			},
+			failure: function(form, action) {//action.result.errorMessage
+				Ext.Msg.hide();
+				var msg = "请款流程部署失败，请检查您的网络连接或者联系管理员！";
+				try{
+					var result = Ext.decode(action.response.responseText);
+					if(result.msg){
+						msg = result.msg;
+					}
+				}catch(e){
+					msg = "系统错误：" + e;
+				}
+				Ext.Msg.alert('系统提示信息', msg);
+			}
+		});
 	}
 	
 	/**
@@ -719,7 +1139,7 @@ function cashAdvance(){
 	 * @param windowId
 	 * @param form
 	 */
-	function saveLoadRequest(windowId, form){
+	function saveLoadRequest(windowId, form, callback){
 		Ext.MessageBox.show({
 			msg:"正在保存请款信息，请稍候...",
 			progressText:"正在保存请款信息，请稍候...",
@@ -741,10 +1161,14 @@ function cashAdvance(){
 						}
 						Ext.Msg.alert('系统提示信息', msg, function(btn, text) {
 							if (btn == 'ok') {
-								Ext.getCmp(windowId).close();
 								loadCashDataStore();
 							}
 						});
+						Ext.getCmp(windowId).close();
+						if(callback && (typeof(callback) == "function")){
+							callback();
+						}
+						
 					}else if(!result.success){
 						var msg = "系统消息发送失败！";
 						if(result.msg){
