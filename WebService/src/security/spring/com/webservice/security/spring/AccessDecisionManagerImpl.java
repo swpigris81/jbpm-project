@@ -43,9 +43,10 @@ public class AccessDecisionManagerImpl implements AccessDecisionManager {
     public void decide(Authentication authentication, Object object,
             Collection<ConfigAttribute> configAttributes)
             throws AccessDeniedException, InsufficientAuthenticationException {
-        log.info("AccessDecisionManagerImpl : "+object.toString());//object is a URL.
+        log.debug("AccessDecisionManagerImpl : "+object.toString());//object is a URL.
         //boolean bool = false;
         if (configAttributes == null) {
+            log.info("指定URL尚未分配权限！");
             return;
         }
         Iterator<ConfigAttribute> ite=configAttributes.iterator();
@@ -58,6 +59,7 @@ public class AccessDecisionManagerImpl implements AccessDecisionManager {
                 }
             }
         }
+        log.info("无权访问指定URL");
         throw new AccessDeniedException("no right");
     }
 

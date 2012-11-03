@@ -96,14 +96,31 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
      * @update 2012-8-30 大牙-小白 [变更描述]
      */
     public void saveMyRequestCash(CashAdvanceInfo info){
-        cashAdvanceDao.save(info);
+        cashAdvanceDao.saveOrUpdate(info);
     }
+    /**
+     * <p>Discription:[删除请款信息]</p>
+     * @param idArray
+     * @author:大牙
+     * @update:2012-10-29
+     */
+    public void deleteReuqestCash(String idArray){
+        if(idArray == null || "".equals(idArray.trim())){
+            return;
+        }
+        cashAdvanceDao.deleteReuqestCash(idArray);
+    }
+    
     public Map<String, Object> addNewRequest(IRoleService roleService, CashAdvanceInfo cashAdvanceInfo) throws Exception{
         Map<String, Object> resultMap = new HashMap<String, Object>();
         try{
+            if(cashAdvanceInfo.getId() == null || "".equals(cashAdvanceInfo.getId())){
+                cashAdvanceInfo.setId(null);
+            }
             if(Constants.CASH_STATUS_00.equals(cashAdvanceInfo.getCashStatus())){
                 //当用户点击暂时保存时的操作
                 saveMyRequestCash(cashAdvanceInfo);
+                resultMap.put("success", true);
                 resultMap.put("msg", "请款信息已经保存成功！");
             }else if(Constants.CASH_STATUS_01.equals(cashAdvanceInfo.getCashStatus())){
                 //当用户点击提交时的操作
@@ -439,7 +456,6 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
                         info.setCashCheckUserName(null);
                         info.setCashCheckDate(null);
                         info.setCashApprovalDate(null);
-                        info.setCashReason(reason);
                         contentMap.put("cashAmount", info.getCashAmount().doubleValue());
                         contentMap.put("cashId", info.getId());
                     }

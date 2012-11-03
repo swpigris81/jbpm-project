@@ -56,6 +56,13 @@ public interface CashAdvanceService {
      */
     public void saveMyRequestCash(CashAdvanceInfo info);
     /**
+     * <p>Discription:[删除请款信息]</p>
+     * @param idArray
+     * @author:大牙
+     * @update:2012-10-29
+     */
+    public void deleteReuqestCash(String idArray);
+    /**
      * <p>Discription:[新增请款]</p>
      * @param userTransaction 事务
      * @param roleService 角色服务

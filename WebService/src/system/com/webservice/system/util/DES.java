@@ -149,8 +149,8 @@ public class DES {
     }
 
     public static void main(String args[]) throws Exception {
-        // 加密源数据
-        String encryptorString = "13563368";
+        // 加密源数据13563368
+        String encryptorString = "8177loveyy";
 
         DES des = new DES();
 

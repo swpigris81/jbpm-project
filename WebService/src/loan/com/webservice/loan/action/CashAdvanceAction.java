@@ -1,28 +1,29 @@
 package com.webservice.loan.action;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.InitialContext;
-import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
-
+import org.jbpm.api.Configuration;
+import org.jbpm.api.ProcessDefinition;
+import org.jbpm.api.ProcessEngine;
+import org.jbpm.api.RepositoryService;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.subethamail.wiser.Wiser;
 
 import com.webservice.common.action.BaseAction;
+import com.webservice.jbpm4.vo.ProcessDefinitionVO;
 import com.webservice.loan.bean.CashAdvanceInfo;
-import com.webservice.loan.bean.CashTaskInfo;
 import com.webservice.loan.service.CashAdvanceService;
 import com.webservice.loan.service.CashTaskService;
-import com.webservice.system.common.constants.Constants;
-import com.webservice.system.role.bean.RoleInfo;
 import com.webservice.system.role.service.IRoleService;
 /**
  * <p>Description: [请款]</p>
@@ -43,6 +44,22 @@ public class CashAdvanceAction extends BaseAction {
     private String currentUserName;
     /** 请款信息 **/
     private CashAdvanceInfo cashAdvanceInfo;
+    /**
+     * 请款流程文件
+     */
+    private File process;
+    /**
+     * 请款流程文件类型
+     */
+    private String processContentType;
+    /**
+     * 请款流程文件名
+     */
+    private String processFileName;
+    /**
+     * 请款流程ID
+     */
+    private String processId;
     
     /** 请款任务ID **/
     private String taskIds;
@@ -56,6 +73,10 @@ public class CashAdvanceAction extends BaseAction {
     private String approveResult;
     /** 处理意见或者是原因 **/
     private String reason;
+    /**
+     * 邮件
+     */
+    private Wiser wiser = new Wiser();
     
     /**
      * <p>Discription:[方法功能中文描述]</p>
@@ -284,6 +305,70 @@ public class CashAdvanceAction extends BaseAction {
     }
 
     /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return File process.
+     */
+    public File getProcess() {
+        return process;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param process The process to set.
+     */
+    public void setProcess(File process) {
+        this.process = process;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String processContentType.
+     */
+    public String getProcessContentType() {
+        return processContentType;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param processContentType The processContentType to set.
+     */
+    public void setProcessContentType(String processContentType) {
+        this.processContentType = processContentType;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String processFileName.
+     */
+    public String getProcessFileName() {
+        return processFileName;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param processFileName The processFileName to set.
+     */
+    public void setProcessFileName(String processFileName) {
+        this.processFileName = processFileName;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String processId.
+     */
+    public String getProcessId() {
+        return processId;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param processId The processId to set.
+     */
+    public void setProcessId(String processId) {
+        this.processId = processId;
+    }
+
+    /**
      * <p>Discription:[我的请款信息]</p>
      * @return 显示我发起的请款列表
      * @author:[创建者中文名字]
@@ -450,6 +535,175 @@ public class CashAdvanceAction extends BaseAction {
                 out.print(getJsonString(resultMap));
                 out.flush();
                 out.close();
+            }
+        }
+        return null;
+    }
+    /**
+     * <p>Discription:[修改请款]</p>
+     * @return
+     * @author:大牙
+     * @update:2012-10-29
+     */
+    public String editRequest(){
+        return newRequest();
+    }
+    /**
+     * <p>Discription:[删除请款]</p>
+     * @return
+     * @author:大牙
+     * @update:2012-10-29
+     */
+    public String deleteRequest(){
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        // 定义TransactionDefinition并设置好事务的隔离级别和传播方式。
+        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+        // 代价最大、可靠性最高的隔离级别，所有的事务都是按顺序一个接一个地执行
+        definition.setIsolationLevel(TransactionDefinition.ISOLATION_SERIALIZABLE);
+        // 开始事务
+        TransactionStatus status = transactionManager.getTransaction(definition);
+        PrintWriter out = null;
+        try{
+            out = getPrintWriter();
+            if(loanIds == null || "".equals(loanIds.trim())){
+                resultMap.put("success", false);
+                resultMap.put("msg", "您选择要删除的请款信息为空！");
+            }else{
+                cashAdvanceService.deleteReuqestCash(loanIds);
+                resultMap.put("success", true);
+                resultMap.put("msg", "您选择要删除的请款信息已成功删除！");
+            }
+        }catch(Exception e){
+            LOG.error(e.getMessage(), e);
+            status.setRollbackOnly();
+            resultMap.put("success", false);
+            resultMap.put("msg", "系统错误，错误原因："+ e.getMessage());
+        }finally{
+            if(status.isRollbackOnly()){
+                this.transactionManager.rollback(status);
+            }else{
+                this.transactionManager.commit(status);
+            }
+            if(out != null){
+                out.print(getJsonString(resultMap));
+                out.flush();
+                out.close();
+            }
+        }
+        return null;
+    }
+    /**
+     * <p>Discription:[流程列表]</p>
+     * @return
+     * @author:大牙
+     * @update:2012-10-29
+     */
+    public String processList(){
+        ProcessEngine processEngine = Configuration.getProcessEngine();
+        RepositoryService repositoryService = processEngine.getRepositoryService();
+        //获取所有流程定义
+        Long allList = repositoryService.createProcessDefinitionQuery().count();
+        //分页查询流程定义
+        List<ProcessDefinition> pdList = repositoryService.createProcessDefinitionQuery().page(start, limit).list();
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        List<ProcessDefinitionVO> list = new ArrayList<ProcessDefinitionVO>();
+        for(ProcessDefinition pd : pdList){
+            ProcessDefinitionVO vo = new ProcessDefinitionVO();
+            vo.setId(pd.getId());
+            vo.setDeploymentId(pd.getDeploymentId());
+            vo.setKey(pd.getKey());
+            vo.setName(pd.getName());
+            vo.setVersion(String.valueOf(pd.getVersion()));
+            vo.setDescription(pd.getDescription());
+            list.add(vo);
+        }
+        resultMap.put("success", true);
+        resultMap.put("processList", list);
+        resultMap.put("totalCount", allList);
+        PrintWriter out = null;
+        try{
+            out = getPrintWriter();
+        }catch(Exception e){
+            LOG.error(e.getMessage(), e);
+            resultMap.put("success", false);
+            resultMap.put("msg", e.getMessage());
+        }finally{
+            if(out != null){
+                out.print(getJsonString(resultMap));
+                out.flush();
+                out.close();
+            }
+        }
+        return null;
+    }
+    /**
+     * <p>Discription:[部署流程]</p>
+     * @return
+     * @author:大牙
+     * @update:2012-10-29
+     */
+    public String deployLoan(){
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        if(process == null){
+            resultMap.put("success", false);
+            resultMap.put("msg", "请款流程文件不存在！");
+        }else if(processFileName.indexOf("jpdl.xml") < 0){
+            resultMap.put("success", false);
+            resultMap.put("msg", "请款流程文件类型不正确！");
+        }else{
+            PrintWriter out = null;
+            try{
+                LOG.info("流程文件类型是：" + this.processContentType);
+                out = getPrintWriter(getRequest(), getResponse(), "utf-8", "text/html; charset=utf-8");
+                //由于文件上传之后变成了*.tmp类似的文件名称，所以只能使用addResourceFromInputStream方法来进行部署
+                Configuration.getProcessEngine().getRepositoryService().createDeployment().addResourceFromInputStream(processFileName, new FileInputStream(process)).deploy();
+                //启动Email
+                wiser.start();
+                resultMap.put("success", true);
+                resultMap.put("msg", "请款流程已经部署成功！");
+            }catch(Exception e){
+                resultMap.put("success", false);
+                resultMap.put("msg", "系统异常，异常原因：" + e.getMessage());
+            }finally{
+                if(out != null){
+                    out.print(getJsonString(resultMap));
+                    out.flush();
+                    out.close();
+                }
+            }
+        }
+        return null;
+    }
+    /**
+     * <p>Discription:[卸载流程]</p>
+     * @return
+     * @author:大牙
+     * @update:2012-10-29
+     */
+    public String unDeployLoan(){
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        if(this.processId == null || "".equals(processId.trim())){
+            resultMap.put("success", false);
+            resultMap.put("msg", "所选请款流程为空！");
+        }else{
+            PrintWriter out = null;
+            try{
+                out = getPrintWriter();
+                String [] processIds = processId.split(",");
+                for(String id : processIds){
+                    Configuration.getProcessEngine().getRepositoryService().deleteDeploymentCascade(id);
+                }
+                resultMap.put("success", true);
+                resultMap.put("msg", "所选请款流程已成功卸载！");
+            }catch(Exception e){
+                resultMap.put("success", false);
+                resultMap.put("msg", "系统异常，异常原因：" + e.getMessage());
+            }finally{
+                if(out != null){
+                    out.print(getJsonString(resultMap));
+                    out.flush();
+                    out.close();
+                }
             }
         }
         return null;

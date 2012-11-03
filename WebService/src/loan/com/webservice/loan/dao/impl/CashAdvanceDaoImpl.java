@@ -30,6 +30,13 @@ public class CashAdvanceDaoImpl extends BaseDao implements CashAdvanceDao {
         }
         return 0L;
     }
+    
+    @Override
+    public void saveOrUpdate(CashAdvanceInfo info) {
+        log.info("begin saveOrUpdate cashAdvanceInfo");
+        getHibernateTemplate().saveOrUpdate(info);
+        log.info("end saveOrUpdate cashAdvanceInfo");
+    }
 
     @Override
     public void save(CashAdvanceInfo info) {
@@ -37,7 +44,30 @@ public class CashAdvanceDaoImpl extends BaseDao implements CashAdvanceDao {
         getHibernateTemplate().save(info);
         log.info("end save cashAdvanceInfo");
     }
-    
+    /**
+     * <p>Discription:[删除请款信息]</p>
+     * @param idArray
+     * @author:大牙
+     * @update:2012-10-29
+     */
+    public void deleteReuqestCash(String idArray){
+        log.info("begin delete cashAdvanceInfo");
+        StringBuffer sb = new StringBuffer("delete from CashAdvanceInfo model where 1=2 ");
+        if(idArray != null && !"".equals(idArray.trim())){
+            sb.append("or ( model.id in ( ");
+            String [] ids = idArray.split(",");
+            for(int i=0; i<ids.length; i++){
+                if(i == ids.length -1){
+                    sb.append(" ? )");
+                }else{
+                    sb.append(" ?, ");
+                }
+            }
+            sb.append(" ) ");
+            super.excuteByHQL(sb.toString(), ids);
+        }
+        log.info("end delete cashAdvanceInfo");
+    }
     /**
      * <p>Discription:[更新请款]</p>
      * @param info 请款信息
