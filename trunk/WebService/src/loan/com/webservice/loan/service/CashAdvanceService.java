@@ -3,9 +3,8 @@ package com.webservice.loan.service;
 import java.util.List;
 import java.util.Map;
 
-import javax.transaction.UserTransaction;
-
 import com.webservice.loan.bean.CashAdvanceInfo;
+import com.webservice.loan.vo.StatisticsVo;
 import com.webservice.system.role.service.IRoleService;
 
 /** 
@@ -98,5 +97,14 @@ public interface CashAdvanceService {
 
 //    public Map<String, Object> doRequest(UserTransaction userTransaction, 
 //            IRoleService roleService,  IJbpmService jbpmService, String taskIds, String loanIds, String userId, String userName, String doType, String checkResult, String approveResult, String reason) throws Exception;
-
+    /**
+     * <p>Discription:[请款统计]</p>
+     * @param statistics 请款统计查询条件
+     * @param userByName 我审核的请款统计
+     * @param userName 我的请款统计
+     * @return 请款统计信息，分月显示
+     * @author:大牙
+     * @update:2012-11-8
+     */
+    public List statistics(StatisticsVo statistics, String userByName, String userName);
 }

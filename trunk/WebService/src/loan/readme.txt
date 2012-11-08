@@ -1,6 +1,1 @@
-申请借款
-Application For Money
-
-Fund Requisition
-
-Cash advance（预借款申请）
+请款，大于1000元的请款需要二级审批，小于等于1000元的请款只需要一级审批即可。

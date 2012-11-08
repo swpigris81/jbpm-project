@@ -1,5 +1,6 @@
 package com.webservice.loan.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -8,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import com.webservice.common.dao.impl.BaseDao;
 import com.webservice.loan.bean.CashAdvanceInfo;
 import com.webservice.loan.dao.CashAdvanceDao;
+import com.webservice.loan.vo.StatisticsVo;
 
 /** 
  * <p>Description: [请款]</p>
@@ -111,5 +113,76 @@ public class CashAdvanceDaoImpl extends BaseDao implements CashAdvanceDao {
             return super.queryPageByHQL(sql.toString(), cashIds.toArray(), start, limit);
         }
         return super.queryPageByHQL(sql.toString(), new Object[]{}, start, limit);
+    }
+    
+    /**
+     * <p>Discription:[我的请款统计]</p>
+     * @param statistics 统计条件
+     * @param userName 我的请款
+     * @return 请款集合
+     * @author:大牙
+     * @update:2012-11-8
+     */
+    public List myStatistics(StatisticsVo statistics, String userName){
+        List list = null;
+        List paramList = new ArrayList();
+        StringBuffer hql = new StringBuffer("from CashAdvanceInfo model where 1=1");
+        if(statistics != null){
+            if(statistics.getStatisticsBeginDate() != null && !"".equals(statistics.getStatisticsBeginDate())){
+                hql.append(" and model.cashDate >= ? ");
+                paramList.add(statistics.getStatisticsBeginDate());
+            }
+            if(statistics.getStatisticsEndDate() != null && !"".equals(statistics.getStatisticsEndDate())){
+                hql.append(" and model.cashDate <= ? ");
+                paramList.add(statistics.getStatisticsEndDate());
+            }
+        }
+        if(userName != null && !"".equals(userName.trim())){
+            hql.append(" and (model.cashUserId = ? or model.cashUserName like ? ) ");
+            paramList.add(userName);
+            paramList.add("%" + userName + "%");
+        }
+        log.info(hql.toString());
+        list = super.queryByHQL(hql.toString(), paramList.toArray());
+        return list;
+    }
+    
+    /**
+     * <p>Discription:[我的请款统计]</p>
+     * @param statistics 统计条件
+     * @param userByName 我审核的请款
+     * @return 请款集合
+     * @author:大牙
+     * @update:2012-11-8
+     */
+    public List statisticsByMe(StatisticsVo statistics, String userByName){
+        List list = null;
+        List paramList = new ArrayList();
+        StringBuffer hql = new StringBuffer("from CashAdvanceInfo model where 1=1");
+        if(statistics != null){
+            if(statistics.getStatisticsBeginDate() != null && !"".equals(statistics.getStatisticsBeginDate())){
+                hql.append(" and model.cashDate >= ? ");
+                paramList.add(statistics.getStatisticsBeginDate());
+            }
+            if(statistics.getStatisticsEndDate() != null && !"".equals(statistics.getStatisticsEndDate())){
+                hql.append(" and model.cashDate <= ? ");
+                paramList.add(statistics.getStatisticsEndDate());
+            }
+            if(statistics.getStatisticsName() != null && !"".equals(statistics.getStatisticsName().trim())){
+                hql.append(" and (model.cashUserId = ? or model.cashUserName like ? )");
+                paramList.add(statistics.getStatisticsName());
+                paramList.add("%" + statistics.getStatisticsName() + "%");
+            }
+        }
+        if(userByName != null && !"".equals(userByName.trim())){
+            hql.append(" and (model.cashCheckUserId = ? or model.cashCheckUserName like ? or model.cashApprovalUserId = ? or model.cashApprovalUserName like ? ) ");
+            paramList.add(userByName);
+            paramList.add("%" + userByName + "%");
+            paramList.add(userByName);
+            paramList.add("%" + userByName + "%");
+        }
+        log.info(hql.toString());
+        list = super.queryByHQL(hql.toString(), paramList.toArray());
+        return list;
     }
 }

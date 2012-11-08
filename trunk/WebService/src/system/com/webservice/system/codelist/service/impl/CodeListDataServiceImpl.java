@@ -205,7 +205,7 @@ public class CodeListDataServiceImpl implements ICodeListDataService {
             }
         }
         sql.append(" ) ");
-        this.baseDao.excuteSQL(sql.toString(), codeList);
+        this.baseDao.excuteBySQL(sql.toString(), codeList);
     }
     @Override
     public List findCodeDataListTree(String codeId, String parentDataKey) throws SQLException {

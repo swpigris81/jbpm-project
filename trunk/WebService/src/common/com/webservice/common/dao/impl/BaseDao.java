@@ -180,7 +180,19 @@ public class BaseDao extends HibernateDaoSupport implements IBaseDao {
             return null;
         }
     }
-    
+    /**
+     * <p>Discription:[此方法已过时]</p>
+     * @deprecated
+     * @param sql
+     * @param params
+     * @return
+     * @throws DataAccessResourceFailureException
+     * @throws HibernateException
+     * @throws IllegalStateException
+     * @throws SQLException
+     * @author:大牙
+     * @update:2012-11-7
+     */
     public int excuteSQL(final String sql, final Object[] params) throws DataAccessResourceFailureException, HibernateException, IllegalStateException, SQLException{
         log.info("excute by sql: " + sql);
         Session session = getSession();
@@ -246,6 +258,7 @@ public class BaseDao extends HibernateDaoSupport implements IBaseDao {
     }
     /**
      * <p>Discription:[JDBC批量执行SQL语句]</p>
+     * @deprecated
      * @param sql
      * @param paramList 一个数组集合
      * @return
@@ -290,7 +303,7 @@ public class BaseDao extends HibernateDaoSupport implements IBaseDao {
                 if(paramList != null && paramList.size() > 0){
                     for(int i=0, j=paramList.size(); i < j; i++){
                         Object[] obj = paramList.get(i);
-                        excuteSQL(sql, obj);
+                        excuteBySQL(sql, obj);
                     }
                 }
             }
