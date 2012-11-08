@@ -3,6 +3,7 @@ package com.webservice.loan.dao;
 import java.util.List;
 
 import com.webservice.loan.bean.CashAdvanceInfo;
+import com.webservice.loan.vo.StatisticsVo;
 
 /** 
  * <p>Description: [描述该类概要功能介绍]</p>
@@ -76,4 +77,23 @@ public interface CashAdvanceDao {
      * @update 2012-9-8 大牙-小白 [变更描述]
      */
     public List<CashAdvanceInfo> getCashInfoByIds(List<String> cashIds, int start, int limit);
+    /**
+     * <p>Discription:[我的请款统计]</p>
+     * @param statistics 统计条件
+     * @param userName 我的请款
+     * @return 请款集合
+     * @author:大牙
+     * @update:2012-11-8
+     */
+    public List myStatistics(StatisticsVo statistics, String userName);
+    
+    /**
+     * <p>Discription:[我的请款统计]</p>
+     * @param statistics 统计条件
+     * @param userByName 我审核的请款
+     * @return 请款集合
+     * @author:大牙
+     * @update:2012-11-8
+     */
+    public List statisticsByMe(StatisticsVo statistics, String userByName);
 }

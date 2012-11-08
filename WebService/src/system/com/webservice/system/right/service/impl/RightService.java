@@ -82,6 +82,6 @@ public class RightService implements IRightService {
             }
         }
         sql += " )";
-        this.baseDao.excuteSQL(sql, roles);
+        this.baseDao.excuteBySQL(sql, roles);
     }
 }

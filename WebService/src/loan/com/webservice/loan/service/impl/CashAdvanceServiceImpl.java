@@ -1,14 +1,17 @@
 package com.webservice.loan.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.mapping.Array;
 import org.jbpm.api.Configuration;
 import org.jbpm.api.ExecutionService;
 import org.jbpm.api.ProcessEngine;
@@ -21,9 +24,11 @@ import com.webservice.loan.bean.CashTaskInfo;
 import com.webservice.loan.dao.CashAdvanceDao;
 import com.webservice.loan.dao.CashTaskDao;
 import com.webservice.loan.service.CashAdvanceService;
+import com.webservice.loan.vo.StatisticsVo;
 import com.webservice.system.common.constants.Constants;
 import com.webservice.system.role.bean.RoleInfo;
 import com.webservice.system.role.service.IRoleService;
+import com.webservice.system.util.Tools;
 
 /** 
  * <p>Description: [描述该类概要功能介绍]</p>
@@ -575,4 +580,130 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
 //        }
 //        return resultMap;
 //    }
+    
+    /**
+     * <p>Discription:[请款统计]</p>
+     * @param statistics 请款统计查询条件
+     * @param userByName 我审核的请款统计
+     * @param userName 我的请款统计
+     * @return 请款统计信息，分月显示
+     * @author:大牙
+     * @update:2012-11-8
+     */
+    public List statistics(StatisticsVo statistics, String userByName, String userName){
+        List statisticsList = new ArrayList();
+        if(userByName == null || "".equals(userByName.trim())){
+            //查询我的统计，请款人是userName
+            if(userName != null && !"".equals(userName.trim())){
+                statisticsList = cashAdvanceDao.myStatistics(statistics, userName);
+            }
+        }else if(userName == null || "".equals(userName.trim())){
+            //查询我审核的请款统计
+            statisticsList = cashAdvanceDao.statisticsByMe(statistics, userByName);
+        }
+        return makeStatistics(statisticsList);
+    }
+    /**
+     * <p>Discription:[组装统计信息]</p>
+     * @param statisticsList 请款信息
+     * @return 统计信息
+     * @author:大牙
+     * @update:2012-11-8
+     */
+    public List<StatisticsVo> makeStatistics(List<CashAdvanceInfo> statisticsList){
+        List<StatisticsVo> statisticList = new ArrayList<StatisticsVo>();
+        if(statisticsList != null && !statisticsList.isEmpty()){
+            //使用年月来分别存放请款信息以便统计
+            Map<Integer, ArrayList<CashAdvanceInfo>> map = new HashMap<Integer, ArrayList<CashAdvanceInfo>>();
+            for(CashAdvanceInfo info : statisticsList){
+                ArrayList<CashAdvanceInfo> tempList = null;
+                if(map.get(Tools.getMonthFromDate(info.getCashDate())) != null){
+                    //如果已经存在相同月份的请款信息
+                    tempList = map.get(Tools.getMonthFromDate(info.getCashDate()));
+                }else{
+                    //如果不存在相同月份的请款信息
+                    tempList = new ArrayList<CashAdvanceInfo>();
+                }
+                tempList.add(info);
+                map.put(Tools.getMonthFromDate(info.getCashDate()), tempList);
+            }
+            if(map != null && !map.isEmpty()){
+                Set<Integer> keySet = map.keySet();
+                for(int key : keySet){
+                    //统计请款总数
+                    BigDecimal statisticsAllLoan = new BigDecimal("0");
+                    //已批准请款总数
+                    BigDecimal statisticsAllPassLoan = new BigDecimal("0");
+                    //正在审批请款总数
+                    BigDecimal statisticsCheckingLoan = new BigDecimal("0");
+                    //审批驳回请款总数
+                    BigDecimal statisticsRejectLoan = new BigDecimal("0");
+                    ArrayList<CashAdvanceInfo> list = map.get(key);
+                    StatisticsVo vo = makeLoanInfo(list, statisticsAllLoan, statisticsAllPassLoan,
+                            statisticsCheckingLoan, statisticsRejectLoan);
+                    statisticList.add(vo);
+                }
+            }
+        }
+        return statisticList;
+    }
+    /**
+     * <p>Discription:[统计]</p>
+     * @param list 要统计的数据
+     * @param statisticsAllLoan 统计所有请款
+     * @param statisticsAllPassLoan 统计所有审批通过的请款
+     * @param statisticsCheckingLoan 统计正在审批的请款
+     * @param statisticsRejectLoan 统计审核驳回的请款
+     * @author:大牙
+     * @update:2012-11-8
+     */
+    public StatisticsVo makeLoanInfo(ArrayList<CashAdvanceInfo> list,
+            BigDecimal statisticsAllLoan, BigDecimal statisticsAllPassLoan,
+            BigDecimal statisticsCheckingLoan, BigDecimal statisticsRejectLoan) {
+        StatisticsVo vo = new StatisticsVo();
+        if(list != null && !list.isEmpty()){
+            Date[] date = new Date[list.size()];
+            int i=0;
+            for(CashAdvanceInfo info : list){
+                date[i] = info.getCashDate();
+                statisticsAllLoan = statisticsAllLoan.add(info.getCashAmount());
+                //需更高级审批时
+                if(info.getCashAmount().compareTo(new BigDecimal(Constants.DEFAULT_LOAN_AMOUNT)) == 1){
+                    if (Constants.CASH_STATUS_05.equals(info.getCashStatus())) {
+                        // 审批通过
+                        statisticsAllPassLoan = statisticsAllPassLoan.add(info.getCashAmount());
+                    } else if (Constants.CASH_STATUS_03.equals(info.getCashStatus())
+                            || Constants.CASH_STATUS_06.equals(info.getCashStatus())) {
+                        // 审核或者是审批驳回
+                        statisticsRejectLoan = statisticsRejectLoan.add(info.getCashAmount());
+                    } else if (Constants.CASH_STATUS_01.equals(info.getCashStatus())
+                            || Constants.CASH_STATUS_02.equals(info.getCashStatus())
+                            || Constants.CASH_STATUS_04.equals(info.getCashStatus())) {
+                        // 发起审核(正在审核)
+                        statisticsCheckingLoan = statisticsCheckingLoan.add(info.getCashAmount());
+                    }
+                }else{
+                    if(Constants.CASH_STATUS_02.equals(info.getCashStatus())){
+                        //审核通过
+                        statisticsAllPassLoan = statisticsAllPassLoan.add(info.getCashAmount());
+                    }else if(Constants.CASH_STATUS_03.equals(info.getCashStatus())){
+                        //审核驳回
+                        statisticsRejectLoan = statisticsRejectLoan.add(info.getCashAmount());
+                    }else if(Constants.CASH_STATUS_01.equals(info.getCashStatus())){
+                        //发起审核(正在审核)
+                        statisticsCheckingLoan = statisticsCheckingLoan.add(info.getCashAmount());
+                    }
+                }
+                i ++ ;
+            }
+            vo.setStatisticsAllLoan(statisticsAllLoan);
+            vo.setStatisticsAllPassLoan(statisticsAllPassLoan);
+            vo.setStatisticsCheckingLoan(statisticsCheckingLoan);
+            vo.setStatisticsRejectLoan(statisticsRejectLoan);
+            vo.setStatisticsName(list.get(0).getCashUserName());
+            vo.setStatisticsBeginDate(Tools.getMinDate(date));
+            vo.setStatisticsEndDate(Tools.getMaxDate(date));
+        }
+        return vo;
+    }
 }

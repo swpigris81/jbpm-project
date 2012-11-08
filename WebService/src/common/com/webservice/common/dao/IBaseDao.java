@@ -49,7 +49,8 @@ public interface IBaseDao {
      */
     public List queryPageBySQL(String sql, Object[] params, int start, int limit);
     /**
-     * <p>Discription:[调用jdbc执行sql语句,用于insert/update/delete,需要自行组装sql语句]</p>
+     * <p>Discription:[调用jdbc执行sql语句,用于insert/update/delete,需要自行组装sql语句, 已过时，请参考: <code>com.webservice.common.dao.IBaseDao#excuteBySQL</code>]</p>
+     * @deprecated
      * @param sql
      * @return
      * @throws DataAccessResourceFailureException
@@ -60,6 +61,7 @@ public interface IBaseDao {
      * @update: 2011-7-3 代超[变更描述]
      */
     public int excuteSQL(String sql, Object[] params) throws DataAccessResourceFailureException, HibernateException, IllegalStateException, SQLException;
+    
     /**
      * <p>Discription:[调用Hibernate自带的jdbc执行sql语句,用于insert/update/delete,需要自行组装sql语句]</p>
      * @param sql
@@ -103,7 +105,8 @@ public interface IBaseDao {
     public List<Object []> queryListByPageByJDBC(String sql, int start, int limit, SQLParameter[] params);
     
     /**
-     * <p>Discription:[JDBC批量执行SQL语句]</p>
+     * <p>Discription:[JDBC批量执行SQL语句, 已过时, 请参考: <code>com.webservice.common.dao.IBaseDao#excuteBySQL</code>]</p>
+     * @deprecated
      * @param sql
      * @param paramList 一个数组集合
      * @return

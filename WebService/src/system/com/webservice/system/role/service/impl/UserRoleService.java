@@ -107,7 +107,7 @@ public class UserRoleService implements IUserRoleService {
             }
         }
         sql += " )";
-        this.baseDao.excuteSQL(sql, roles);
+        this.baseDao.excuteBySQL(sql, roles);
     }
     
     /**
@@ -131,7 +131,7 @@ public class UserRoleService implements IUserRoleService {
             }
         }
         sql += " )";
-        this.baseDao.excuteSQL(sql, users);
+        this.baseDao.excuteBySQL(sql, users);
     }
     
     /**
@@ -158,7 +158,7 @@ public class UserRoleService implements IUserRoleService {
             }
         }
         sql += " )";
-        this.baseDao.excuteSQL(sql, users);
+        this.baseDao.excuteBySQL(sql, users);
     }
     
     /**

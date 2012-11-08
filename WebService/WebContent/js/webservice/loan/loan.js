@@ -54,7 +54,7 @@ function cashAdvance(){
 	});
 	
 	/**
-	 * 渠道信息数据集
+	 * 请款信息数据集
 	 */
 	var cashDataStore = new Ext.data.Store({
 		proxy:new Ext.data.HttpProxy({
@@ -122,6 +122,62 @@ function cashAdvance(){
 			}
 		}
 	});
+	/**
+	 * 统计属性
+	 */
+	var statisticsReader = new Ext.data.JsonReader({
+		totalProperty : "totalCount",
+		root : "statisticsList"
+	},[
+	   {name:"statisticsName"},
+	   {name:"statisticsBeginDate"},
+	   {name:"statisticsEndDate"},
+	   {name:"statisticsAllLoan"},
+	   {name:"statisticsAllPassLoan"},
+	   {name:"statisticsCheckingLoan"},
+	   {name:"statisticsRejectLoan"}
+	]);
+	/**
+	 * 统计数据集
+	 */
+	function getStatisticsStore(){
+		var statisticsStore = new Ext.data.Store({
+			proxy:new Ext.data.HttpProxy({
+				url: path + "/loan/statisticsCashAdvance.action?method=statistics"
+			}),
+			reader:statisticsReader,
+			//倒叙排序
+			sortInfo:{field: 'statisticsName', direction: 'ASC'},
+			listeners:{
+				"loadexception":function(loader, node, response){
+					try{
+						if(response.status == "200"){
+							try{
+								var re = Ext.decode(response.responseText);
+								if(re){
+									Ext.Msg.alert('错误提示',re.msg, function(btn){
+									});
+								}
+							}catch(e){
+								Ext.Msg.alert('错误提示',"系统错误！错误代码："+e, function(btn){
+								});
+							}
+						}else{
+							httpStatusCodeHandler(response.status);
+						}
+					}catch(e){
+						Ext.Msg.alert('错误提示',"系统错误！错误代码："+e, function(btn){
+						});
+					}
+				}
+			}
+		});
+		return statisticsStore;
+	}
+	
+	var myStatisticStore = getStatisticsStore();
+	var statisticByMeStore = getStatisticsStore();
+	
 	
 	/**
 	 * 数据展现样式
@@ -218,6 +274,57 @@ function cashAdvance(){
 		sortable:true,
 		width:70
 	}]);
+	/**
+	 * 统计显示列表
+	 */
+	var statisticsCM = new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(),{
+		header:"请款人",
+		dataIndex:"statisticsName",
+		width:70
+	},{
+		header:"统计开始日期",
+		dataIndex:"statisticsBeginDate",
+		renderer:function(val){
+			if(val){
+				if(val.indexOf("-") > -1){
+					val = val.replace(/-/g, "/");
+				}
+				var dt = new Date(val);
+				return dt.format('Y-m-d');
+			}
+		},
+		width:70
+	},{
+		header:"统计结束日期",
+		dataIndex:"statisticsEndDate",
+		renderer:function(val){
+			if(val){
+				if(val.indexOf("-") > -1){
+					val = val.replace(/-/g, "/");
+				}
+				var dt = new Date(val);
+				return dt.format('Y-m-d');
+			}
+		},
+		width:70
+	},{
+		header:"请款总数",
+		dataIndex:"statisticsAllLoan",
+		width:70
+	},{
+		header:"已批准请款总数",
+		dataIndex:"statisticsAllPassLoan",
+		width:70
+	},{
+		header:"正在审批请款总数",
+		dataIndex:"statisticsCheckingLoan",
+		width:70
+	},{
+		header:"审批驳回请款总数",
+		dataIndex:"statisticsRejectLoan",
+		width:70
+	}]);
+	
 	//查询参数
 	var params = {};
 	/**
@@ -316,6 +423,94 @@ function cashAdvance(){
 	});
 	
 	/**
+	 * 请款统计查询面板
+	 */
+	var searchStatisticsPanel = new Ext.form.FormPanel({
+		//id:"searchPanel",
+		buttonAlign:"right",
+		labelAlign:"right",
+		border:true,
+		frame:true,
+		labelWidth:80,
+		autoHeight:true,
+		//height:80,
+		layout:'column',
+		region:'north',
+		items:[{
+			columnWidth:.30,
+			layout:'form',
+			items:[getDateField("statistics.statisticsBeginDate", "统计开始日期", true, false)]
+		},{
+			columnWidth:.30,
+			layout:'form',
+			items:[getDateField("statistics.statisticsEndDate", "统计结束日期", true, false)]
+		}],
+		buttons:[{
+			text:"查询",
+			handler:function(){
+				var baseParams = searchStatisticsPanel.getForm().getValues();
+				baseParams.start = 0;
+				baseParams.limit = 50;
+				baseParams.userName = userName;
+				myStatisticStore.load({
+					params:baseParams
+				});
+			}
+		},{
+			text:"重置",
+			handler:function(){
+				searchStatisticsPanel.form.reset();
+			}
+		}]
+	});
+	
+	/**
+	 * 我审批的请款统计查询面板
+	 */
+	var searchStatisticsByMePanel = new Ext.form.FormPanel({
+		//id:"searchPanel",
+		buttonAlign:"right",
+		labelAlign:"right",
+		border:true,
+		frame:true,
+		labelWidth:80,
+		autoHeight:true,
+		//height:80,
+		layout:'column',
+		region:'north',
+		items:[{
+			columnWidth:.30,
+			layout:'form',
+			items:[getTextField("statistics.statisticsName", "请款人", true, false)]
+		},{
+			columnWidth:.30,
+			layout:'form',
+			items:[getDateField("statistics.statisticsBeginDate", "统计开始日期", true, false)]
+		},{
+			columnWidth:.30,
+			layout:'form',
+			items:[getDateField("statistics.statisticsEndDate", "统计结束日期", true, false)]
+		}],
+		buttons:[{
+			text:"查询",
+			handler:function(){
+				var baseParams = searchStatisticsByMePanel.getForm().getValues();
+				baseParams.start = 0;
+				baseParams.limit = 50;
+				baseParams.userByName = userName;
+				statisticByMeStore.load({
+					params:baseParams
+				});
+			}
+		},{
+			text:"重置",
+			handler:function(){
+				searchStatisticsByMePanel.form.reset();
+			}
+		}]
+	});
+	
+	/**
 	 * 我的请款列表
 	 */
 	var cashGrid = new Ext.grid.GridPanel({
@@ -355,7 +550,7 @@ function cashAdvance(){
 	 */
 	var cashTodoGrid = new Ext.grid.GridPanel({
 		//id:"cashGrid",
-		title:"请款管理",
+		title:"待办任务列表",
 		region:'center',
 		collapsible:false,//是否可以展开
 		animCollapse:true,//展开时是否有动画效果
@@ -385,6 +580,43 @@ function cashAdvance(){
 		})
 	});
 	/**
+	 * 请款统计列表
+	 * @param statisticsCM
+	 * @param statisticsStore
+	 * @returns {Ext.grid.GridPanel}
+	 */
+	function showStatisticsGrid(statisticsCM, statisticsStore){
+		var statisticsGrid = new Ext.grid.GridPanel({
+			//id:"cashGrid",
+			title:"请款统计",
+			region:'center',
+			collapsible:false,//是否可以展开
+			animCollapse:true,//展开时是否有动画效果
+			autoScroll:true,
+			loadMask:true,//载入遮罩动画（默认）
+			view: new Ext.grid.GridView({ forceFit:true }),
+			plugins: [new Ext.ux.ColumnWidthCalculator()],
+			frame:true,
+			autoShow:true,
+			store:statisticsStore,
+			cm:statisticsCM,
+			viewConfig:{forceFit:true},//若父容器的layout为fit，那么强制本grid充满该父容器
+			split: true,
+			stripeRows: true,
+			bbar:new Ext.PagingToolbar({
+				pageSize:50,//每页显示数
+				store:cashTaskStore,
+				displayInfo:true,
+				displayMsg:"显示{0}-{1}条记录，共{2}条记录",
+				nextText:"下一页",
+				prevText:"上一页",
+				emptyMsg:"无相关记录"
+			})
+		});
+		return statisticsGrid;
+	}
+	
+	/**
 	 * 主显示面板
 	 */
 	var mainTabPanel = new Ext.TabPanel({
@@ -403,22 +635,28 @@ function cashAdvance(){
 			title:"我的待办任务",
 			//layout:'border',
 			html:"<div id='todoRequest' style='width:100%; height:100%'></div>"
+		},{
+			title:"我的请款统计",
+			//layout:'border',
+			html:"<div id='myStatisticsPanelDiv' style='width:100%; height:100%'></div>"
+		},{
+			title:"我审批的请款统计",
+			//layout:'border',
+			html:"<div id='statisticsByMePanelDiv' style='width:100%; height:100%'></div>"
 		}],
 		listeners :{
 			"tabchange":function(thiz, tab){
 				if(Ext.get("todoRequest").getHeight() > 0){
-//					var gtbar = todoPanel.getTopToolbar();
-//					var tbar = new Ext.Toolbar();;
-//					if(gtbar){
-//						todoPanel.tbar.update("");
-//						tbar.render(todoPanel.tbar);
-//					}
-//					
-//					tbar.add({
-//						text:"ads"
-//					});
 					todoPanel.setHeight(Ext.get("todoRequest").getHeight());
 					todoPanel.render();
+				}
+				if(Ext.get("myStatisticsPanelDiv").getHeight() > 0){
+					statisticsPanel.setHeight(Ext.get("myStatisticsPanelDiv").getHeight());
+					statisticsPanel.render();
+				}
+				if(Ext.get("statisticsByMePanelDiv").getHeight() > 0){
+					statisticsByMePanel.setHeight(Ext.get("statisticsByMePanelDiv").getHeight());
+					statisticsByMePanel.render();
 				}
 			}
 		}
@@ -468,8 +706,32 @@ function cashAdvance(){
 			}
 		}]
 	});
-	
-	
+	/**
+	 * 我的请款统计面板
+	 */
+	var statisticsPanel = new Ext.Panel({
+		layout:'border',
+		border:false,
+		height:Ext.get("myStatisticsPanelDiv").getHeight(),
+		renderTo:"myStatisticsPanelDiv",
+		items:[searchStatisticsPanel, showStatisticsGrid(statisticsCM, myStatisticStore)],
+		tbar:[{
+			text:"下载统计报表"
+		}]
+	});
+	/**
+	 * 我审批的请款统计
+	 */
+	var statisticsByMePanel = new Ext.Panel({
+		layout:'border',
+		border:false,
+		height:Ext.get("statisticsByMePanelDiv").getHeight(),
+		renderTo:"statisticsByMePanelDiv",
+		items:[searchStatisticsByMePanel, showStatisticsGrid(statisticsCM, statisticByMeStore)],
+		tbar:[{
+			text:"下载统计报表"
+		}]
+	});
 	
 	/**
 	 * 加载数据

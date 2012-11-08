@@ -71,4 +71,8 @@ public class Constants {
      * 系统默认用户
      */
     public static String ADMINISTRATOR = "Administrator";
+    /**
+     * 请款金额超过该值(1000)，则需要更高级别审批
+     */
+    public static String DEFAULT_LOAN_AMOUNT = "1000";
 }

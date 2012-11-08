@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.UUID;
 
+import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.quartz.SchedulerException;
 
 import com.webservice.system.message.bean.SystemMessage;
@@ -710,6 +712,17 @@ public class Tools {
         }
         return bool;
     }
+    /**
+     * <p>Discription:[获取指定日期所在月份]</p>
+     * @param date 日期
+     * @return 月份
+     * @author:大牙
+     * @update:2012-11-8
+     */
+    public static int getMonthFromDate(Date date){
+        String mon = dateToString(date, "yyyyMM");
+        return NumberUtils.toInt(mon);
+    }
     
     /**
      * <p><strong>Description:</strong> 判断开始日期是否在结束日期之后</p>
@@ -731,6 +744,108 @@ public class Tools {
         }else{
             return true;
         }
+    }
+    /**
+     * <p>Discription:[获取日期中最大的那一天]</p>
+     * @param dates 日期数组
+     * @return 最大的那一天
+     * @author:大牙
+     * @update:2012-11-8
+     */
+    public static Date getMaxDate(Date ... dates){
+        if(dates == null){
+            return null;
+        }
+        Date d = dates[0];
+        if(dates.length == 1){
+            return dates[0];
+        }
+        if(dates.length == 2){
+            try{
+                //如果0日期在1日期之前
+                if(compareToDate(dateToString(dates[0]), dateToString(dates[1]))){
+                    return dates[1];
+                }else{
+                    return dates[0];
+                }
+            }catch(Exception e){
+                return null;
+            }
+        }
+        if(dates.length > 2){
+            Date [] dest = new Date[dates.length - 1];
+            System.arraycopy(dates, 1, dest, 0 , dates.length - 1);
+            Date tempMax = getMaxDate(dest);
+            return getMaxDate(new Date[]{d, tempMax});
+        }
+        return null;
+    }
+    /**
+     * <p>Discription:[获取日期中最小的那一天]</p>
+     * @param dates 日期数组
+     * @return 最小的那一天
+     * @author:大牙
+     * @update:2012-11-8
+     */
+    public static Date getMinDate(Date ... dates){
+        if(dates == null){
+            return null;
+        }
+        Date d = dates[0];
+        if(dates.length == 1){
+            return dates[0];
+        }
+        if(dates.length == 2){
+            try{
+                //如果0日期在1日期之前
+                if(compareToDate(dateToString(dates[0]), dateToString(dates[1]))){
+                    return dates[0];
+                }else{
+                    return dates[1];
+                }
+            }catch(Exception e){
+                return null;
+            }
+        }
+        if(dates.length > 2){
+            Date [] dest = new Date[dates.length - 1];
+            System.arraycopy(dates, 1, dest, 0 , dates.length - 1);
+            Date tempMin = getMinDate(dest);
+            return getMinDate(new Date[]{d, tempMin});
+        }
+        return null;
+    }
+    /**
+     * <p>Discription:[判断所有日期是否都是在同一月]</p>
+     * @param dates 日期
+     * @return 如果都在同一月，则返回true，否则返回false
+     * @author:大牙
+     * @update:2012-11-8
+     */
+    public static boolean isSameMonth(Date ... dates){
+        boolean bool = false;
+        if(dates == null || dates.length < 1){
+            bool = true;
+        }else{
+            Date d = dates[0];
+            if(dates.length > 2){
+                Date t = dates[1];
+                boolean temp = isSameMonth(new Date[]{d, t});
+                Date [] dest = new Date[dates.length - 1];
+                //复制源数组到目标数组，从源数组的第1个位置开始复制到目标数组的第0个位置，共复制date.length-1个元素
+                System.arraycopy(dates, 1, dest, 0 , dates.length - 1);
+                bool = isSameMonth(dest) && temp;
+            }else if(dates.length == 2){
+                if(getMonthFromDate(d) == getMonthFromDate(dates[1])){
+                    bool = true;
+                }else{
+                    bool = false;
+                }
+            }else{
+                bool = true;
+            }
+        }
+        return bool;
     }
     
     public static void iLoveBaby() throws ParseException{
@@ -771,6 +886,9 @@ public class Tools {
         
         
         System.out.println("1984年的第234天的日期是 : "+dateToString(getDateFromYearDays(1984, 234)));
+        
+        Date [] d = new Date[]{StringToDate("2012-02-01"), StringToDate("2012-01-31"), StringToDate("2012-03-31"), StringToDate("2012-01-21")};
+        System.out.println(dateToString(getMinDate(d)));
         //System.out.println(getDateAfterDays(today, 15));
         //System.out.println(getDateAfterDays(today, 15));
         //Date newYear = StringToDate("2012-01-01");

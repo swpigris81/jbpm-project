@@ -24,6 +24,7 @@ import com.webservice.jbpm4.vo.ProcessDefinitionVO;
 import com.webservice.loan.bean.CashAdvanceInfo;
 import com.webservice.loan.service.CashAdvanceService;
 import com.webservice.loan.service.CashTaskService;
+import com.webservice.loan.vo.StatisticsVo;
 import com.webservice.system.role.service.IRoleService;
 /**
  * <p>Description: [请款]</p>
@@ -73,6 +74,10 @@ public class CashAdvanceAction extends BaseAction {
     private String approveResult;
     /** 处理意见或者是原因 **/
     private String reason;
+    /**
+     * 请款统计查询条件
+     */
+    private StatisticsVo statistics;
     /**
      * 邮件
      */
@@ -369,6 +374,22 @@ public class CashAdvanceAction extends BaseAction {
     }
 
     /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return StatisticsVo statistics.
+     */
+    public StatisticsVo getStatistics() {
+        return statistics;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param statistics The statistics to set.
+     */
+    public void setStatistics(StatisticsVo statistics) {
+        this.statistics = statistics;
+    }
+
+    /**
      * <p>Discription:[我的请款信息]</p>
      * @return 显示我发起的请款列表
      * @author:[创建者中文名字]
@@ -428,8 +449,17 @@ public class CashAdvanceAction extends BaseAction {
                 resultMap.put("success", false);
                 resultMap.put("msg", "请款金额不能为空！");
             }else{
-                //resultMap = this.cashAdvanceService.addNewRequest(this.springJTM.getUserTransaction(), roleService, jbpmService, cashAdvanceInfo);
-                resultMap = this.cashAdvanceService.addNewRequest(roleService, cashAdvanceInfo);
+                ProcessEngine processEngine = Configuration.getProcessEngine();
+                RepositoryService repositoryService = processEngine.getRepositoryService();
+                //获取指定key=loan的所有流程定义
+                Long processDefCount = repositoryService.createProcessDefinitionQuery().processDefinitionKey("loan").count();
+                if(processDefCount < 1){
+                    resultMap.put("success", false);
+                    resultMap.put("msg", "系统未部署任何请款流程，请联系系统管理员部署请款流程！");
+                }else{
+                    //resultMap = this.cashAdvanceService.addNewRequest(this.springJTM.getUserTransaction(), roleService, jbpmService, cashAdvanceInfo);
+                    resultMap = this.cashAdvanceService.addNewRequest(roleService, cashAdvanceInfo);
+                }
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -601,10 +631,10 @@ public class CashAdvanceAction extends BaseAction {
     public String processList(){
         ProcessEngine processEngine = Configuration.getProcessEngine();
         RepositoryService repositoryService = processEngine.getRepositoryService();
-        //获取所有流程定义
-        Long allList = repositoryService.createProcessDefinitionQuery().count();
-        //分页查询流程定义
-        List<ProcessDefinition> pdList = repositoryService.createProcessDefinitionQuery().page(start, limit).list();
+        //获取指定key=loan的所有流程定义
+        Long allList = repositoryService.createProcessDefinitionQuery().processDefinitionKey("loan").count();
+        //分页查询指定key=loan流程定义
+        List<ProcessDefinition> pdList = repositoryService.createProcessDefinitionQuery().processDefinitionKey("loan").page(start, limit).list();
         Map<String, Object> resultMap = new HashMap<String, Object>();
         List<ProcessDefinitionVO> list = new ArrayList<ProcessDefinitionVO>();
         for(ProcessDefinition pd : pdList){
@@ -658,10 +688,11 @@ public class CashAdvanceAction extends BaseAction {
                 //由于文件上传之后变成了*.tmp类似的文件名称，所以只能使用addResourceFromInputStream方法来进行部署
                 Configuration.getProcessEngine().getRepositoryService().createDeployment().addResourceFromInputStream(processFileName, new FileInputStream(process)).deploy();
                 //启动Email
-                wiser.start();
+                //wiser.start();
                 resultMap.put("success", true);
                 resultMap.put("msg", "请款流程已经部署成功！");
             }catch(Exception e){
+                LOG.error(e.getMessage(), e);
                 resultMap.put("success", false);
                 resultMap.put("msg", "系统异常，异常原因：" + e.getMessage());
             }finally{
@@ -704,6 +735,38 @@ public class CashAdvanceAction extends BaseAction {
                     out.flush();
                     out.close();
                 }
+            }
+        }
+        return null;
+    }
+    /**
+     * <p>Discription:[请款统计]</p>
+     * @return
+     * @author:大牙
+     * @update:2012-11-7
+     */
+    public String statistics(){
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        PrintWriter out = null;
+        try{
+            out = getPrintWriter();
+            //我的请款统计
+            String userName = super.getRequest().getParameter("userName");
+            //我审核的请款统计
+            String userByName = getRequest().getParameter("userByName");
+            List list = cashAdvanceService.statistics(statistics, userByName, userName);
+            resultMap.put("success", true);
+            resultMap.put("totalCount", list.size());
+            resultMap.put("statisticsList", list);
+        }catch(Exception e){
+            LOG.error(e.getMessage(), e);
+            resultMap.put("success", false);
+            resultMap.put("msg", "系统错误，错误原因："+ e.getMessage());
+        }finally{
+            if(out != null){
+                out.print(getJsonString(resultMap));
+                out.flush();
+                out.close();
             }
         }
         return null;
