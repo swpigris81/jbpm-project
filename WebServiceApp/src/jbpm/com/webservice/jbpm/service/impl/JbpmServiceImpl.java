@@ -3,7 +3,10 @@ package com.webservice.jbpm.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.UserTransaction;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
@@ -12,7 +15,6 @@ import org.jbpm.task.Task;
 import org.jbpm.task.User;
 import org.jbpm.task.query.TaskSummary;
 
-import com.webservice.jbpm.client.service.JbpmAsyncService;
 import com.webservice.jbpm.client.service.JbpmSyncService;
 import com.webservice.jbpm.service.IJbpmService;
 /**
@@ -27,6 +29,8 @@ public class JbpmServiceImpl implements IJbpmService {
      */
     private static JbpmSyncService jbpmClient;
     private String[] processName;
+    private Context ctx;
+    private UserTransaction transactionManager;
     
     /**
      * <p>Discription:[方法功能中文描述]</p>
@@ -44,13 +48,26 @@ public class JbpmServiceImpl implements IJbpmService {
         this.processName = processName;
     }
 
-    public void init() throws NamingException{
+    public void init() throws Exception{
         log.info(processName);
+        if(ctx == null){
+            ctx = new InitialContext();
+        }
+        //if(transactionManager == null){
+            transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+        //}
         if(jbpmClient == null){
             jbpmClient = JbpmSyncService.getInstance();
         }
-        jbpmClient.setProcess(processName);
-        jbpmClient.init();
+        try{
+            transactionManager.begin();
+            jbpmClient.setProcess(processName);
+            jbpmClient.init();
+            transactionManager.commit();
+        }catch(Exception e){
+            transactionManager.rollback();
+            throw e;
+        }
     }
     
     public void destory() throws Exception{
@@ -101,14 +118,23 @@ public class JbpmServiceImpl implements IJbpmService {
      * @throws NamingException 
      * @update 2012-9-6 大牙-小白 [变更描述]
      */
-    public synchronized Long getTaskId(String ... processName) throws NamingException{
+    public synchronized Long getTaskId(String ... processName) throws Exception{
         //保证processId至少存在一个, 否则使用默认流程图
 //        if(processName != null && processName.length > 0 && !"".equals(processName[0].trim())){
 //            jbpmClient.setProcess(processName);
 //        }
 //        jbpmClient.init();
-        JbpmSyncService jbpmClient = JbpmSyncService.getInstance();
-        return jbpmClient.getTaskId();
+//        JbpmSyncService jbpmClient = JbpmSyncService.getInstance();
+        Long taskId = -1L;
+        try{
+            transactionManager.begin();
+            taskId = jbpmClient.getTaskId();
+            transactionManager.commit();
+        }catch(Exception e){
+            transactionManager.rollback();
+            throw e;
+        }
+        return taskId;
     }
     
     /**
@@ -133,7 +159,9 @@ public class JbpmServiceImpl implements IJbpmService {
             throw new Exception("流程图不能为空！");
         }
         //jbpmClient.init();
+        Task task = null;
         try{
+            transactionManager.begin();
             if(param != null && !param.isEmpty()){
                 jbpmClient.startProcess(processId, param);
             }else{
@@ -142,14 +170,16 @@ public class JbpmServiceImpl implements IJbpmService {
             List<TaskSummary> ts = getAssignedTaskByUserOrGroup(userName, null, processName);
             if(ts != null && !ts.isEmpty()){
                 Long taskId = ts.get(0).getId();
-                Task task = jbpmClient.getTaskById(taskId);
-                return task;
+                task = jbpmClient.getTaskById(taskId);
             }
+            transactionManager.commit();
         }catch(Exception e){
             e.printStackTrace();
             log.error(e.getMessage(), e);
+            transactionManager.rollback();
+            throw e;
         }
-        return null;
+        return task;
     }
     /**
      * <p>Discription:[分配任务给指定用户]</p>
@@ -172,9 +202,12 @@ public class JbpmServiceImpl implements IJbpmService {
         }
         //jbpmClient.init();
         try{
+            transactionManager.begin();
             jbpmClient.assignTaskToUser(NumberUtils.toLong(taskId), userName, targetUserName);
+            transactionManager.commit();
         }catch(Exception e){
             log.error(e.getMessage(), e);
+            transactionManager.rollback();
             throw e;
         }
     }
@@ -200,14 +233,17 @@ public class JbpmServiceImpl implements IJbpmService {
         }
         //jbpmClient.init();
         try{
+            transactionManager.begin();
             Task task = jbpmClient.getTaskById(NumberUtils.toLong(taskId));
             if(task != null){
                 jbpmClient.startTask(new User(userName), roleList, task.getId());
             }else{
                 throw new Exception("当前系统中不存在ID为：" + taskId + " 的工作流任务，请联系系统管理员.");
             }
+            transactionManager.commit();
         }catch(Exception e){
             log.error(e.getMessage(), e);
+            transactionManager.rollback();
             throw e;
         }
     }
@@ -232,14 +268,17 @@ public class JbpmServiceImpl implements IJbpmService {
         }
         //jbpmClient.init();
         try{
+            transactionManager.begin();
             Task task = jbpmClient.getTaskById(NumberUtils.toLong(taskId));
             if(task != null){
                 jbpmClient.completeTask(new User(userName), task.getId(), resultMap, null);
             }else{
                 throw new Exception("当前系统中不存在ID为：" + taskId + " 的工作流任务，请联系系统管理员.");
             }
+            transactionManager.commit();
         }catch(Exception e){
             log.error(e.getMessage(), e);
+            transactionManager.rollback();
             throw e;
         }finally{
             //log.info("aaaaaaaaaaaaaaaaaa"+jbpmClient.getTaskId());
@@ -253,16 +292,19 @@ public class JbpmServiceImpl implements IJbpmService {
         }
         //jbpmClient.init();
         try{
+            transactionManager.begin();
             List<TaskSummary> list = null;
             if(group != null && !group.isEmpty()){
                 list = jbpmClient.getAssignedTasks(new User(user), group);
             }else{
                 list = jbpmClient.getAssignedTasks(new User(user));
             }
+            transactionManager.commit();
             return list;
         }catch(Exception e){
             e.printStackTrace();
             log.error(e.getMessage(), e);
+            transactionManager.rollback();
             throw e;
         }
     }
@@ -274,12 +316,17 @@ public class JbpmServiceImpl implements IJbpmService {
 //            jbpmClient.setProcess(processName);
 //        }
 //        jbpmClient.init();
+        Object variable = null;
         try{
-            return jbpmClient.getVariableValue(name, processInstanceId);//jbpmClient.getSessionInfo(processSessionId)
+            transactionManager.begin();
+            variable = jbpmClient.getVariableValue(name, processInstanceId);//jbpmClient.getSessionInfo(processSessionId)
+            transactionManager.commit();
         }catch(Exception e){
             log.error(e.getMessage(), e);
+            transactionManager.rollback();
             throw e;
         }
+        return variable;
     }
     
     /**
@@ -300,9 +347,12 @@ public class JbpmServiceImpl implements IJbpmService {
         }
         //jbpmClient.init();
         try{
+            transactionManager.begin();
             jbpmClient.setVariableValue(name, value, processInstanceId);
+            transactionManager.commit();
         }catch(Exception e){
             log.error(e.getMessage(), e);
+            transactionManager.rollback();
             throw e;
         }
     }
@@ -316,9 +366,12 @@ public class JbpmServiceImpl implements IJbpmService {
      */
     public void setInstanceVariableForNewTask(String name, Object value) throws Exception{
         try{
+            transactionManager.begin();
             jbpmClient.setVariableValue(name, value);
+            transactionManager.commit();
         }catch(Exception e){
             log.error(e.getMessage(), e);
+            transactionManager.rollback();
             throw e;
         }
     }

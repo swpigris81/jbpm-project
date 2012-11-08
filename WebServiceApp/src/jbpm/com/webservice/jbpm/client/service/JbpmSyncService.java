@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -14,6 +16,7 @@ import javax.persistence.Query;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
+import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -155,7 +158,7 @@ public class JbpmSyncService {
      * @throws NamingException 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void init() throws NamingException{
+    public void init() throws Exception{
         //if(this.ksession == null){
             setUp();
             start(process);
@@ -281,24 +284,30 @@ public class JbpmSyncService {
      * @return
      * @author:[创建者中文名字]
      * @throws NamingException 
+     * @throws Exception 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public StatefulKnowledgeSession createKnowledgeSession(KnowledgeBase kbase) throws NamingException {
-        StatefulKnowledgeSession session;
+    public StatefulKnowledgeSession createKnowledgeSession(KnowledgeBase kbase) throws Exception {
+        StatefulKnowledgeSession session = null;
         final KnowledgeSessionConfiguration conf = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
-        
-        if (sessionPersistence) {
-            Environment env = createEnvironment(emf);
-            session = JPAKnowledgeService.newStatefulKnowledgeSession(kbase, conf, env);
-            new JPAWorkingMemoryDbLogger(session);
-            if (dbLog == null) {
-                dbLog = new JPAFixProcessInstanceDbLog(session.getEnvironment());
+        Context ctx = new InitialContext();
+        UserTransaction transactionManager = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+        try{
+            if (sessionPersistence) {
+                Environment env = createEnvironment(emf);
+                session = JPAKnowledgeService.newStatefulKnowledgeSession(kbase, conf, env);
+                new JPAWorkingMemoryDbLogger(session);
+                if (dbLog == null) {
+                    dbLog = new JPAFixProcessInstanceDbLog(session.getEnvironment());
+                }
+            } else {
+                Environment env = EnvironmentFactory.newEnvironment();
+                env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
+                session = kbase.newStatefulKnowledgeSession(conf, env);
+                logger = new WorkingMemoryInMemoryLogger(session);
             }
-        } else {
-            Environment env = EnvironmentFactory.newEnvironment();
-            env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
-            session = kbase.newStatefulKnowledgeSession(conf, env);
-            logger = new WorkingMemoryInMemoryLogger(session);
+        }catch(Exception e){
+            throw e;
         }
         this.ksession = session;
         return session;
@@ -311,7 +320,7 @@ public class JbpmSyncService {
      * @throws NamingException 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public StatefulKnowledgeSession createKnowledgeSession(String... process) throws NamingException {
+    public StatefulKnowledgeSession createKnowledgeSession(String... process) throws Exception {
         KnowledgeBase kbase = createKnowledgeBase(process);
         return createKnowledgeSession(kbase);
     }
@@ -365,7 +374,7 @@ public class JbpmSyncService {
      * @throws NamingException 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public StatefulKnowledgeSession loadSession(int id, String... process) throws NamingException { 
+    public StatefulKnowledgeSession loadSession(int id, String... process) throws Exception { 
         KnowledgeBase kbase = createKnowledgeBase(process);
         final KnowledgeSessionConfiguration config = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
         config.setOption( ClockTypeOption.get( ClockType.PSEUDO_CLOCK.getId() ) );
@@ -381,7 +390,7 @@ public class JbpmSyncService {
      * @throws NamingException 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public void start(String ... process) throws NamingException{
+    public void start(String ... process) throws Exception{
         KnowledgeBase kbase = null;
         if(process == null || process.length < 1 || process[0].equals("")){
             kbase = createKnowledgeBase("ProcessTask.bpmn");
@@ -461,7 +470,7 @@ public class JbpmSyncService {
      * @throws NamingException 
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
-    public StatefulKnowledgeSession getKSession(int sessionId) throws NamingException{
+    public StatefulKnowledgeSession getKSession(int sessionId) throws Exception{
         if(sessionId != -1){
             //获取历史会话
             return loadSession(sessionId, "");
