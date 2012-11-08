@@ -28,9 +28,10 @@ public interface IJbpmService {
      * <p>Discription:[获取当前任务ID]</p>
      * @return
      * @author 大牙-小白
+     * @throws Exception 
      * @update 2012-9-6 大牙-小白 [变更描述]
      */
-    public Long getTaskId(String ... processName) throws NamingException;
+    public Long getTaskId(String ... processName) throws NamingException, Exception;
     
     /**
      * <p>Discription:[启动流程，获取该流程的第一个任务]</p>
