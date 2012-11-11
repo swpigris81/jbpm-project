@@ -31,5 +31,15 @@
 			<result name="success">/jsp/webservice/loan/loan.jsp</result>
 			<result name="input">/index.jsp</result>
 		</action>
+		
+		<action name="downloadStatisticsAction" class="com.webservice.loan.action.CashAdvanceAction" method="download">
+			<result name="success" type="dispatcher">/WEB-INF/jsp/report/report.jsp</result>
+			<result name="download" type="redirectAction">
+				<param name="namespace">/base</param>
+				<param name="actionName">${downActionName}</param>
+				<param name="fileName">${fileName}</param>
+				<param name="fileLoc">${fileLoc}</param>
+			</result>
+		</action>
 	</package>
 </struts>

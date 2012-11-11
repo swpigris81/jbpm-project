@@ -303,7 +303,7 @@ public class Base64Coder {
     }
 
     public static void main(String[] args) {
-        String old = "swpigris81";
+        String old = "D:\\Program Files\\eclipse\\admin审批的请款统计";
 
         String en = encodeString(old);
 

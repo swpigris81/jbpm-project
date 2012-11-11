@@ -1,5 +1,8 @@
 package com.webservice.loan.service.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +14,8 @@ import java.util.Set;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.mapping.Array;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.jbpm.api.Configuration;
 import org.jbpm.api.ExecutionService;
 import org.jbpm.api.ProcessEngine;
@@ -28,6 +32,7 @@ import com.webservice.loan.vo.StatisticsVo;
 import com.webservice.system.common.constants.Constants;
 import com.webservice.system.role.bean.RoleInfo;
 import com.webservice.system.role.service.IRoleService;
+import com.webservice.system.util.PoiUtil;
 import com.webservice.system.util.Tools;
 
 /** 
@@ -591,6 +596,18 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
      * @update:2012-11-8
      */
     public List statistics(StatisticsVo statistics, String userByName, String userName){
+        return makeStatistics(queryLoanList(statistics, userByName, userName));
+    }
+    /**
+     * <p>Discription:[查询指定条件的请款信息]</p>
+     * @param statistics 查询条件
+     * @param userByName 审批人
+     * @param userName 请款人
+     * @return 请款信息
+     * @author:大牙
+     * @update:2012-11-9
+     */
+    public List queryLoanList(StatisticsVo statistics, String userByName, String userName){
         List statisticsList = new ArrayList();
         if(userByName == null || "".equals(userByName.trim())){
             //查询我的统计，请款人是userName
@@ -601,8 +618,9 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
             //查询我审核的请款统计
             statisticsList = cashAdvanceDao.statisticsByMe(statistics, userByName);
         }
-        return makeStatistics(statisticsList);
+        return statisticsList;
     }
+    
     /**
      * <p>Discription:[组装统计信息]</p>
      * @param statisticsList 请款信息
@@ -703,7 +721,115 @@ public class CashAdvanceServiceImpl implements CashAdvanceService {
             vo.setStatisticsName(list.get(0).getCashUserName());
             vo.setStatisticsBeginDate(Tools.getMinDate(date));
             vo.setStatisticsEndDate(Tools.getMaxDate(date));
+            vo.setLoanList(list);
         }
         return vo;
+    }
+    
+    /**
+     * <p>Discription:[将统计信息写入报表文件]</p>
+     * @param dataList 要写入的数据
+     * @param fileName 要写入的报表名称
+     * @param userByName 我审核的请款统计
+     * @param userName 我的请款统计
+     * @return 报表文件流
+     * @author:大牙
+     * @throws Exception 
+     * @update:2012-11-9
+     */
+    public String statisticsInputStream(List<StatisticsVo> dataList, String fileName, String userByName, String userName) throws Exception{
+        if(dataList == null || dataList.isEmpty()){
+            return null;
+        }
+        if(userByName == null || "".equals(userByName.trim())){
+            //查询我的统计，请款人是userName
+            if(userName != null && !"".equals(userName.trim())){
+                fileName = userName + "的请款统计";
+            }
+        }else if(userName == null || "".equals(userName.trim())){
+            //查询我审核的请款统计
+            fileName = userByName + "审批的请款统计";
+        }
+        PoiUtil poiUtil = new PoiUtil();
+        Workbook wb = poiUtil.createWorkBook(1000);
+        Sheet sheet = poiUtil.createWorkSheet(wb, fileName);
+        Sheet detailSheet = poiUtil.createWorkSheet(wb, fileName + "明细");
+        int i=1;
+        int j=1;
+        FileOutputStream out = null;
+        File outFile = new File(fileName + ".xlsx");
+        try{
+            out = new FileOutputStream(outFile);
+            poiUtil.exportExcel2007(sheet, 0, new Object[]{"请款人姓名", "统计请款开始日期", "统计请款结束日期", "请款总额", "已批准总额", "审批中总额", "审批驳回总额"});
+            for(StatisticsVo vo : dataList){
+                List data = new ArrayList();
+                data.add(vo.getStatisticsName());
+                data.add(Tools.dateToString(vo.getStatisticsBeginDate()));
+                data.add(Tools.dateToString(vo.getStatisticsEndDate()));
+                data.add(vo.getStatisticsAllLoan());
+                data.add(vo.getStatisticsAllPassLoan());
+                data.add(vo.getStatisticsCheckingLoan());
+                data.add(vo.getStatisticsRejectLoan());
+                List<CashAdvanceInfo> cl = vo.getLoanList();
+                poiUtil.exportExcel2007(sheet, i, data.toArray());
+                i++;
+                poiUtil.exportExcel2007(detailSheet, 0, new Object[]{"请款人姓名", "请款日期", "请款金额", "请款状态"});
+                for(CashAdvanceInfo info : cl){
+                    data = new ArrayList();
+                    data.add(info.getCashUserName());
+                    data.add(Tools.dateToString(info.getCashDate()));
+                    data.add(info.getCashAmount());
+                    switch (NumberUtils.toInt(info.getCashStatus(), 0)) {
+                        case 0: {
+                            data.add("申请请款");
+                        }
+                            break;
+                        case 1: {
+                            data.add("发起审核");
+                        }
+                            break;
+                        case 2: {
+                            data.add("审核通过");
+                        }
+                            break;
+                        case 3: {
+                            data.add("审核驳回");
+                        }
+                            break;
+                        case 4: {
+                            data.add("发起审批");
+                        }
+                            break;
+                        case 5: {
+                            data.add("审批通过");
+                        }
+                            break;
+                        case 6: {
+                            data.add("审批驳回");
+                        }
+                            break;
+                        default :{
+                            data.add("状态未知");
+                        }
+                            break;
+                    }
+                    poiUtil.exportExcel2007(detailSheet, j, data.toArray());
+                    j++;
+                }
+            }
+            wb.write(out);
+        }catch(Exception e){
+            throw e;
+        }finally{
+            try {
+                if(out != null){
+                    out.flush();
+                    out.close();
+                }
+            } catch (IOException e) {
+                throw e;
+            }
+        }
+        return outFile.getName();
     }
 }

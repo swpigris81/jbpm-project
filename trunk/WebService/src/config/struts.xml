@@ -60,4 +60,15 @@
     
     <!-- 请款 -->
     <include file="struts-loan.xml"></include>
+    
+    <package name="base" namespace="/base" extends="struts-default">
+    	<action name="downloadAction" class="com.webservice.system.download.DownloadBaseAction">
+    		<result name="success" type="stream">
+    			<param name="contentType">application/octet-stream;charset=ISO8859-1</param>
+	            <param name="inputName">targetFile</param>
+	            <param name="contentDisposition">attachment;filename="${fileName}"</param>  
+	            <param name="bufferSize">4096</param>
+    		</result>
+    	</action>
+    </package>
 </struts>

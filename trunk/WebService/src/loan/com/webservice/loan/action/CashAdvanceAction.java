@@ -2,6 +2,7 @@ package com.webservice.loan.action;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import com.webservice.loan.service.CashAdvanceService;
 import com.webservice.loan.service.CashTaskService;
 import com.webservice.loan.vo.StatisticsVo;
 import com.webservice.system.role.service.IRoleService;
+import com.webservice.system.util.Base64Coder;
 /**
  * <p>Description: [请款]</p>
  * @author  <a href="mailto: swpigris81@126.com">大牙-小白</a>
@@ -78,6 +80,10 @@ public class CashAdvanceAction extends BaseAction {
      * 请款统计查询条件
      */
     private StatisticsVo statistics;
+    
+    private String fileName;
+    private String fileLoc;
+    private String downActionName;
     /**
      * 邮件
      */
@@ -387,6 +393,54 @@ public class CashAdvanceAction extends BaseAction {
      */
     public void setStatistics(StatisticsVo statistics) {
         this.statistics = statistics;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String fileName.
+     */
+    public String getFileName() {
+        return fileName;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param fileName The fileName to set.
+     */
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String fileLoc.
+     */
+    public String getFileLoc() {
+        return fileLoc;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param fileLoc The fileLoc to set.
+     */
+    public void setFileLoc(String fileLoc) {
+        this.fileLoc = fileLoc;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String downActionName.
+     */
+    public String getDownActionName() {
+        return downActionName;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param downActionName The downActionName to set.
+     */
+    public void setDownActionName(String downActionName) {
+        this.downActionName = downActionName;
     }
 
     /**
@@ -770,5 +824,40 @@ public class CashAdvanceAction extends BaseAction {
             }
         }
         return null;
+    }
+    /**
+     * <p>Discription:[下载请款统计]</p>
+     * @return
+     * @throws IOException
+     * @author:大牙
+     * @update:2012-11-9
+     */
+    public String download() throws IOException{
+        //我的请款统计
+        String userName = super.getRequest().getParameter("userName");
+        //我审核的请款统计
+        String userByName = getRequest().getParameter("userByName");
+        List<StatisticsVo> list = cashAdvanceService.statistics(statistics, userByName, userName);
+        String fileName = "";
+        try{
+            String fileLoc = cashAdvanceService.statisticsInputStream(list, fileName, userByName, userName);
+            //BASE64编码，浏览器不支持直接中文
+            if(fileLoc != null && !"".equals(fileLoc.trim())){
+                setFileLoc(Base64Coder.encodeString(fileLoc));
+            }
+            setFileName(fileLoc);
+            setDownActionName("downloadAction");
+        }catch(Exception e){
+            LOG.error(e.getMessage(), e);
+        }
+        if(fileLoc != null && !"".equals(fileLoc.trim())){
+            return "download";
+        }else{
+            PrintWriter out = getPrintWriter(getRequest(), getResponse(), "UTF-8", "text/html; charset=utf-8");
+            out.print("<script>alert('当前未查询到任何数据！'); window.close();</script>");
+            out.flush();
+            out.close();
+            return null;
+        }
     }
 }

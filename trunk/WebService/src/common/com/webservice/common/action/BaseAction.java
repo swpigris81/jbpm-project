@@ -1,6 +1,9 @@
 package com.webservice.common.action;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Map;
 
@@ -58,6 +61,7 @@ public class BaseAction extends ActionSupport {
     public void setLimit(int limit) {
         this.limit = limit;
     }
+    
     /**
      * <p>Discription:获取写文件流工具</p>
      * @param request
@@ -155,5 +159,16 @@ public class BaseAction extends ActionSupport {
      */
     public String begin(){
         return SUCCESS;
+    }
+    
+    /**
+     * <p>Discription:[公共下载，需扩展]</p>
+     * @return
+     * @throws IOException
+     * @author:大牙
+     * @update:2012-11-9
+     */
+    public String download() throws IOException{
+        return "download";
     }
 }

@@ -3,3 +3,7 @@
 
 2012-08-16
 完成JBPM5.3在Tomcat上运行环境的配置，详细配置步骤参考：src/atomikos/readme.txt
+
+2012-11-09
+去掉JBPM5.3框架，整合JBPM4.4框架，详细配置参考：src/jbpm4/JBPM4.doc
+完成请款功能！
