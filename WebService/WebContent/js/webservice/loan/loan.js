@@ -716,7 +716,15 @@ function cashAdvance(){
 		renderTo:"myStatisticsPanelDiv",
 		items:[searchStatisticsPanel, showStatisticsGrid(statisticsCM, myStatisticStore)],
 		tbar:[{
-			text:"下载统计报表"
+			text:"下载统计报表",
+			iconCls:"page_excel",
+			handler:function(){
+				var baseParams = searchStatisticsPanel.getForm().getValues();
+				baseParams.start = 0;
+				baseParams.limit = 50;
+				baseParams.userName = userName;
+				downloadStatistic(baseParams);
+			}
 		}]
 	});
 	/**
@@ -729,7 +737,15 @@ function cashAdvance(){
 		renderTo:"statisticsByMePanelDiv",
 		items:[searchStatisticsByMePanel, showStatisticsGrid(statisticsCM, statisticByMeStore)],
 		tbar:[{
-			text:"下载统计报表"
+			text:"下载统计报表",
+			iconCls:"page_excel",
+			handler:function(){
+				var baseParams = searchStatisticsByMePanel.getForm().getValues();
+				baseParams.start = 0;
+				baseParams.limit = 50;
+				baseParams.userByName = userName;
+				downloadStatistic(baseParams);
+			}
 		}]
 	});
 	
@@ -1456,6 +1472,27 @@ function cashAdvance(){
 				Ext.Msg.alert('系统提示信息', msg);
 			}
 		});
+	}
+	/**
+	 * 下载统计信息
+	 * @param baseParams
+	 */
+	function downloadStatistic(baseParams){
+		var url = path + "/loan/downloadStatisticsAction.action?method=download";
+		var exportForm = getExportForm(url, baseParams);
+		var statisticsName = getTextField("statistics.statisticsName", "请款人", true, false, baseParams["statistics.statisticsName"]);
+		var statisticsBeginDate = getDateField("statistics.statisticsBeginDate", "统计开始日期", true, false, baseParams["statistics.statisticsBeginDate"]);
+		var statisticsEndDate = getDateField("statistics.statisticsEndDate", "统计结束日期", true, false, baseParams["statistics.statisticsEndDate"]);
+		var userByName = getTextField("userByName", "请款人", true, false, baseParams.userByName);
+		var userName = getTextField("userName", "请款人", true, false, baseParams.userName);
+		exportForm.add(statisticsName);
+		exportForm.add(statisticsBeginDate);
+		exportForm.add(statisticsEndDate);
+		exportForm.add(userByName);
+		exportForm.add(userName);
+		showAllWindow("downloadStatistic", "下载统计报表", 300, 400, exportForm);
+		exportForm.getForm().submit();
+		Ext.getCmp("downloadStatistic").close();
 	}
 }
 /**

@@ -1,5 +1,6 @@
 package com.webservice.loan.service;
 
+import java.io.FileInputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -107,4 +108,16 @@ public interface CashAdvanceService {
      * @update:2012-11-8
      */
     public List statistics(StatisticsVo statistics, String userByName, String userName);
+    /**
+     * <p>Discription:[将统计信息写入报表文件]</p>
+     * @param dataList 要写入的数据
+     * @param fileName 要写入的报表名称
+     * @param userByName 我审核的请款统计
+     * @param userName 我的请款统计
+     * @return 报表文件流
+     * @author:大牙
+     * @throws Exception 
+     * @update:2012-11-9
+     */
+    public String statisticsInputStream(List<StatisticsVo> dataList, String fileName, String userByName, String userName) throws Exception;
 }

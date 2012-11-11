@@ -2,6 +2,9 @@ package com.webservice.loan.vo;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+
+import com.webservice.loan.bean.CashAdvanceInfo;
 
 /** 
  * <p>Description: [请款统计]</p>
@@ -37,6 +40,10 @@ public class StatisticsVo {
      * 审批驳回请款总数
      */
     private BigDecimal statisticsRejectLoan;
+    /**
+     * 请款详细信息
+     */
+    private List<CashAdvanceInfo> loanList;
     /**
      * <p>Discription:[方法功能中文描述]</p>
      * @return String statisticsName.
@@ -135,5 +142,18 @@ public class StatisticsVo {
     public void setStatisticsRejectLoan(BigDecimal statisticsRejectLoan) {
         this.statisticsRejectLoan = statisticsRejectLoan;
     }
-    
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return List<CashAdvanceInfo> loanList.
+     */
+    public List<CashAdvanceInfo> getLoanList() {
+        return loanList;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param loanList The loanList to set.
+     */
+    public void setLoanList(List<CashAdvanceInfo> loanList) {
+        this.loanList = loanList;
+    }
 }

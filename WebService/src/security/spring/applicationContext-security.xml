@@ -55,6 +55,8 @@
 		<security:intercept-url pattern="/user/userValidation.action/**" filters="none"/>
 		<!-- 系统用户注册 -->
 		<security:intercept-url pattern="/user/userRegister.action/**" filters="none"/>
+		<!-- 系统文件下载 -->
+		<security:intercept-url pattern="/base/downloadAction.action/**" filters="none"/>
 		<!-- 配置登录页面 -->
 		<security:form-login login-page="/index.jsp" default-target-url="/index.jsp" authentication-success-handler-ref="loginSuccessHandler" authentication-failure-handler-ref="loginFailureHandler"/>
 		<!-- 

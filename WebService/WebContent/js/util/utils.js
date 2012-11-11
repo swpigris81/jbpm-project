@@ -715,3 +715,29 @@ function getComboBoxField(name, store, label, valueField, textField, isNull, rea
 	});
 	return comboBoxField;
 }
+
+/**
+ * 导出面板
+ * @returns {Ext.form.FormPanel}
+ */
+function getExportForm(url, baseParams, target){
+	if(!target){
+		target = "targetFrame";
+	}
+	var exportForm = new Ext.form.FormPanel({
+		frame: true,
+		labelWidth:60,
+		autoScroll:false,
+		waitMsgTarget:true,
+		baseParams : baseParams,
+		viewConfig:{forceFit:true},
+		//实现非Ajax提交表单
+		onSubmit:Ext.emptyFn,
+		submit:function(){
+			this.getEl().dom.action = url;
+			this.getEl().dom.target = target;
+			this.getEl().dom.submit();
+		}
+	});
+	return exportForm;
+}
