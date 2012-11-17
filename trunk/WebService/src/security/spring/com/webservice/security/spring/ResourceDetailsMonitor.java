@@ -221,9 +221,10 @@ public class ResourceDetailsMonitor implements InitializingBean {
     }
     
     public void refresh(){
-        FilterInvocationSecurityMetadataSource newSource = new SecurityMetadataSourceServiceImpl(this.userDao,this.roleDao,this.userRoleDao,this.menuDao,this.roleMenuDao,this.roleMenuService, this.rightService, this.buttonService);
+        SecurityMetadataSourceServiceImpl newSource = new SecurityMetadataSourceServiceImpl(this.userDao,this.roleDao,this.userRoleDao,this.menuDao,this.roleMenuDao,this.roleMenuService, this.rightService, this.buttonService);
         if(newSource!=null){
             log.info("开始刷新系统内存...");
+            newSource.loadResourceDefine();
             filterSecurityInterceptor.setSecurityMetadataSource(newSource);
             log.info("正在刷新系统内存...");
         }

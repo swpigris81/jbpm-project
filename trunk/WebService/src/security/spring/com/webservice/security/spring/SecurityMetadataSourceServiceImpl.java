@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -166,7 +167,7 @@ public class SecurityMetadataSourceServiceImpl implements
 
     public SecurityMetadataSourceServiceImpl(){
         //this.sessionFactory = 
-        loadResourceDefine();
+        //loadResourceDefine();
     }
     /*
     public SecurityMetadataSourceServiceImpl(IUserDao userDao,IRoleDao roleDao,IUserRoleDao userRoleDao, IMenuDao menuDao, IRoleMenuDao roleMenuDao, IRoleMenuService roleMenuService){
@@ -188,7 +189,7 @@ public class SecurityMetadataSourceServiceImpl implements
         this.roleMenuService = roleMenuService;
         this.rightService = rightService;
         this.buttonService = buttonService;
-        loadResourceDefine();
+        //loadResourceDefine();
     }
     
     public IUserDao getUserDao() {
@@ -211,37 +212,106 @@ public class SecurityMetadataSourceServiceImpl implements
         List<String> roles = new ArrayList<String>();
         log.debug(menus);
         resourceMap = new HashMap<String, Collection<ConfigAttribute>>();
-        if(menus!=null){
-            for(int i=0,j = menus.size();i<j;i++){
-                MenuInfo menu =  menus.get(i);
-                if(menu == null || "".equals(menu)) {
-                    continue;
-                }
-                roles = this.roleMenuService.getMenuRoleMapByMenuId(menu.getMenuId());
-                Collection<ConfigAttribute> atts = new ArrayList<ConfigAttribute>();
-                for(String role : roles){
-                    ConfigAttribute ca = new SecurityConfig(role);
-                    atts.add(ca);
-                }
-                resourceMap.put(menu.getPagePath(), atts);
-            }
+        //update by 大牙 at 2012-11-12 for 效率
+//        if(menus!=null){
+//            for(int i=0,j = menus.size();i<j;i++){
+//                MenuInfo menu =  menus.get(i);
+//                if(menu == null || "".equals(menu)) {
+//                    continue;
+//                }
+//                roles = this.roleMenuService.getMenuRoleMapByMenuId(menu.getMenuId());
+//                Collection<ConfigAttribute> atts = new ArrayList<ConfigAttribute>();
+//                for(String role : roles){
+//                    ConfigAttribute ca = new SecurityConfig(role);
+//                    atts.add(ca);
+//                }
+//                resourceMap.put(menu.getPagePath(), atts);
+//            }
+//        }
+        getResourceMenu(menus);
+        getResourceButton(buttons);
+//        if(buttons!= null){
+//            for(int i=0,j = buttons.size();i<j;i++){
+//                ButtonInfo button = buttons.get(i);
+//                if(button.getButtonUrl() == null || "".equals(button.getButtonUrl())){
+//                    continue;
+//                }
+//                roles = this.rightService.getButtonRoleNameByButton(button.getButtonId());
+//                Collection<ConfigAttribute> atts = new ArrayList<ConfigAttribute>();
+//                for(String role : roles){
+//                    ConfigAttribute ca = new SecurityConfig(role);
+//                    atts.add(ca);
+//                }
+//                resourceMap.put(button.getButtonUrl(), atts);
+//            }
+//        }
+        //update by 大牙 at 2012-11-12
+    }
+    /**
+     * <p>Discription:[设置菜单的角色资源(一个菜单资源对应多个有权访问该菜单的角色ID)]</p>
+     * @param menus 菜单信息
+     * @author:大牙
+     * @update:2012-11-12
+     */
+    private void getResourceMenu(List<MenuInfo> menus){
+        if(menus == null || menus.isEmpty()){
+            return;
         }
-        if(buttons!= null){
-            for(int i=0,j = buttons.size();i<j;i++){
-                ButtonInfo button = buttons.get(i);
-                if(button.getButtonUrl() == null || "".equals(button.getButtonUrl())){
-                    continue;
-                }
-                roles = this.rightService.getButtonRoleNameByButton(button.getButtonId());
+        List<String> menuIds = new ArrayList<String>(menus.size());
+        for(MenuInfo menu: menus){
+            menuIds.add(menu.getMenuId());
+        }
+        List roleMenuList = roleMenuService.getMenuRoleByMenuId(menuIds.toArray());
+        if(roleMenuList != null && !roleMenuList.isEmpty()){
+            for(int i=0, j=roleMenuList.size(); i<j; i++){
+                Object [] obj = (Object[]) roleMenuList.get(i);
+                String roleId = String.valueOf(obj[1]);
+                String menuPath = String.valueOf(obj[2]);
                 Collection<ConfigAttribute> atts = new ArrayList<ConfigAttribute>();
-                for(String role : roles){
-                    ConfigAttribute ca = new SecurityConfig(role);
-                    atts.add(ca);
+                if(roleId != null && !"".equals(roleId.trim())){
+                    String []roleConcatId = roleId.split(",");
+                    for(String role : roleConcatId){
+                        ConfigAttribute ca = new SecurityConfig(role);
+                        atts.add(ca);
+                    }
                 }
-                resourceMap.put(button.getButtonUrl(), atts);
+                resourceMap.put(menuPath, atts);
             }
         }
     }
+    /**
+     * <p>Discription:[设置按钮角色信息(一个按钮资源对应多个有权访问该按钮的角色ID)]</p>
+     * @param buttons 按钮信息
+     * @author:大牙
+     * @update:2012-11-12
+     */
+    private void getResourceButton(List<ButtonInfo> buttons){
+        if(buttons == null || buttons.isEmpty()){
+            return;
+        }
+        List<String> buttonList = new ArrayList<String>(buttons.size());
+        for(ButtonInfo bi : buttons){
+            buttonList.add(bi.getButtonId());
+        }
+        List buttonRoleList = this.rightService.getButtonRoleByButtonIds(buttonList.toArray());
+        if(buttonRoleList != null && !buttonRoleList.isEmpty()){
+            for(int i=0, j=buttonRoleList.size(); i<j; i++){
+                Object [] obj = (Object[]) buttonRoleList.get(i);
+                String roleId = String.valueOf(obj[1]);
+                String buttonPath = String.valueOf(obj[2]);
+                Collection<ConfigAttribute> atts = new ArrayList<ConfigAttribute>();
+                if(roleId != null && !"".equals(roleId.trim())){
+                    String []roleConcatId = roleId.split(",");
+                    for(String role : roleConcatId){
+                        ConfigAttribute ca = new SecurityConfig(role);
+                        atts.add(ca);
+                    }
+                }
+                resourceMap.put(buttonPath, atts);
+            }
+        }
+    }
+    
     /**
      * <p>Discription:[未使用]</p>
      * @author: 代超

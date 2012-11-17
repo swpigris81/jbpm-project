@@ -5,6 +5,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.api.jpdl.DecisionHandler;
 import org.jbpm.api.model.OpenExecution;
+
+import com.webservice.system.util.ConfigProperties;
 /**
  * <p>Description: [决定是否需要下一步审批]</p>
  * @author  <a href="mailto: swpigris81@126.com">大牙</a>
@@ -15,8 +17,10 @@ public class LoanHandler implements DecisionHandler{
     @Override
     public String decide(OpenExecution execution) {
         Double cashAmount = NumberUtils.toDouble(String.valueOf(execution.getVariable("cashAmount")), 0);
+        ConfigProperties.setPropertiesFile("loan.properties");
+        ConfigProperties.systemInit();
         log.info("请款金额：" + cashAmount);
-        if(cashAmount > 1000){
+        if(cashAmount > ConfigProperties.getIntProperties("loanMaxValue")){
             //请款金额大于1000时需要下一步审批
             return "yes";
         }else{

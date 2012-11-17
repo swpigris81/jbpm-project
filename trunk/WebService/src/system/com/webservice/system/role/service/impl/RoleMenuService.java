@@ -50,6 +50,26 @@ public class RoleMenuService implements IRoleMenuService {
         return this.roleMenuDao.queryBySQL(sql, param);
     }
     
+    public List getMenuRoleByMenuId(Object ... menuId){
+        StringBuffer sql = new StringBuffer("SELECT DISTINCT menu_info.menu_id, GROUP_CONCAT(role_info.role_id) role_concat_id, menu_info.page_path ");
+        sql.append("FROM rolemenu, menu_info, role_info ");
+        sql.append("WHERE rolemenu.menuId = menu_info.menu_id AND rolemenu.roleId = role_info.role_id ");
+        if(menuId != null && menuId.length > 0){
+            sql.append(" AND menu_info.menu_id in ( ");
+            for(int i=0; i<menuId.length; i++){
+                if(i == menuId.length -1){
+                    sql.append(" ? )");
+                }else{
+                    sql.append(" ?, ");
+                }
+            }
+            sql.append(" GROUP BY menu_info.menu_id ");
+            return this.roleMenuDao.queryBySQL(sql.toString(), menuId);
+        }else{
+            return null;
+        }
+    }
+    
     /**
      * <p>Discription:[查询根节点（第一级节点）]</p>
      * @param role

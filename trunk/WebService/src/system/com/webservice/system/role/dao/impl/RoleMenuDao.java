@@ -23,7 +23,7 @@ public class RoleMenuDao extends HibernateDaoSupport implements IRoleMenuDao {
         //do nothing
     }
     
-    public List queryBySQL(final String sql, final String[] params){
+    public List queryBySQL(final String sql, final Object[] params){
         log.info("query by sql: " + sql);
         return getHibernateTemplate().executeFind(new HibernateCallback() {
             public Object doInHibernate(Session session){
@@ -38,7 +38,7 @@ public class RoleMenuDao extends HibernateDaoSupport implements IRoleMenuDao {
         });
     }
     
-    public List queryByHQL(final String hql, final String[] params){
+    public List queryByHQL(final String hql, final Object[] params){
         log.info("query by hql: " + hql);
         return getHibernateTemplate().executeFind(new HibernateCallback() {
             public Object doInHibernate(Session session){
