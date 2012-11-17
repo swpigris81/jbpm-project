@@ -16,6 +16,14 @@ public interface IRightService {
      * @update: 2011-6-6 代超[变更描述]
      */
     public List<String> getButtonRoleNameByButton(String buttonId);
+    /**
+     * <p>Discription:[根据按钮ID查询能访问该按钮的角色信息]</p>
+     * @param buttonIds 按钮id
+     * @return 按钮ID, 角色id(以,分隔的角色ID), 按钮url
+     * @author:大牙
+     * @update:2012-11-12
+     */
+    public List getButtonRoleByButtonIds(Object ... buttonIds);
     
     /**
      * <p>Discription:[根据菜单ID，角色ID查询有权限访问的按钮]</p>

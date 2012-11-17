@@ -69,4 +69,12 @@ public interface IRoleMenuService {
      * @update: 2011-7-3 代超[变更描述]
      */
     public void deleteByRoleId(String[] roles) throws Exception;
+    /**
+     * <p>Discription:[批量根据菜单ID查询对应的角色菜单信息]</p>
+     * @param menuId 菜单ID
+     * @return 菜单ID, 角色ID(以,分隔的角色ID), 菜单路径
+     * @author:大牙
+     * @update:2012-11-12
+     */
+    public List getMenuRoleByMenuId(Object ... menuId);
 }

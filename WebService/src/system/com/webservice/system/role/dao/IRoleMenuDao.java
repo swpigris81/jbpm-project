@@ -9,9 +9,9 @@ import java.util.List;
  * @createDate May 18, 2011
  */
 public interface IRoleMenuDao {
-    public List queryBySQL(String sql, String[] params);
+    public List queryBySQL(String sql, Object[] params);
     
-    public List queryByHQL(String hql, String[] params);
+    public List queryByHQL(String hql, Object[] params);
     /**
      * 批量删除
      * @param entities

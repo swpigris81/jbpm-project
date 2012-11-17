@@ -55,6 +55,34 @@ public class RightService implements IRightService {
         String []params = new String[]{buttonId};
         return this.baseDao.queryBySQL(sql, params);
     }
+    
+    /**
+     * <p>Discription:[根据按钮ID查询能访问该按钮的角色信息]</p>
+     * @param buttonIds 按钮id
+     * @return 按钮ID, 角色id(以,分隔的角色ID), 按钮url
+     * @author:大牙
+     * @update:2012-11-12
+     */
+    public List getButtonRoleByButtonIds(Object ... buttonIds){
+        StringBuffer sql = new StringBuffer();
+        if(buttonIds != null && buttonIds.length > 0){
+            sql.append("SELECT menubutton.button_id, GROUP_CONCAT(role_info.role_id), menubutton.button_url ");
+            sql.append("FROM menubutton, right_info, role_info ");
+            sql.append("WHERE menubutton.button_id = right_info.button_id AND right_info.role_id = role_info.role_id ");
+            sql.append("AND menubutton.button_id IN( ");
+            for(int i=0; i<buttonIds.length; i++){
+                if(i == buttonIds.length - 1){
+                    sql.append(" ? )");
+                }else{
+                    sql.append(" ?, ");
+                }
+            }
+            sql.append(" GROUP BY menubutton.button_id");
+            return this.baseDao.queryBySQL(sql.toString(), buttonIds);
+        }else{
+            return null;
+        }
+    }
 
     @Override
     public List getButtonByRight(String menuId, String roleId) {
