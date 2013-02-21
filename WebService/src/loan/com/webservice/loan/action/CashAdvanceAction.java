@@ -728,33 +728,33 @@ public class CashAdvanceAction extends BaseAction {
      */
     public String deployLoan(){
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        if(process == null){
-            resultMap.put("success", false);
-            resultMap.put("msg", "请款流程文件不存在！");
-        }else if(processFileName.indexOf("jpdl.xml") < 0){
-            resultMap.put("success", false);
-            resultMap.put("msg", "请款流程文件类型不正确！");
-        }else{
-            PrintWriter out = null;
-            try{
+        PrintWriter out = null;
+        try{
+            out = getPrintWriter(getRequest(), getResponse(), "utf-8", "text/html; charset=utf-8");
+            if(process == null){
+                resultMap.put("success", false);
+                resultMap.put("msg", "请款流程文件不存在！");
+            }else if(processFileName.indexOf("jpdl.xml") < 0){
+                resultMap.put("success", false);
+                resultMap.put("msg", "请款流程文件类型不正确！");
+            }else{
                 LOG.info("流程文件类型是：" + this.processContentType);
-                out = getPrintWriter(getRequest(), getResponse(), "utf-8", "text/html; charset=utf-8");
                 //由于文件上传之后变成了*.tmp类似的文件名称，所以只能使用addResourceFromInputStream方法来进行部署
                 Configuration.getProcessEngine().getRepositoryService().createDeployment().addResourceFromInputStream(processFileName, new FileInputStream(process)).deploy();
                 //启动Email
                 //wiser.start();
                 resultMap.put("success", true);
                 resultMap.put("msg", "请款流程已经部署成功！");
-            }catch(Exception e){
-                LOG.error(e.getMessage(), e);
-                resultMap.put("success", false);
-                resultMap.put("msg", "系统异常，异常原因：" + e.getMessage());
-            }finally{
-                if(out != null){
-                    out.print(getJsonString(resultMap));
-                    out.flush();
-                    out.close();
-                }
+            }
+        }catch(Exception e){
+            LOG.error(e.getMessage(), e);
+            resultMap.put("success", false);
+            resultMap.put("msg", "系统异常，异常原因：" + e.getMessage());
+        }finally{
+            if(out != null){
+                out.print(getJsonString(resultMap));
+                out.flush();
+                out.close();
             }
         }
         return null;

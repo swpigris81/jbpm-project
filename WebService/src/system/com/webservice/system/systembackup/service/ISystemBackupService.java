@@ -81,4 +81,13 @@ public interface ISystemBackupService {
      * @update:[日期YYYY-MM-DD] [更改人姓名][变更描述]
      */
     public int queryPageBackList(Map<String, Object> paramMap);
+    /**
+     * <p>Discription:添加/修改系统备份定时任务</p>
+     * @param jobDataMap 任务参数
+     * @param jobName 任务名称
+     * @param cronTime 任务执行时间
+     * @author:大牙
+     * @update:2012-11-23
+     */
+    public void executeJob(Map jobDataMap, String jobName, String cronTime);
 }

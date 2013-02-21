@@ -73,6 +73,10 @@ function indexPage(){
         }
     });
     
+    var title = "欢迎您    "+userName;
+    if(!userName){
+        title = "您尚未登录，请先登录！";
+    }
     /**
      * 主页面
      */
@@ -87,7 +91,7 @@ function indexPage(){
 			margins:'0 0 10 0'
 			//html:"aaaa"
 		},{
-			title:"欢迎您    "+userName,
+			title:title,
 			id:"userInfo_panel",
 			layout:"border",
 			region:"west",

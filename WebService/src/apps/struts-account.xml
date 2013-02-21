@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC 
+      "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+      "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="account_manage" namespace="/account_manage" extends="struts-default">
+		<!-- 切记：action name不能是一样的，否则会进不了Action -->
+		<action name="accountManage" class="com.webservice.apps.account.action.AccountManageAction" method="begin">
+			 <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+			 <result name="input">/index.jsp</result>
+		</action>
+		<!-- 账目管理 -->
+        <action name="accountList" class="com.webservice.apps.account.action.AccountManageAction" method="accountList">
+             <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <action name="addAccountInfo" class="com.webservice.apps.account.action.AccountManageAction" method="addAccountInfo">
+             <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <action name="editAccountInfo" class="com.webservice.apps.account.action.AccountManageAction" method="editAccountInfo">
+             <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <action name="deleteAccountInfo" class="com.webservice.apps.account.action.AccountManageAction" method="deleteAccountInfo">
+             <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <!-- 账户管理 -->
+        <action name="myAccountList" class="com.webservice.apps.account.action.AccountManageAction" method="myAccountList">
+             <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <action name="addAccountCard" class="com.webservice.apps.account.action.AccountManageAction" method="addAccountCard">
+             <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <action name="editAccountCard" class="com.webservice.apps.account.action.AccountManageAction" method="editAccountCard">
+             <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <action name="deleteAccountCard" class="com.webservice.apps.account.action.AccountManageAction" method="deleteAccountCard">
+             <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <action name="transferAccount" class="com.webservice.apps.account.action.AccountManageAction" method="transferAccount">
+        	 <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <!-- 账目预算 -->
+        <action name="accountBudget" class="com.webservice.apps.account.action.AccountManageAction" method="accountBudgetList">
+        	 <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <action name="addBudget" class="com.webservice.apps.account.action.AccountManageAction" method="addBudget">
+        	 <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <action name="editBudget" class="com.webservice.apps.account.action.AccountManageAction" method="editBudget">
+        	 <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <action name="deleteBudget" class="com.webservice.apps.account.action.AccountManageAction" method="deleteBudget">
+        	 <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <!-- 账目统计报表 -->
+        <action name="accountReport" class="com.webservice.apps.account.action.AccountManageAction" method="accountReport">
+        	 <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <!-- 账目备份同步 -->
+        <action name="accountBackup" class="com.webservice.apps.account.action.AccountManageAction" method="accountBackup">
+        	 <result name="success">/jsp/webservice/apps/account/account.jsp</result>
+             <result name="input">/index.jsp</result>
+        </action>
+        <!-- 账目备份文件列表 -->
+        <action name="accountBackupFileList" class="com.webservice.apps.account.action.AccountManageAction" method="accountBackupFileList">
+        	<result name="success">/jsp/webservice/apps/account/account.jsp</result>
+            <result name="input">/index.jsp</result>
+        </action>
+        <!-- 模板下载 -->
+        <action name="downloadTemplate" class="com.webservice.apps.account.action.AccountManageAction" method="download">
+        	<result name="success">/jsp/webservice/apps/account/account.jsp</result>
+        	<result name="download" type="redirectAction">
+				<param name="namespace">/base</param>
+				<param name="actionName">downloadAction</param>
+				<param name="fileName">${fileName}</param>
+				<param name="fileLoc">${fileLoc}</param>
+			</result>
+            <result name="input">/index.jsp</result>
+        </action>
+        <!-- 上传账目文件 -->
+        <action name="uploadAccount" class="com.webservice.apps.account.action.AccountManageAction" method="uploadAccount">
+			<interceptor-ref name="fileUpload">
+				<!-- 只允许Excel格式上传 -->
+				<param name="allowedTypes">application/vnd.ms-excel,application/actet-stream,application/excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</param>
+				<param name="maximumSize">2097152</param>
+			</interceptor-ref>
+			<param name="savePath">/temp</param>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result name="success">/jsp/webservice/apps/account/account.jsp</result>
+			<result name="input">/index.jsp</result>
+		</action>
+	</package>
+</struts>

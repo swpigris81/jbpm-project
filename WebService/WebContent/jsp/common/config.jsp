@@ -23,6 +23,8 @@
 <!-- 引用Ext JS 的语言文件 -->
 <script type="text/javascript" src="<%=path %>/js/ext-2.2.1/source/locale/ext-lang-zh_CN.js"></script>
 
+<!-- JavaScript的Form表单验证工具 -->
+<script type="text/javascript" language="JavaScript" src="<%=path%>/js/util/validate/validatorForForm_v4.js"></script>
 
 <!-- DWR3.0 RC 消息反转 -->
 <!-- 

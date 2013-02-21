@@ -4,10 +4,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.webservice.apps.account.job.BackupJob;
 import com.webservice.common.dao.impl.BaseDao;
 import com.webservice.system.systembackup.bean.SystemBackupInfo;
 import com.webservice.system.systembackup.dao.ISystemBackupDao;
 import com.webservice.system.systembackup.service.ISystemBackupService;
+import com.webservice.system.util.quarz.manager.QuartzManager;
 
 /** 
  * <p>Description: [描述该类概要功能介绍]</p>
@@ -66,6 +68,22 @@ public class SystemBackupServiceImpl implements ISystemBackupService {
             return list.size();
         }
         return 0;
+    }
+    
+    /**
+     * <p>Discription:添加/修改系统备份定时任务</p>
+     * @param jobDataMap 任务参数
+     * @param jobName 任务名称
+     * @param cronTime 任务执行时间
+     * @author:大牙
+     * @update:2012-11-23
+     */
+    public void executeJob(Map jobDataMap, String jobName, String cronTime){
+        if(QuartzManager.getJobDetail(jobName) != null){
+            QuartzManager.removeJob(jobName);
+        }
+        QuartzManager.addJob(jobDataMap, jobName, BackupJob.class, cronTime);
+        QuartzManager.startJobs();
     }
     
     public BaseDao getBaseDao() {

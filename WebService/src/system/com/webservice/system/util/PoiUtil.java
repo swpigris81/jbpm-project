@@ -3,6 +3,7 @@
  */
 package com.webservice.system.util;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -11,27 +12,35 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.poi.hpsf.DocumentSummaryInformation;
 import org.apache.poi.hpsf.SummaryInformation;
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.directwebremoting.util.Logger;
 
 /**
  * POI处理Excel公共类
@@ -39,6 +48,8 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
  * @author Jason
  */
 public class PoiUtil<T> {
+    private static Logger logger = Logger.getLogger(PoiUtil.class);
+    
 	/**
 	 * <p>Discription:[创建excel表格]</p>
 	 * @param defaultLines 默认存储在内存中的数据行数
@@ -58,6 +69,34 @@ public class PoiUtil<T> {
 	 */
 	public static Workbook createWorkBook() {
 		return new SXSSFWorkbook();
+	}
+	/**
+	 * <p>Discription:解析Excel文件为Workbook</p>
+	 * @param file Exce文件
+	 * @return Workbook
+	 * @throws Exception
+	 * @author:大牙
+	 * @update:2012-11-30
+	 */
+	public static Workbook getWorkBook(File file) throws Exception{
+	    if(file == null){
+	        return null;
+	    }
+	    Workbook wb = null;
+	    try{
+	        wb = new HSSFWorkbook(new FileInputStream(file));
+	    }catch(Exception e){
+	        try {
+                wb = new XSSFWorkbook(new FileInputStream(file));
+            } catch (FileNotFoundException e1) {
+                logger.error("文件不存在", e1);
+                throw e1;
+            } catch (IOException e1) {
+                logger.error("IO异常，" + e1.getMessage(), e1);
+                throw e1;
+            }
+	    }
+	    return wb;
 	}
 
 	/**
@@ -185,10 +224,11 @@ public class PoiUtil<T> {
                     }
                     //写入第一行
                     if(rowNumber == 0){
+                        //第一行要写入文件标题头
                         exportExcel2007(sheet, rowNumber, header);
-                    }else{
-                        exportExcel2007(sheet, rowNumber, obj);
+                        rowNumber ++ ;
                     }
+                    exportExcel2007(sheet, rowNumber, obj);
                     rowNumber ++ ;
                 }
             }catch(Exception e){
@@ -229,7 +269,7 @@ public class PoiUtil<T> {
 					} else if (data[i] instanceof Boolean) {
 						cell.setCellValue((Boolean) data[i]);
 					} else if (data[i] instanceof Date) {
-						cell.setCellValue((Date) data[i]);
+						cell.setCellValue(Tools.dateToString((Date) data[i]));
 					} else if (data[i] instanceof BigDecimal) {
 						cell.setCellValue(((BigDecimal) data[i]).doubleValue());
 					} else {
@@ -276,7 +316,7 @@ public class PoiUtil<T> {
 					} else if (data[i] instanceof Boolean) {
 						cell.setCellValue((Boolean) data[i]);
 					} else if (data[i] instanceof Date) {
-						cell.setCellValue((Date) data[i]);
+					    cell.setCellValue(Tools.dateToString((Date) data[i]));
 					} else if (data[i] instanceof BigDecimal) {
 						cell.setCellValue(((BigDecimal) data[i]).doubleValue());
 					} else {
@@ -318,37 +358,123 @@ public class PoiUtil<T> {
 			int sheetTotal = workbook.getNumberOfSheets();
 			// 获取工作表信息
 			for (int i = 0; i < sheetTotal; i++) {
-
 				HSSFSheet sheet = workbook.getSheetAt(i);
-				if (null == sheet)
+				if (null == sheet){
 					continue;
+				}
 				int rowTotal = sheet.getLastRowNum();
 				// 获取 行信息
 				for (int j = 0; j < rowTotal; j++) {
 					HSSFRow row = sheet.getRow(j);
-					if (null == row)
+					if (null == row){
 						continue;
+					}
 					int cellTotal = row.getLastCellNum();
 					// 获取单元格信息
 					for (int k = 0; k < cellTotal; k++) {
 						HSSFCell cell = row.getCell(k);
-						if (null == cell)
+						if (null == cell){
 							continue;
+						}
 						xlsContent.append(cell.toString());
 					}
 				}
 			}
 			System.out.println("内容：" + xlsContent.toString());
-
-			
 		} catch (Exception e) {
 			throw e;
 		} finally {
-			if (null != input)
+			if (null != input){
 				input.close();
-
+			}
 		}
 	}
+	
+	/**
+	 * <p>Discription:读取Excel文件，支持03以及07及以上版本</p>
+	 * @param file Excel文件
+	 * @return 以map格式输出：<sheet名：sheet内容>。其中sheet内容是以列表存储，列表中存储的是String数组，sheet中的每一行则是一个String数组
+	 * @throws Exception
+	 * @author:大牙
+	 * @update:2012-11-30
+	 */
+	public Map<String, Object> readExcel(File file) throws Exception{
+	    return readExcel(getWorkBook(file));
+	}
+	
+	/**
+     * <p>Discription:读取Workbook文件，支持03以及07及以上版本</p>
+     * @param file Workbook文件
+     * @return 以map格式输出：<sheet名：sheet内容>。其中sheet内容是以列表存储，列表中存储的是String数组，sheet中的每一行则是一个String数组
+     * @throws Exception
+     * @author:大牙
+     * @update:2012-11-30
+     */
+	public Map<String, Object> readExcel(Workbook wb) throws Exception{
+	    if(wb == null){
+	        return null;
+	    }
+	    DecimalFormat df = new DecimalFormat("#.##");
+        int sheetNumber = wb.getNumberOfSheets();
+        Map<String, Object> excelMap = new LinkedHashMap<String, Object>();
+        for (int i = 0; i < sheetNumber; i++) {
+            Sheet sheet = wb.getSheetAt(i);
+            List<String[]> strs=new ArrayList<String[]>();
+            // 注意得到的行数是基于0的索引 遍历所有的行
+            for (int k = 0; k <= sheet.getLastRowNum(); k++) {
+                Row rows = sheet.getRow(k);
+                if(rows == null){
+                    continue;
+                }
+                String[] str = new String[rows.getLastCellNum()];
+                // 遍历每一列
+                for (int l = 0; l < rows.getLastCellNum(); l++) {
+                    Cell cell = rows.getCell(l);
+                    // 单元格类型
+                    if(cell == null){
+                        continue;
+                    }
+                    int cellType = cell.getCellType();
+                    switch (cellType) {
+                    case 0:// 数字类型
+                        str[l] = df.format(cell.getNumericCellValue());
+                        break;
+                    case 1:// String类型
+                        str[l] = cell.getStringCellValue();
+                        break;
+                    case 2:// Formula Cell type 公式类型
+                        FormulaEvaluator he = null;
+                        try {
+                            he = new HSSFFormulaEvaluator((HSSFWorkbook) wb);
+                        }
+                        catch (Exception e) {
+                            he = new XSSFFormulaEvaluator((XSSFWorkbook) wb);
+                        }
+                        if (he != null && he.evaluateFormulaCell(cell) == 0) {
+                            str[l] = df.format(he.evaluate(cell).getNumberValue());
+                        }
+                        else {
+                            str[l] = he.evaluate(cell).getStringValue();
+                        }
+                        break;
+                    case 3:// 空格
+                        str[l] = "";
+                        break;
+                    case 4:// Boolean Cell type
+                        str[l] = BooleanUtils.toStringTrueFalse(cell.getBooleanCellValue());
+                        break;
+                    case 5:// Errors
+                        break;
+                    default:// 其它格式的数据
+                        break;
+                    }
+                }
+                strs.add(str);
+            }
+            excelMap.put(sheet.getSheetName(), strs);
+        }
+	    return excelMap;
+    }
 
 	public static void showInfo(SummaryInformation sumInfo,
 			DocumentSummaryInformation docInfo) throws Exception {

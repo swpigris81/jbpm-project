@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/loan"/>
+	<classpathentry kind="src" path="src/apps"/>
 	<classpathentry kind="src" path="src/system"/>
 	<classpathentry kind="src" path="src/jbpm4"/>
 	<classpathentry kind="src" path="src/common"/>
