@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/loan"/>
+	<classpathentry kind="src" path="src/netty"/>
 	<classpathentry kind="src" path="src/apps"/>
 	<classpathentry kind="src" path="src/system"/>
 	<classpathentry kind="src" path="src/jbpm4"/>
@@ -148,5 +149,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xstream-1.4.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xwork-core-2.1.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/netty-3.5.10.Final.jar" sourcepath="WebContent/WEB-INF/lib/netty-3.5.10.Final-sources.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

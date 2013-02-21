@@ -10,6 +10,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/config"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/security/spring"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/apps"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/netty"/>
         <property name="context-root" value="WebService"/>
         <property name="java-output-path" value="/WebService/WebContent/WEB-INF/classes"/>
     </wb-module>

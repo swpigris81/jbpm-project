@@ -10,6 +10,7 @@
 		<property name="locations">
 			<list>
 				<value>classpath*:/config.properties</value>
+				<value>classpath*:/netty.properties</value>
 			</list>
 		</property>
 	</bean>
@@ -37,6 +38,9 @@
 	<import resource="classpath*:/applicationContext-account-dao.xml"/>
 	<import resource="classpath*:/applicationContext-account-service.xml"/>
 	<import resource="classpath*:/applicationContext-account-action.xml"/>
+	
+	<!-- Netty框架 -->
+	<import resource="classpath*:/applicationContext-netty-service.xml"/>
 	
 	<!-- C3P0数据源配置 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"

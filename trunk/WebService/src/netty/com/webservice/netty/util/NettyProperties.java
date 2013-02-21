@@ -1,4 +1,4 @@
-package com.webservice.loan.util;
+package com.webservice.netty.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,12 +13,12 @@ import org.apache.commons.logging.LogFactory;
 import com.webservice.system.util.ConfigProperties;
 
 /** 
- * <p>Description: 请款流程配置文件</p>
+ * <p>Description: [Netty配置文件读取]</p>
  * @author  <a href="mailto: swpigris81@126.com">大牙</a>
  * @version v1.0
  */
-public class LoanConfigProperties {
-    private static Log log = LogFactory.getLog(LoanConfigProperties.class);
+public class NettyProperties {
+    private static Log log = LogFactory.getLog(NettyProperties.class);
     
     private static Properties props = null;
     
@@ -26,7 +26,7 @@ public class LoanConfigProperties {
     
     private static String projectHomePath;
     
-    private static String propertiesFile = "loan.properties";
+    private static String propertiesFile = "netty.properties";
     /**
      * <p>Discription:[获取属性值]</p>
      * @param key 属性ID
