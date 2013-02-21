@@ -1,5 +1,5 @@
 2012-08-16
-搭建系统框架，集成：Struts2, Spring3.05, Hibernate3.2, JBPM5.3, SpringSecurity3.05, Apache Shiro, axis2(WebService)
+搭建系统框架，集成：Struts2, Spring3.05, Hibernate3.2, JBPM5.3, SpringSecurity3.05, Apache Shiro, axis2(WebService), Netty3.5.10
 
 2012-08-16
 完成JBPM5.3在Tomcat上运行环境的配置，详细配置步骤参考：src/atomikos/readme.txt
@@ -10,3 +10,7 @@
 
 2012-11-12
 优化刷新内存中菜单权限信息的功能
+
+
+2013-02-21
+为程序增加Netty框架，支持以报文方式执行指定程序。主要是为了便于与手机端进行报文的发送与接收，如：找回手机（Android版）等等功能。
