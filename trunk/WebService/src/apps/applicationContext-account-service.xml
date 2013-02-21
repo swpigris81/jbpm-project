@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+	<bean id="accountAlertService" parent="serviceProxy">
+        <property name="target">
+            <bean
+                class="com.webservice.apps.account.service.impl.AccountAlertServiceImpl"
+                abstract="false">
+                <property name="baseDao" ref="BaseDao"></property>
+                <property name="alertDao" ref="AccountAlertDAO"></property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="add*">PROPAGATION_REQUIRED</prop>
+                <prop key="del*">PROPAGATION_REQUIRED</prop>
+                <prop key="edit*">PROPAGATION_REQUIRED</prop>
+                <prop key="upd*">PROPAGATION_REQUIRED</prop>
+                <prop key="sa*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="accountBaseInfoService" parent="serviceProxy">
+        <property name="target">
+            <bean
+                class="com.webservice.apps.account.service.impl.AccountBaseInfoServiceImpl"
+                abstract="false">
+                <property name="baseDao" ref="BaseDao"></property>
+                <property name="accountDao" ref="AccountBaseInfoDAO"></property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="add*">PROPAGATION_REQUIRED</prop>
+                <prop key="del*">PROPAGATION_REQUIRED</prop>
+                <prop key="edit*">PROPAGATION_REQUIRED</prop>
+                <prop key="upd*">PROPAGATION_REQUIRED</prop>
+                <prop key="sa*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="balanceInfoService" parent="serviceProxy">
+        <property name="target">
+            <bean
+                class="com.webservice.apps.account.service.impl.BalanceInfoServiceImpl"
+                abstract="false">
+                <property name="baseDao" ref="BaseDao"></property>
+                <property name="balanceDao" ref="BalanceInfoDAO"></property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="add*">PROPAGATION_REQUIRED</prop>
+                <prop key="del*">PROPAGATION_REQUIRED</prop>
+                <prop key="edit*">PROPAGATION_REQUIRED</prop>
+                <prop key="upd*">PROPAGATION_REQUIRED</prop>
+                <prop key="sa*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="balanceRightService" parent="serviceProxy">
+        <property name="target">
+            <bean
+                class="com.webservice.apps.account.service.impl.BalanceRightServiceImpl"
+                abstract="false">
+                <property name="baseDao" ref="BaseDao"></property>
+                <property name="rightDao" ref="BalanceRightDAO"></property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="add*">PROPAGATION_REQUIRED</prop>
+                <prop key="del*">PROPAGATION_REQUIRED</prop>
+                <prop key="edit*">PROPAGATION_REQUIRED</prop>
+                <prop key="upd*">PROPAGATION_REQUIRED</prop>
+                <prop key="sa*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="accountCardService" parent="serviceProxy">
+        <property name="target">
+            <bean
+                class="com.webservice.apps.account.service.impl.AccountCardInfoServiceImpl"
+                abstract="false">
+                <property name="baseDao" ref="BaseDao"></property>
+                <property name="accountCardDao" ref="AccountCardInfoDao"></property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="add*">PROPAGATION_REQUIRED</prop>
+                <prop key="del*">PROPAGATION_REQUIRED</prop>
+                <prop key="edit*">PROPAGATION_REQUIRED</prop>
+                <prop key="upd*">PROPAGATION_REQUIRED</prop>
+                <prop key="sa*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

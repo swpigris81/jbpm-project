@@ -30,6 +30,7 @@ public class BaseAction extends ActionSupport {
      * <p>Discription:序列号</p>
      */
     private static final long serialVersionUID = 1L;
+    public static final String DOWNLOAD = "download";
     public int start;
     public int limit;
     
@@ -169,6 +170,6 @@ public class BaseAction extends ActionSupport {
      * @update:2012-11-9
      */
     public String download() throws IOException{
-        return "download";
+        return DOWNLOAD;
     }
 }

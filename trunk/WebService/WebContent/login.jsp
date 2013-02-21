@@ -10,7 +10,6 @@ pageEncoding="UTF-8" %>
         <link href="<%=path%>/js/util/loginpage/bluelogin/css/Default.css" type="text/css" rel="stylesheet" />
         <link href="<%=path%>/js/util/loginpage/bluelogin/css/User_Login.css" type="text/css" rel="stylesheet" />
         <link href="<%=path%>/js/util/loginpage/bluelogin/css/xtree.css" type="text/css" rel="stylesheet" />
-		<script type="text/javascript" language="JavaScript" src="<%=path%>/js/util/validate/validatorForForm_v4.js"></script>
     </head>
     
     <body id="userlogin_body">
@@ -94,8 +93,8 @@ pageEncoding="UTF-8" %>
                                         	</span>
                                         </li>
                                         <LI class=user_main_text>
-                                            
                                         </LI>
+                                        <!-- 
                                         <LI class=user_main_input>
                                         	<span>
                                         		<INPUT type="radio" name="roleName" id="radio2" value="2" style="vertical-align:middle;margin-top:-2px; margin-bottom:1px;">
@@ -103,6 +102,7 @@ pageEncoding="UTF-8" %>
 	                                            </INPUT>
                                         	</span>
                                         </LI>
+                                        -->
                                     </UL>
                                     <UL>
                                         <LI class=user_main_input>

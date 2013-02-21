@@ -54,7 +54,7 @@
 	<!-- 系统消息管理 -->
 	<include file="struts-message.xml"></include>
     <!-- 账目管理 -->
-    <!-- <include file="com/integral/applications/account/config/account_manage.xml"></include> -->
+    <include file="struts-account.xml"></include>
     <!-- 系统备份 -->
     <include file="struts-systembackup.xml"></include>
     

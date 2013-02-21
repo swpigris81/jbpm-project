@@ -53,7 +53,7 @@ public class SystemBackupSettingDaoImpl extends HibernateDaoSupport implements I
         log.debug("getting SystemBackSettingInfo instance with id: " + id);
         try {
             SystemBackSettingInfo instance = (SystemBackSettingInfo) getHibernateTemplate()
-                    .get("com.integral.system.systembackup.bean.SystemBackupInfo", id);
+                    .get(SystemBackSettingInfo.class, id);
             return instance;
         } catch (RuntimeException re) {
             log.error("get failed", re);

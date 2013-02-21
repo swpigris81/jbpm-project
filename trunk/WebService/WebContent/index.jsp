@@ -11,6 +11,7 @@
 
 <%@include file="/jsp/common/config.jsp" %>
 <%
+//登录页面上选择是否是管理员，1-是管理员，2-普通用户登录
 Object loginRoleName = session.getAttribute("loginRoleName");
 %>
 <script type="text/javascript">

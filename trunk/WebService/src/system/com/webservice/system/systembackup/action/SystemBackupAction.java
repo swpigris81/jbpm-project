@@ -101,6 +101,7 @@ public class SystemBackupAction extends BaseAction {
                 }
             }
         }catch(Exception e){
+            LOG.error(e.getMessage());
             try{
                 if(os != null){
                     os.flush();
@@ -119,7 +120,7 @@ public class SystemBackupAction extends BaseAction {
                 response.reset();
                 out = getPrintWriter(ServletActionContext.getRequest(), response, "UTF-8", "text/html; charset=utf-8");
                 out = response.getWriter();
-                out.write("<script>parent.showSystemMsg('系统提示','系统错误，错误代码："+StringUtils.convertChar(e.getMessage())+"')</script>");
+                out.write("<script>alert('系统错误，错误原因："+StringUtils.convertChar(e.getMessage())+"'); window.close();</script>");
                 out.flush();
                 out.close();
             }catch(Exception e1){
@@ -172,6 +173,10 @@ public class SystemBackupAction extends BaseAction {
                 settingInfo.setId(settingId);
             }
             this.systemBackupSettingService.saveOrUpdate(settingInfo);
+            //更新定时任务
+            Map<String, String> jobDataMap = new HashMap<String, String>();
+            jobDataMap.put("userName", userName);
+            systemBackupService.executeJob(jobDataMap, "ACCOUNTBACKUPJOB", settingInfo.getCronValue());
             resultMap.put("success", true);
             resultMap.put("msg", "您的账目备份设置信息已经成功保存！");
         }catch(Exception e){

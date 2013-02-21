@@ -82,7 +82,7 @@ public class ConfigProperties {
      * @author:大牙
      * @update:2012-11-13
      */
-    private static void loadInitSystemProperties() {
+    public static void loadInitSystemProperties() {
         props = new Properties();
         InputStream in = null;
         try{

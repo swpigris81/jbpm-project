@@ -33,6 +33,11 @@
 	<import resource="classpath*:/applicationContext-loan-service.xml"/>
 	<import resource="classpath*:/applicationContext-loan-action.xml"/>
 	
+	<!-- 账目 -->
+	<import resource="classpath*:/applicationContext-account-dao.xml"/>
+	<import resource="classpath*:/applicationContext-account-service.xml"/>
+	<import resource="classpath*:/applicationContext-account-action.xml"/>
+	
 	<!-- C3P0数据源配置 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
@@ -145,6 +150,12 @@
 				<!-- 请款 -->
 				<value>com/webservice/loan/bean/xml/CashAdvanceInfo.hbm.xml</value>
 				<value>com/webservice/loan/bean/xml/CashTaskInfo.hbm.xml</value>
+				<!-- 账目 -->
+				<value>com/webservice/apps/account/bean/xml/AccountAlert.hbm.xml</value>
+				<value>com/webservice/apps/account/bean/xml/AccountBaseInfo.hbm.xml</value>
+				<value>com/webservice/apps/account/bean/xml/AccountCardInfo.hbm.xml</value>
+				<value>com/webservice/apps/account/bean/xml/BalanceInfo.hbm.xml</value>
+				<value>com/webservice/apps/account/bean/xml/BalanceRight.hbm.xml</value>
 				<!-- JBPM4.4相关配置文件 -->
 				<value>jbpm.execution.hbm.xml</value>
 				<value>jbpm.history.hbm.xml</value>
