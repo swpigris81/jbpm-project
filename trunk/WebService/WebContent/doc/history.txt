@@ -14,3 +14,4 @@
 
 2013-02-21
 为程序增加Netty框架，支持以报文方式执行指定程序。主要是为了便于与手机端进行报文的发送与接收，如：找回手机（Android版）等等功能。
+提供Android手机消息推送功能，使用Google提供了C2DM（Cloudto Device Messaging）服务，Androidpn
