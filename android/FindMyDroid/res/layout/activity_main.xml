@@ -3,16 +3,17 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
+
 	<TextView
-	    android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content"
-	    android:layout_weight="1.0"
-	    android:layout_marginTop="100dip" 
-	    android:gravity="center_horizontal"
-	    android:text="@string/hello"
-	    android:textSize="16sp" 
-	    android:textStyle="bold" 
-	    />
+        android:id="@+id/textViewa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dip" 
+        android:layout_weight="1.0"
+        android:text="@string/readme"
+        android:textStyle="italic" 
+        android:textSize="15sp"
+        android:textColor="#ff9a00"/>
 	<Button
 		android:id="@+id/btn_settings"
 		android:layout_width="wrap_content"

@@ -81,6 +81,8 @@ public class Constants {
     public static final String ACTION_NOTIFICATION_CLICKED = "org.androidpn.client.NOTIFICATION_CLICKED";
 
     public static final String ACTION_NOTIFICATION_CLEARED = "org.androidpn.client.NOTIFICATION_CLEARED";
+    
+    public static final int START_ACTIVITY_FOR_RESULT_REQUEST_CODE = 0;
 
     public static XmppManager xmppManager = null;
 

@@ -342,9 +342,11 @@ public class XmppManager {
             Log.i(LOGTAG, "RegisterTask.run()...");
 
             if (!xmppManager.isRegistered()) {
-                final String newUsername = newRandomUUID();
-                final String newPassword = newRandomUUID();
+//                final String newUsername = newRandomUUID();
+//                final String newPassword = newRandomUUID();
 
+                final String newUsername = xmppManager.getUsername();
+                final String newPassword = xmppManager.getPassword();
                 Registration registration = new Registration();
 
                 PacketFilter packetFilter = new AndFilter(new PacketIDFilter(
