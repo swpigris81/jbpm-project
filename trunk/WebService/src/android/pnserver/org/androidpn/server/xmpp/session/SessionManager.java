@@ -230,6 +230,7 @@ public class SessionManager {
             checkTimeoutInterval = Config.getLong("xmpp.session.maxInactiveInterval", 10 * 1000);
             maxInactiveInterval = Config.getLong("xmpp.session.maxInactiveInterval", -1);
             log.debug("maxInactiveInterval:" + maxInactiveInterval);
+            log.info("maxInactiveInterval:" + maxInactiveInterval);
         }
 
         @SuppressWarnings("static-access")
@@ -252,6 +253,7 @@ public class SessionManager {
 
             if (log.isDebugEnabled())
                 log.debug("Start expire sessions at " + timeNow + " sessioncount " + size);
+            log.info("Start expire sessions at " + timeNow + " sessioncount " + size);
             for (ClientSession session : getSessions()) {
                 if (isValid(session)) {
                     expireHere++;
@@ -262,6 +264,8 @@ public class SessionManager {
             if (log.isDebugEnabled())
                 log.debug("End expire sessions processingTime " + (timeEnd - timeNow)
                         + " expired sessions: " + expireHere);
+            log.info("End expire sessions processingTime " + (timeEnd - timeNow)
+                    + " expired sessions: " + expireHere);
         }
         
         public boolean isValid(ClientSession clientSessions) {  

@@ -107,9 +107,15 @@ public class CipherUtil {
         return md5.encodePassword(passWord, salt);
     }
     
+    public static String generatePasswordWithSalt(String password, String salt){
+        String pw = password + "{" + salt + "}";
+        return encodeByMD5(pw);
+    }
+    
     public static void main(String [] args){
         String name = "812877{代超}";
         System.out.println(encodeByMD5(name));
+        System.out.println(generatePasswordWithSalt("812877", "代超"));
         Md5PasswordEncoder md5 = new Md5PasswordEncoder();
         System.out.println(md5.encodePassword("812877", "代超"));
     }
