@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -138,6 +139,30 @@ public class BaseAction extends ActionSupport {
         LOG.info(json);
         return json;
     }
+    /**
+     * <p>Discription:[向前台页面写出数据]</p>
+     * @param resultMap
+     * @author:大牙
+     * @update:2013-2-26
+     */
+    protected void writeMeessage(Map<String, Object> resultMap){
+        PrintWriter out = null;
+        try {
+            out = getPrintWriter();
+        }
+        catch (IOException e) {
+            resultMap.put("success", false);
+            resultMap.put("msg", "系统错误！错误代码：" + e.getMessage());
+            LOG.error(e.getMessage());
+        }finally{
+            if(out != null){
+                out.print(getJsonString(resultMap));
+                out.flush();
+                out.close();
+            }
+        }
+    }
+    
     /**
      * <p>Discription:[手动开启事务]</p>
      * @param transactionManager

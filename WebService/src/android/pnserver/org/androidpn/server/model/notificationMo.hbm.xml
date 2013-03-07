@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2011-6-5 15:28:30 by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="org.androidpn.server.model.NotificationMO" table="apn_notification">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="username" type="java.lang.String">
+            <column name="username" />
+        </property>
+        <property name="clientIp" type="java.lang.String">
+            <column name="client_ip" />
+        </property>
+        <property name="resource" type="java.lang.String">
+            <column name="resource" />
+        </property>
+        <property name="messageId" type="java.lang.String">
+            <column name="message_id" />
+        </property>
+        <property name="apiKey" type="java.lang.String">
+            <column name="apiKey" />
+        </property>
+        <property name="title" type="java.lang.String">
+            <column name="title" />
+        </property>
+        <property name="message" type="java.lang.String">
+            <column name="message" />
+        </property>
+        <property name="uri" type="java.lang.String">
+            <column name="uri" />
+        </property>
+        <property name="status" type="java.lang.String">
+            <column name="status" />
+        </property>
+        <property name="createTime" type="java.util.Date">
+            <column name="created_time" />
+        </property>
+        <property name="updateTime" type="java.util.Date">
+            <column name="updateTime" />
+        </property>
+    </class>
+</hibernate-mapping>
