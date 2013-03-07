@@ -204,6 +204,14 @@ public class StanzaHandler {
                 mo.setUsername(userName);
                 mo.setStatus(NotificationMO.STATUS_NOT_SEND);
                 List<NotificationMO> list = notificationService.queryNotification(mo);
+                //解决时间差，即：服务器端认为客户端仍然在线，但是实际上客户端已经离线(断网)
+                NotificationMO timeMo = new NotificationMO();
+                timeMo.setUsername(userName);
+                timeMo.setStatus(NotificationMO.STATUS_SEND);
+                List<NotificationMO> timeList = notificationService.queryNotification(timeMo);
+                if(timeList != null && !timeList.isEmpty()){
+                    list.addAll(timeList);
+                }
                 if(!list.isEmpty()){
                     //循环发送该用户的所有离线消息
                     for (NotificationMO notificationMO : list) {
