@@ -33,6 +33,8 @@ import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.PacketError;
 
+import com.webservice.system.util.CipherUtil;
+
 /** 
  * This class is to handle the TYPE_IQ jabber:iq:auth protocol.
  *

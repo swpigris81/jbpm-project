@@ -35,6 +35,8 @@ import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.PacketError;
 
+import com.webservice.system.util.CipherUtil;
+
 /** 
  * This class is to handle the TYPE_IQ jabber:iq:register protocol.
  *
@@ -129,10 +131,17 @@ public class IQRegisterHandler extends IQHandler {
                     if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
                         user = userService.getUser(session.getUsername());
                     } else {
-                        user = new User();
+                        try{
+                            user = userService.getUserByUsername(username);
+                            if(user == null){
+                                user = new User();
+                            }
+                        }catch(UserNotFoundException e){
+                            user = new User();
+                        }
                     }
                     user.setUsername(username);
-                    user.setPassword(password);
+                    user.setPassword(CipherUtil.generatePassword(password, username));
                     user.setEmail(email);
                     user.setName(name);
                     userService.saveUser(user);
