@@ -52,7 +52,7 @@ public class Notifier {
     }
 
     public void notify(String notificationId, String apiKey, String title,
-            String message, String uri) {
+            String message, String uri, String from,String packetId) {
         Log.d(LOGTAG, "notify()...");
 
         Log.d(LOGTAG, "notificationId=" + notificationId);
@@ -105,13 +105,21 @@ public class Notifier {
             intent.putExtra(Constants.NOTIFICATION_TITLE, title);
             intent.putExtra(Constants.NOTIFICATION_MESSAGE, message);
             intent.putExtra(Constants.NOTIFICATION_URI, uri);
+            
+            intent.putExtra(Constants.NOTIFICATION_FROM, from);
+            intent.putExtra(Constants.PACKET_ID, packetId);
+
+            
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+//            PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+//                    intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            
+            PendingIntent contentIntent = PendingIntent.getActivity(context, random.nextInt(),
                     intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             notification.setLatestEventInfo(context, title, message,

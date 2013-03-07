@@ -16,6 +16,7 @@
 package com.webservice.findmydroid.client;
 
 import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 
 import android.content.Intent;
@@ -53,6 +54,9 @@ public class NotificationPacketListener implements PacketListener {
                 String notificationMessage = notification.getMessage();
                 //                String notificationTicker = notification.getTicker();
                 String notificationUri = notification.getUri();
+                String notificationFrom = notification.getFrom();
+                String packetId = notification.getPacketID();
+
 
                 Intent intent = new Intent(Constants.ACTION_SHOW_NOTIFICATION);
                 intent.putExtra(Constants.NOTIFICATION_ID, notificationId);
@@ -64,6 +68,17 @@ public class NotificationPacketListener implements PacketListener {
                 intent.putExtra(Constants.NOTIFICATION_MESSAGE,
                         notificationMessage);
                 intent.putExtra(Constants.NOTIFICATION_URI, notificationUri);
+                
+                intent.putExtra(Constants.NOTIFICATION_FROM, notificationFrom);
+                intent.putExtra(Constants.PACKET_ID, packetId);
+                
+                //FIXME 发送收到通知回执
+                IQ result = NotificationIQ.createResultIQ(notification);
+                
+                try{
+                    xmppManager.getConnection().sendPacket(result);
+                }catch(Exception e){}
+
                 //                intent.setData(Uri.parse((new StringBuilder(
                 //                        "notif://notification.androidpn.org/")).append(
                 //                        notificationApiKey).append("/").append(

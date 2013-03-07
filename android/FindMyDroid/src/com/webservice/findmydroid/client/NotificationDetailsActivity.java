@@ -29,6 +29,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.IQ.Type;
+
+
 /** 
  * Activity for displaying the notification details view.
  *
@@ -68,12 +72,33 @@ public class NotificationDetailsActivity extends Activity {
                 .getStringExtra(Constants.NOTIFICATION_MESSAGE);
         String notificationUri = intent
                 .getStringExtra(Constants.NOTIFICATION_URI);
+        String notificationFrom = intent
+                .getStringExtra(Constants.NOTIFICATION_FROM);
+        String packetId = intent
+                .getStringExtra(Constants.PACKET_ID);
 
+        
         Log.d(LOGTAG, "notificationId=" + notificationId);
         Log.d(LOGTAG, "notificationApiKey=" + notificationApiKey);
         Log.d(LOGTAG, "notificationTitle=" + notificationTitle);
         Log.d(LOGTAG, "notificationMessage=" + notificationMessage);
         Log.d(LOGTAG, "notificationUri=" + notificationUri);
+        //FIXME 发送查看回执
+        IQ result = new IQ() {
+            @Override
+            public String getChildElementXML() {
+                return "<test>aaaa</test>";
+            }
+        };
+
+        result.setType(Type.RESULT);
+        result.setPacketID(packetId);
+        result.setTo(notificationFrom);
+        Log.d(LOGTAG, result.toXML());
+        try{
+            Constants.xmppManager.getConnection().sendPacket(result);
+        }catch(Exception e){}
+
 
         //        Display display = getWindowManager().getDefaultDisplay();
         //        View rootView;

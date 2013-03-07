@@ -27,6 +27,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Presence;
+
 
 import android.util.Log;
 
@@ -129,12 +131,12 @@ class PacketWriter {
      * @param xmppManager 
      * @throws Exception 
      */
-    void startKeepAliveProcess(XmppManager xmppManager) throws Exception {
+    void startKeepAliveProcess() throws Exception {
         // Schedule a keep-alive task to run if the feature is enabled. will write
         // out a space character each time it runs to keep the TCP/IP connection open.
         int keepAliveInterval = SmackConfiguration.getKeepAliveInterval();
         if (keepAliveInterval > 0) {
-            KeepAliveTask task = new KeepAliveTask(keepAliveInterval, xmppManager);
+            KeepAliveTask task = new KeepAliveTask(keepAliveInterval);
             keepAliveThread = new Thread(task);
             task.setThread(keepAliveThread);
             keepAliveThread.setDaemon(true);
@@ -273,11 +275,9 @@ class PacketWriter {
 
         private int delay;
         private Thread thread;
-        private XmppManager xmppManager;
 
-        public KeepAliveTask(int delay, XmppManager xmppManager) {
+        public KeepAliveTask(int delay) {
             this.delay = delay;
-            this.xmppManager = xmppManager;
         }
 
         protected void setThread(Thread thread) {
@@ -295,20 +295,24 @@ class PacketWriter {
             }
             while (!done && keepAliveThread == thread) {
                     // Send heartbeat if no packet has been sent to the server for a given time
-                    if (System.currentTimeMillis() - lastActive >= delay) {
-                        try {
-                        	synchronized (writer) {
-                        		writer.write(" ");
-                        		writer.flush();
-                        	}
-                        }
-                        catch (SocketException e) {
-                           Log.e("PacketReader", e.toString());
-                           connection.disconnect();
-                           xmppManager.startReconnectionThread();
-                        } catch (IOException e) {
-							e.printStackTrace();
-					}
+                if (System.currentTimeMillis() - lastActive >= delay) {
+//                    try {
+//                    	synchronized (writer) {
+//                            sendPacket(new Presence(Presence.Type.available));
+//                    		writer.write(" ");
+//                    		writer.flush();
+//                    	}
+//                    }
+//                    catch (SocketException e) {
+//                       Log.e("PacketReader", e.toString());
+//                       connection.disconnect();
+//                       xmppManager.startReconnectionThread();
+//                    } catch (IOException e) {
+//						e.printStackTrace();
+//                    }
+                    synchronized (writer) {
+                        sendPacket(new Presence(Presence.Type.available));
+                    }
                 }
                 try {
                     // Sleep until we should write the next keep-alive.

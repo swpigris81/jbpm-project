@@ -65,7 +65,7 @@ public final class SmackConfiguration {
             // Get an array of class loaders to try loading the providers files from.
             ClassLoader[] classLoaders = getClassLoaders();
             for (ClassLoader classLoader : classLoaders) {
-                Enumeration configEnum = classLoader.getResources("META-INF/smack-config.xml");
+                Enumeration configEnum = classLoader.getResources("smack-config.xml");
                 while (configEnum.hasMoreElements()) {
                     URL url = (URL) configEnum.nextElement();
                     InputStream systemStream = null;

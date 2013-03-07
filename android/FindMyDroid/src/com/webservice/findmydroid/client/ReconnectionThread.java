@@ -19,7 +19,7 @@ import android.util.Log;
 
 /** 
  * A thread class for recennecting the server.
- *
+ * 复制重新连接服务器
  * @author Sehwan Noh (devnoh@gmail.com)
  */
 public class ReconnectionThread extends Thread {
@@ -42,7 +42,20 @@ public class ReconnectionThread extends Thread {
                 Log.d(LOGTAG, "Trying to reconnect in " + waiting()
                         + " seconds");
                 Thread.sleep((long) waiting() * 1000L);
-                xmppManager.connect();
+                //xmppManager.connect();
+                if (!xmppManager.isConnected()) {
+                    xmppManager.connect();
+                    xmppManager.runTask();//运行任务
+                }else{
+                    waiting = 0;//清除等待计数
+                    synchronized (this) {
+                        try {
+                            wait();//暂停线程
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
                 waiting++;
             }
         } catch (final InterruptedException e) {

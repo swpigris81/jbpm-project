@@ -174,6 +174,9 @@ public class XmppManager {
             if (!reconnection.isAlive()) {
                 reconnection.setName("Xmpp Reconnection Thread");
                 reconnection.start();
+            }else{
+                //通知连接服务器线程启动
+                reconnection.notifyAll();
             }
         }
     }
@@ -220,7 +223,7 @@ public class XmppManager {
         return uuidRaw.replaceAll("-", "");
     }
 
-    private boolean isConnected() {
+    public boolean isConnected() {
         return connection != null && connection.isConnected();
     }
 
@@ -443,8 +446,10 @@ public class XmppManager {
                     PacketListener packetListener = xmppManager
                             .getNotificationPacketListener();
                     connection.addPacketListener(packetListener, packetFilter);
+                    
+                    //getConnection().startKeepAliveThread(xmppManager);
+                    getConnection().startKeepAliveThread();
 
-                    xmppManager.runTask();
 
                 } catch (XMPPException e) {
                     Log.e(LOGTAG, "LoginTask.run()... xmpp error");
@@ -467,6 +472,7 @@ public class XmppManager {
                     xmppManager.startReconnectionThread();
                 }
 
+                xmppManager.runTask();
             } else {
                 Log.i(LOGTAG, "Logged in already");
                 xmppManager.runTask();

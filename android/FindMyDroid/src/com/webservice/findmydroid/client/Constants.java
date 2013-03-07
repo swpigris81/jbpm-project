@@ -71,11 +71,17 @@ public class Constants {
     public static final String NOTIFICATION_URI = "NOTIFICATION_URI";
 
     // INTENT ACTIONS
+    public static final String PACKET_ID = "PACKET_ID";
+    
+    public static final String NOTIFICATION_FROM = "NOTIFICATION_FROM";
+
 
     public static final String ACTION_SHOW_NOTIFICATION = "org.androidpn.client.SHOW_NOTIFICATION";
 
     public static final String ACTION_NOTIFICATION_CLICKED = "org.androidpn.client.NOTIFICATION_CLICKED";
 
     public static final String ACTION_NOTIFICATION_CLEARED = "org.androidpn.client.NOTIFICATION_CLEARED";
+
+    public static XmppManager xmppManager = null;
 
 }

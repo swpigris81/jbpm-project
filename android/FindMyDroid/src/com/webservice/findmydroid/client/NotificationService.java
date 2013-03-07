@@ -113,6 +113,8 @@ public class NotificationService extends Service {
         Log.d(LOGTAG, "deviceId=" + deviceId);
 
         xmppManager = new XmppManager(this);
+        //将xmppManager对象放入全局变量中，方便其他地方使用
+        Constants.xmppManager = xmppManager;
 
         taskSubmitter.submit(new Runnable() {
             public void run() {

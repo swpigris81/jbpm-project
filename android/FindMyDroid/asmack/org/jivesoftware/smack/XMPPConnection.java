@@ -52,7 +52,6 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.util.StringUtils;
 
-import com.webservice.findmydroid.client.XmppManager;
 
 /**
  * Creates a socket connection to a XMPP server. This is the default connection
@@ -1039,7 +1038,7 @@ public class XMPPConnection extends Connection {
 		this.rosterStorage = storage;
 	}
 	
-	public void startKeepAliveThread(XmppManager xmppManager) throws Exception{
-		packetWriter.startKeepAliveProcess(xmppManager);
+	public void startKeepAliveThread() throws Exception{
+		packetWriter.startKeepAliveProcess();
 	}
 }
