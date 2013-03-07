@@ -56,7 +56,6 @@ public class MainActivity extends Activity {
                 serviceManager.startService();
             }
         }
-        Log.d("MainActivity", "测试使用");
     }
 //
     //创建可选项菜单
