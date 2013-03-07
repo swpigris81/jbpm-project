@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/loan"/>
+	<classpathentry kind="src" path="src/android/pnserver"/>
 	<classpathentry kind="src" path="src/netty"/>
 	<classpathentry kind="src" path="src/apps"/>
 	<classpathentry kind="src" path="src/system"/>
@@ -19,6 +20,7 @@
 			<attribute name="owner.project.facets" value="jst.web"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ehcache-1.6.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/activation-1.1.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/activemq-all-5.6.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/antlr-2.7.6.jar"/>
@@ -31,22 +33,17 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/cglib.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-attributes-api.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-attributes-compiler.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-beanutils-1.7.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-chain-1.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-cli-1.2.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-compress-1.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-dbcp-1.2.2.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-digester-1.7.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-exec-1.0.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-lang-2.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-net-2.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-pool.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-validator-1.3.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/core-3.4.2.v_883_R34x.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dom4j-1.6.1.jar"/>
@@ -54,8 +51,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-compiler-5.0.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/drools-core-5.0.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dwr-src.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dwr.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ehcache-1.2.3.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ejb3-persistence-1.0.2.GA.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/errai-bus.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/errai-common.jar"/>
@@ -79,7 +74,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm-tomcat6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jbpm.jar" sourcepath="E:/selfstudy/工作流/JBPM4/jbpm-4.4安装/jbpm-4.4/src"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/joda-time.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jta.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/junit.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/livetribe-jsr223.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-1.2.16.jar"/>
@@ -145,10 +139,29 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xmlbeans-2.4.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xmlpull-1.1.3.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/XmlSchema-1.4.7.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xpp3_min-1.1.4c.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xstream-1.4.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xwork-core-2.1.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/netty-3.5.10.Final.jar" sourcepath="WebContent/WEB-INF/lib/netty-3.5.10.Final-sources.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/tinder-1.2.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/libidn-1.15.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mina-core-2.0.0-RC1.jar" sourcepath="WebContent/WEB-INF/lib/mina-core-2.0.0-RC1-sources.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mina-integration-beans-2.0.0-RC1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-configuration-1.6.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/bcprov-jdk15-140.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-beanutils-1.8.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-digester-2.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-pool-1.3.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/hibernate-annotations-3.4.0.GA.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/hibernate-commons-annotations-3.1.0.GA.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/hsqldb-1.8.0.10.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jcip-annotations-1.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jta-1.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/nekopull-0.2.4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xercesImpl-2.9.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xpp3-1.1.4c.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dwr.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
