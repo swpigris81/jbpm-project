@@ -1,6 +1,7 @@
 package com.webservice.findmydroid;
 
 import com.webservice.findmydroid.client.Constants;
+import com.webservice.findmydroid.util.CipherUtil;
 
 import android.app.Activity;
 import android.content.Context;
@@ -39,7 +40,7 @@ public class UserRegister extends Activity {
                         Context.MODE_PRIVATE);
                 Editor editor = sharedPrefs.edit();
                 editor.putString(Constants.XMPP_USERNAME, userName);
-                editor.putString(Constants.XMPP_PASSWORD, userPassword);
+                editor.putString(Constants.XMPP_PASSWORD, CipherUtil.generatePasswordWithSalt(userPassword, userName));
                 if(editor.commit()){
                     setResult(RESULT_OK);
                 }
@@ -83,7 +84,7 @@ public class UserRegister extends Activity {
                     Context.MODE_PRIVATE);
             Editor editor = sharedPrefs.edit();
             editor.putString(Constants.XMPP_USERNAME, userName);
-            editor.putString(Constants.XMPP_PASSWORD, userPassword);
+            editor.putString(Constants.XMPP_PASSWORD, CipherUtil.generatePasswordWithSalt(userPassword, userName));
             if(editor.commit()){
                 setResult(RESULT_OK);
             }

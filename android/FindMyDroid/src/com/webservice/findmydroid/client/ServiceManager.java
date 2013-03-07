@@ -15,9 +15,11 @@
  */
 package com.webservice.findmydroid.client;
 
+import java.util.List;
 import java.util.Properties;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -106,6 +108,22 @@ public final class ServiceManager {
     public void stopService() {
         Intent intent = NotificationService.getIntent();
         context.stopService(intent);
+    }
+    
+    public boolean isServerRunning(String serviceName){
+        boolean isRun = false;
+        ActivityManager activityManager = (ActivityManager)
+                context.getSystemService(Context.ACTIVITY_SERVICE); 
+        List<ActivityManager.RunningServiceInfo> serviceList = activityManager.getRunningServices(30);
+        if(serviceList != null && !serviceList.isEmpty()){
+            for (int i=0, j=serviceList.size(); i<j; i++) {
+                if (serviceList.get(i).service.getClassName().equals(serviceName)) {
+                    isRun = true;
+                    break;
+                }
+            }
+        }
+        return isRun;
     }
 
     //    private String getMetaDataValue(String name, String def) {

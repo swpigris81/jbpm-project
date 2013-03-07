@@ -2,6 +2,7 @@ package com.webservice.findmydroid;
 
 
 import com.webservice.findmydroid.client.Constants;
+import com.webservice.findmydroid.client.NotificationService;
 import com.webservice.findmydroid.client.ServiceManager;
 
 import android.os.Bundle;
@@ -37,6 +38,7 @@ public class MainActivity extends Activity {
             //跳转到用户注册页面。
             Intent intent = new Intent(MainActivity.this, UserRegister.class);
             startActivityForResult(intent, Constants.START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
+            //startActivity(intent);
         }else{
             Log.d("MainActivity", "当前手机中存储的用户名：" + username);
             setContentView(R.layout.activity_main);
@@ -49,9 +51,12 @@ public class MainActivity extends Activity {
             });
             // Start the service
             ServiceManager serviceManager = new ServiceManager(this);
-            serviceManager.setNotificationIcon(R.drawable.notification);
-            serviceManager.startService();
+            if(!serviceManager.isServerRunning(NotificationService.SERVICE_NAME)){
+                serviceManager.setNotificationIcon(R.drawable.notification);
+                serviceManager.startService();
+            }
         }
+        Log.d("MainActivity", "测试使用");
     }
 //
     //创建可选项菜单
@@ -92,8 +97,10 @@ public class MainActivity extends Activity {
                     });
                     // Start the service
                     ServiceManager serviceManager = new ServiceManager(this);
-                    serviceManager.setNotificationIcon(R.drawable.notification);
-                    serviceManager.startService();
+                    if(!serviceManager.isServerRunning(NotificationService.SERVICE_NAME)){
+                        serviceManager.setNotificationIcon(R.drawable.notification);
+                        serviceManager.startService();
+                    }
                 }
                 //Log.d("MainActivity", "用户提交的注册用户名：" + name + "密码：" + pass);
             }
