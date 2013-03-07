@@ -206,8 +206,8 @@
 		<location>/404.jsp</location>
 	</error-page>
 	<!-- 调试时关闭，正常发布时打开 -->
-	<!-- <error-page>
+	<error-page>
 		<error-code>500</error-code>
 		<location>/error.jsp</location>
-	</error-page> -->
+	</error-page>
 </web-app>
