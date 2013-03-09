@@ -9,9 +9,11 @@
   
      <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
      <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-     <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/swpigris81?useUnicode=true&amp;characterEncoding=UTF-8</property>
+     <!-- <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/swpigris81?useUnicode=true&amp;characterEncoding=UTF-8</property> -->
+     <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/redeempoint?useUnicode=true&amp;characterEncoding=UTF-8</property>
      <property name="hibernate.connection.username">swpigris81</property>
-     <property name="hibernate.connection.password">13563368</property>
+     <!-- <property name="hibernate.connection.password">13563368</property> -->
+     <property name="hibernate.connection.password">812877</property>
      <!-- none|create|update|create-drop -->
      <property name="hibernate.hbm2ddl.auto">none</property>
      <property name="hibernate.format_sql">true</property>
