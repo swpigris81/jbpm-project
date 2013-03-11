@@ -20,6 +20,7 @@ public class UserInfo {
     private String address;
     private String zip;
     private String email;
+    private String phoneImei;
 
     public UserInfo() {
     }
@@ -128,4 +129,21 @@ public class UserInfo {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String phoneImei.
+     */
+    public String getPhoneImei() {
+        return phoneImei;
+    }
+
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param phoneImei The phoneImei to set.
+     */
+    public void setPhoneImei(String phoneImei) {
+        this.phoneImei = phoneImei;
+    }
+    
 }

@@ -109,4 +109,43 @@ public class UserService implements IUserService {
     public List findAll(){
         return this.userDao.findAll();
     }
+    
+    /**
+     * <p>Discription:[根据设备号查询]</p>
+     * @param imei 设备号
+     * @return 用户信息
+     * @author:大牙
+     * @update:2013-3-11
+     */
+    public List findByImei(String imei){
+        return this.userDao.findByProperties("phoneImei", imei);
+    }
+    
+    /**
+     * <p>Discription:[查询所有绑定设备信息的用户]</p>
+     * @param start 分页起始页
+     * @param limit 分页数
+     * @return
+     * @author:大牙
+     * @update:2013-3-11
+     */
+    public List findImeiUserList(int start, int limit){
+        String hql = "from UserInfo where phoneImei is not null";
+        return userDao.findUserByPage(hql, start, limit, null);
+    }
+    /**
+     * <p>Discription:[查询所有绑定设备信息的用户数]</p>
+     * @return
+     * @author:大牙
+     * @update:2013-3-11
+     */
+    public int findCountImeiUser(){
+        String sql = "select count(employee_info.operater_id) as user_size from employee_info where phone_imei is not null";
+        List list = this.baseDao.queryBySQL(sql, null);
+        int size = 0;
+        if(list!=null){
+            size = NumberUtils.toInt((String.valueOf(list.get(0))), 0);
+        }
+        return size;
+    }
 }

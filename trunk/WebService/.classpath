@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/loan"/>
+	<classpathentry kind="src" path="src/android/jpush"/>
 	<classpathentry kind="src" path="src/android/pnserver"/>
 	<classpathentry kind="src" path="src/netty"/>
 	<classpathentry kind="src" path="src/apps"/>
@@ -55,7 +56,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/errai-bus.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/errai-common.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/freemarker-2.3.15.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gson.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/guice-2.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/guice-aopalliance.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/guice-servlet.jar"/>
@@ -163,5 +163,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xercesImpl-2.9.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xpp3-1.1.4c.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dwr.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jpush-api.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gson-2.2.2.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
