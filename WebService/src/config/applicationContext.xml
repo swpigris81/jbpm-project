@@ -45,6 +45,7 @@
 	<!-- AndroidPN框架 -->
 	<import resource="classpath*:/applicationContext-pn-service.xml"/>
 	<import resource="classpath*:/applicationContext-pn-action.xml"/>
+	<import resource="classpath*:/applicationContext-jpush-action.xml"/>
 	
 	<!-- C3P0数据源配置 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
