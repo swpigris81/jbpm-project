@@ -38,5 +38,8 @@
         <property name="email" type="java.lang.String">
             <column name="email" />
         </property>
+        <property name="phoneImei" type="java.lang.String">
+            <column name="phone_imei" />
+        </property>
     </class>
 </hibernate-mapping>
