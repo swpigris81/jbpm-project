@@ -397,8 +397,15 @@ public class UserAction extends BaseAction implements ServletRequestAware, Servl
                 }
             }
             List l = this.userService.getUserByName(user.getUserName());
+            List l2 = null;
+            if(user.getPhoneImei() != null && !"".equals(user.getPhoneImei().trim())){
+                l2 = this.userService.findByImei(user.getPhoneImei());
+            }
+            
             if(l!=null && l.size()>0){
-                out.print("{success:false, msg:'您输入的用户名已被别人使用，请更换用户名！'}");
+                out.print("{'success':false, 'msg':'您输入的用户名已被别人使用，请更换用户名！'}");
+            }else if(l2 != null && !l2.isEmpty()){
+                out.print("{'success':false, 'msg':'您输入的手机IMEI号已被别人注册，请更换手机IMEI号！'}");
             }else{
                 //构建用户角色
                 UserRole userRole = new UserRole();
@@ -420,11 +427,11 @@ public class UserAction extends BaseAction implements ServletRequestAware, Servl
                 
                 this.userService.saveOrUpdate(user);
                 this.userRoleService.saveOrUpdate(userRole);
-                out.print("{success:true,msg:'"+msg+"'}");
+                out.print("{'success':true,'msg':'"+msg+"'}");
             }
         }catch(Exception e){
             status.setRollbackOnly();
-            out.print("{success:false,msg:'系统异常，请联系管理员！'}");
+            out.print("{'success':false,'msg':'系统异常，请联系管理员！'}");
         }finally{
             transactionManager.commit(status);
             if(out != null){

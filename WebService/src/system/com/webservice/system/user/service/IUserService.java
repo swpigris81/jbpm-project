@@ -77,4 +77,28 @@ public interface IUserService {
      * @update 2012-9-5 大牙-小白 [变更描述]
      */
     public List findAll();
+    /**
+     * <p>Discription:[根据设备号查询]</p>
+     * @param imei 设备号
+     * @return 用户信息
+     * @author:大牙
+     * @update:2013-3-11
+     */
+    public List findByImei(String imei);
+    /**
+     * <p>Discription:[查询所有绑定设备信息的用户]</p>
+     * @param start 分页起始页
+     * @param limit 分页数
+     * @return
+     * @author:大牙
+     * @update:2013-3-11
+     */
+    public List findImeiUserList(int start, int limit);
+    /**
+     * <p>Discription:[查询所有绑定设备信息的用户数]</p>
+     * @return
+     * @author:大牙
+     * @update:2013-3-11
+     */
+    public int findCountImeiUser();
 }
