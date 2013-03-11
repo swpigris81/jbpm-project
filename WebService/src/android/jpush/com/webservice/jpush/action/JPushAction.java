@@ -34,6 +34,10 @@ public class JPushAction extends BaseAction {
      */
     private String phoneImei;
     /**
+     * 消息标题
+     */
+    private String title;
+    /**
      * 消息内容
      */
     private String content;
@@ -229,6 +233,20 @@ public class JPushAction extends BaseAction {
         }else{
             this.content = content;
         }
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @return String title.
+     */
+    public String getTitle() {
+        return title;
+    }
+    /**
+     * <p>Discription:[方法功能中文描述]</p>
+     * @param title The title to set.
+     */
+    public void setTitle(String title) {
+        this.title = title;
     }
     
 }
