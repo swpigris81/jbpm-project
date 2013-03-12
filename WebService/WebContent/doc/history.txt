@@ -64,3 +64,27 @@ COMMENT='通知内容'
 COLLATE='utf8_general_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=9;
+
+20130311
+完成JPush与服务器端的整合。增加菜单权限：
+INSERT INTO `menubutton` (`button_id`, `button_name`, `button_text`, `menu_id`, `button_url`, `button_show`, `button_css`, `handler`) VALUES
+('002085543d5c56e0013d5c60e28d0002', 'android_jiguang_pus_btn', '推送消息', '002085543d5c56e0013d5c5fad580001', '/jpush/jpush.action?method=push', 'yes', 'table_add', 'push'),
+('002085543d5c56e0013d5c69ce3101e7', 'android_jiguang_user_list', '用户列表', '002085543d5c56e0013d5c5fad580001', '/jpush/jpushUserList.action?method=userList', 'no', 'none', '');
+
+INSERT INTO `menu_info` (`menu_id`, `menu_name`, `page_path`, `menu_level`, `parent_menu`, `is_leave`, `is_show`, `comment`) VALUES
+('002085543d5c56e0013d5c5fad580001', 'Android极光云推送', '/jpush/jpushBegin.action?method=begin', '', '4028098136ce4d040136ce4de4490001', '1', '1', NULL);
+
+20130312
+完成Google GCM与服务器端的整合。增加表：
+CREATE TABLE `gcm_user` (
+	`ID` BIGINT(20) NOT NULL AUTO_INCREMENT,
+	`user_name` VARCHAR(100) NULL DEFAULT NULL,
+	`regis_id` VARCHAR(100) NULL DEFAULT NULL,
+	PRIMARY KEY (`ID`),
+	UNIQUE INDEX `regis_id` (`regis_id`)
+)
+COMMENT='Google GCM消息推送用户注册信息'
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB;
+
+增加权限菜单：

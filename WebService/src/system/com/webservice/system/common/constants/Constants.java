@@ -83,4 +83,8 @@ public class Constants {
      * 离线用户
      */
     public static String ANDROID_OFFLINE = "00";
+    /**
+     * GCM注册的APIkey
+     */
+    public static String GCM_API_KEY = "AIzaSyAu2yzgzJsC8NibpapNcslwYe2t1UgHyrY";
 }

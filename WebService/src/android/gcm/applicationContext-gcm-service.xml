@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+	<bean id="gcmService" parent="serviceProxy">
+        <property name="target">
+            <bean
+                class="com.webservice.gcm.service.impl.GcmServiceImpl"
+                abstract="false">
+                <property name="baseDao" ref="BaseDao"></property>
+                <property name="gcmDao" ref="gcmDao"></property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="add*">PROPAGATION_REQUIRED</prop>
+                <prop key="del*">PROPAGATION_REQUIRED</prop>
+                <prop key="edit*">PROPAGATION_REQUIRED</prop>
+                <prop key="upd*">PROPAGATION_REQUIRED</prop>
+                <prop key="sa*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

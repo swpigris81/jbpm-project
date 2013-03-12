@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC 
+      "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+      "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="gcm" namespace="/gcm" extends="struts-default">
+		<!-- 切记：action name不能是一样的，否则会进不了Action -->
+		<action name="gcmBegin" class="com.webservice.gcm.action.GoogleGcmAction" method="begin">
+			 <result name="success">/jsp/webservice/apps/android/gcm/gcm.jsp</result>
+			 <result name="input">/index.jsp</result>
+		</action>
+		<action name="gcmUserList" class="com.webservice.gcm.action.GoogleGcmAction" method="userList">
+			 <result name="success">/jsp/webservice/apps/android/gcm/gcm.jsp</result>
+			 <result name="input">/index.jsp</result>
+		</action>
+		<action name="gcmSender" class="com.webservice.gcm.action.GoogleGcmAction" method="gcmSender">
+			 <result name="success">/jsp/webservice/apps/android/gcm/gcm.jsp</result>
+			 <result name="input">/index.jsp</result>
+		</action>
+		<action name="gcmRegister" class="com.webservice.gcm.action.GoogleGcmAction" method="registration">
+			 <result name="success">/jsp/webservice/apps/android/gcm/gcm.jsp</result>
+			 <result name="input">/index.jsp</result>
+		</action>
+		<action name="gcmUnRegister" class="com.webservice.gcm.action.GoogleGcmAction" method="unRegistration">
+			 <result name="success">/jsp/webservice/apps/android/gcm/gcm.jsp</result>
+			 <result name="input">/index.jsp</result>
+		</action>
+	</package>
+</struts>

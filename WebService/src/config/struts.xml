@@ -63,6 +63,7 @@
     <!-- Android推送 -->
     <include file="struts-pnserver.xml"></include>
     <include file="struts-jpush.xml"></include>
+    <include file="struts-gcm.xml"></include>
     
     <package name="base" namespace="/base" extends="struts-default">
     	<action name="downloadAction" class="com.webservice.system.download.action.DownloadBaseAction">
