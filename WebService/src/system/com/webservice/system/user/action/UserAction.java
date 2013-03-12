@@ -396,17 +396,54 @@ public class UserAction extends BaseAction implements ServletRequestAware, Servl
                     user.setPassword(passWord);
                 }
             }
-            List l = this.userService.getUserByName(user.getUserName());
-            List l2 = null;
-            if(user.getPhoneImei() != null && !"".equals(user.getPhoneImei().trim())){
-                l2 = this.userService.findByImei(user.getPhoneImei());
+            boolean bool = false;
+			if (user.getUserName() != null
+					&& !"".equals(user.getUserName().trim())
+					&& user.getPhoneImei() != null
+					&& !"".equals(user.getPhoneImei().trim())) {
+            	String checkUserHql = "from UserInfo where userName = ? and phoneImei = ?";
+				List userList = userService
+						.findUserByPageCondition(
+								checkUserHql,
+								0,
+								9999999,
+								new String[] { user.getUserName(),
+										user.getPhoneImei() });
+				if(userList != null && !userList.isEmpty()){
+					out.print("{'success':false, 'msg':'您输入的用户名以及设备IMEI号已被注册，请更换！'}");
+					bool = true;
+				}else{
+					checkUserHql = "from UserInfo where userName = ? and password = ?";
+					userList = userService
+							.findUserByPageCondition(
+									checkUserHql,
+									0,
+									9999999,
+									new String[] { user.getUserName(),
+											user.getPassword() });
+					if(userList != null && !userList.isEmpty()){
+						LOG.info("您已经注册过，现在将更新您的设备IMEI号");
+						String imei = user.getPhoneImei();
+						user = (UserInfo) userList.get(0);
+						user.setPhoneImei(imei);
+						bool = false;
+					}else{
+						checkUserHql = "from UserInfo where phoneImei = ?";
+						userList = userService
+								.findUserByPageCondition(
+										checkUserHql,
+										0,
+										9999999,
+										new String[] { user.getPhoneImei() });
+						if(userList != null && !userList.isEmpty()){
+							out.print("{'success':false, 'msg':'您输入的设备IMEI号已被注册，请更换！'}");
+							bool = true;
+						}
+					}
+				}
             }
             
-            if(l!=null && l.size()>0){
-                out.print("{'success':false, 'msg':'您输入的用户名已被别人使用，请更换用户名！'}");
-            }else if(l2 != null && !l2.isEmpty()){
-                out.print("{'success':false, 'msg':'您输入的手机IMEI号已被别人注册，请更换手机IMEI号！'}");
-            }else{
+            if(!bool){
                 //构建用户角色
                 UserRole userRole = new UserRole();
                 userRole.setUserId(user.getUserName());

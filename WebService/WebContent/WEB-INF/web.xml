@@ -147,7 +147,6 @@
 		<servlet-name>SpringHelperInit</servlet-name>
 		<servlet-class>com.webservice.common.init.SpringInitServlet</servlet-class>
 		<load-on-startup>0</load-on-startup>
-		<description>初始化Spring上下文</description>
 	</servlet>
 	<!-- 初始化JBPM4的用户角色 -->
 	<!-- 
