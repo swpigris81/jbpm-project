@@ -26,6 +26,7 @@ public class GcmDaoImpl extends BaseDao implements GcmDao {
      * @update:2013-3-12
      */
     public List findByHql(String hql, Map<String, Object> paramMap) {
+        logger.info("hibernate : " + hql);
         if(paramMap != null && !paramMap.isEmpty()){
             Object[] paramArray = null;
             if(paramMap.containsKey("start")){

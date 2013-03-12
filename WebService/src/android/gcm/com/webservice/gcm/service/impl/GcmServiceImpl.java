@@ -50,6 +50,7 @@ public class GcmServiceImpl implements GcmService {
      * @update:2013-3-12
      */
     public void saveGcmRegis(GcmModel gcm){
+        logger.info("用户注册");
         gcmDao.saveGcmRegis(gcm);
     }
     
@@ -60,6 +61,7 @@ public class GcmServiceImpl implements GcmService {
      * @update:2013-3-12
      */
     public void unRegistion(List list){
+        logger.info("用户注销");
         gcmDao.deleteGcmRegis(list);
     }
     
