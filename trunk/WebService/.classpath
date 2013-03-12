@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/loan"/>
+	<classpathentry kind="src" path="src/android/gcm"/>
 	<classpathentry kind="src" path="src/android/jpush"/>
 	<classpathentry kind="src" path="src/android/pnserver"/>
 	<classpathentry kind="src" path="src/netty"/>
@@ -165,5 +166,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dwr.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jpush-api.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gson-2.2.2.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gcm-server.jar" sourcepath="WebContent/WEB-INF/lib/gcm-server-src.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

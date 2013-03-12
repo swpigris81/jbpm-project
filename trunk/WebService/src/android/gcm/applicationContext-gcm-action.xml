@@ -6,8 +6,12 @@
                 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
                 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 	<bean
-        class="com.webservice.jpush.action.JPushAction"
-        scope="prototype" id="jpushAction">
-        <property name="userService" ref="userService"></property>
+        class="com.webservice.gcm.action.GoogleGcmAction"
+        scope="prototype" id="googleGcmAction">
+        <property name="gcmService" ref="gcmService"></property>
+        <property name="systemRoleName" value="系统注册用户"></property>
+        <property name="roleService" ref="roleService"></property>
+		<property name="userService" ref="userService"></property>
+		<property name="userRoleService" ref="userRoleService"></property>
     </bean>
 </beans>

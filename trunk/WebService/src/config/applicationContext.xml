@@ -45,7 +45,12 @@
 	<!-- AndroidPN框架 -->
 	<import resource="classpath*:/applicationContext-pn-service.xml"/>
 	<import resource="classpath*:/applicationContext-pn-action.xml"/>
+	<!-- JPush框架 -->
 	<import resource="classpath*:/applicationContext-jpush-action.xml"/>
+	<!-- Google GCM框架 -->
+	<import resource="classpath*:/applicationContext-gcm-action.xml"/>
+	<import resource="classpath*:/applicationContext-gcm-service.xml"/>
+	<import resource="classpath*:/applicationContext-gcm-dao.xml"/>
 	
 	<!-- C3P0数据源配置 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
@@ -175,6 +180,7 @@
 				<!-- Android推送用户 -->
 				<value>org/androidpn/server/model/PnUser.hbm.xml</value>
 				<value>org/androidpn/server/model/notificationMo.hbm.xml</value>
+				<value>com/webservice/gcm/bean/xml/GcmModel.hbm.xml</value>
 			</list>
 		</property>
 
