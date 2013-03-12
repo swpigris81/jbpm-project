@@ -100,7 +100,7 @@ function jpush(){
         animCollapse:true,//展开时是否有动画效果
         autoScroll:true,
         width:Ext.get("jpush_div").getWidth(),
-        height:Ext.get("jpush_div").getHeight(),
+        height:Ext.get("jpush_div").getHeight() - 20,
         loadMask:true,//载入遮罩动画（默认）
         frame:true,
         autoShow:true,
@@ -110,6 +110,7 @@ function jpush(){
         viewConfig:{forceFit:true},//若父容器的layout为fit，那么强制本grid充满该父容器
         split: true,
         stripeRows: true,
+        renderTo:"jpush_div",
         bbar:new Ext.PagingToolbar({
             pageSize:50,//每页显示数
             store:userStore,
@@ -137,32 +138,36 @@ function jpush(){
     this.push = function(url){
         var gridSelectionModel = userGrid.getSelectionModel();
         var gridSelection = gridSelectionModel.getSelections();
-        if(gridSelection.length != 1){
-            Ext.MessageBox.alert('提示','请选择一条用户信息！');
+        if(gridSelection.length < 1){
+            Ext.MessageBox.alert('提示','请要推送消息的用户！');
             return false;
         }
-        
-        var userForm = showUserForm(url, false, true, false);
+        var userArray = new Array();
+        var imeiArray = new Array();
+        for(var i=0; i<gridSelection.length; i++){
+            var userName = gridSelection[i].get("userName");
+            var imei = gridSelection[i].get("phoneImei");
+            userArray.push(userName);
+            imeiArray.push(imei);
+        }
+        var userForm = showPushForm(url, userArray.join(","), imeiArray.join(","));
         var button = [{
-            text:"保存",
+            text:"推送消息",
             handler:function(){
                 if(userForm.form.isValid()){
-                    saveUser("editUserWindow", userForm);
+                    push("pushWindow", userForm);
                 }
             }
         },{
             text:"关闭窗口",
             handler:function(){
-                var userWindow = Ext.getCmp("editUserWindow");
+                var userWindow = Ext.getCmp("pushWindow");
                 if(userWindow){
                     userWindow.close();
                 }
             }
         }];
-        showUserWindow("editUserWindow", "修改用户信息",500, 320, userForm, button);
-        
-        
-        
+        showAllWindow("pushWindow", "推送消息",500, 320, userForm, null, button);
     };
     /**
      * 推送表单
@@ -206,6 +211,60 @@ function jpush(){
             }]
         });
         return userForm;
+    }
+    /**
+     * 推送消息
+     */
+    function push(windowId, form){
+        Ext.MessageBox.show({
+            msg:"正在推送消息，请稍候...",
+            progressText:"正在推送消息，请稍候...",
+            width:300,
+            wait:true,
+            waitConfig: {interval:200},
+            icon:Ext.Msg.INFO
+        });
+        form.getForm().submit({
+            timeout:60000,
+            success: function(form, action) {
+                Ext.Msg.hide();
+                try{
+                    var result = Ext.decode(action.response.responseText);
+                    if(result && result.success){
+                        var msg = "消息推送成功！";
+                        if(result.msg){
+                            msg = result.msg;
+                        }
+                        Ext.Msg.alert('系统提示信息', msg, function(btn, text) {
+                            if (btn == 'ok') {
+                                Ext.getCmp(windowId).close();
+                            }
+                        });
+                    }else if(!result.success){
+                        var msg = "消息推送失败！";
+                        if(result.msg){
+                            msg = result.msg;
+                        }
+                        Ext.Msg.alert('系统提示信息', msg);
+                    }
+                }catch(e){
+                    Ext.Msg.alert('系统提示信息', "系统错误：" + e);
+                }
+            },
+            failure: function(form, action) {//action.result.errorMessage
+                Ext.Msg.hide();
+                var msg = "消息推送失败，请检查您的网络连接或者联系管理员！";
+                try{
+                    var result = Ext.decode(action.response.responseText);
+                    if(result.msg){
+                        msg = result.msg;
+                    }
+                }catch(e){
+                    msg = "系统错误：" + e;
+                }
+                Ext.Msg.alert('系统提示信息', msg);
+            }
+        });
     }
 }
 /**
