@@ -55,6 +55,10 @@
 		<security:intercept-url pattern="/user/userValidation.action/**" filters="none"/>
 		<!-- 系统用户注册 -->
 		<security:intercept-url pattern="/user/userRegister.action/**" filters="none"/>
+		<!-- GCM消息推送用户注销 -->
+		<security:intercept-url pattern="/gcm/gcmUnRegister.action/**" filters="none"/>
+		<!-- GCM消息推送用户注册 -->
+		<security:intercept-url pattern="/gcm/gcmRegister.action/**" filters="none"/>
 		<!-- 系统文件下载 -->
 		<security:intercept-url pattern="/base/downloadAction.action/**" filters="none"/>
 		<!-- 配置登录页面 -->

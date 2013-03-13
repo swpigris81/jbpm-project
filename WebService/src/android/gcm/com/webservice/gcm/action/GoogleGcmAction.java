@@ -24,6 +24,7 @@ import com.webservice.system.role.service.IUserRoleService;
 import com.webservice.system.user.bean.UserInfo;
 import com.webservice.system.user.service.IUserService;
 import com.webservice.system.util.CipherUtil;
+import com.webservice.system.util.ConfigProperties;
 
 /** 
  * <p>Description: [GoogleGCM服务器端]</p>
@@ -38,6 +39,8 @@ public class GoogleGcmAction extends BaseAction {
     private String messageContent;
     private String messageTitle;
     private String phoneImei;
+    private String androidAlias;
+    private String androidAliasArray;
     /**
      * 用户服务
      */
@@ -53,7 +56,7 @@ public class GoogleGcmAction extends BaseAction {
     /**
      * 系统默认角色名
      */
-    private String systemRoleName;
+    private String systemRoleName = ConfigProperties.getProperties("defaultRoleName");
     /**
      * GCM服务
      */
@@ -75,7 +78,7 @@ public class GoogleGcmAction extends BaseAction {
             resultMap.put("msg", "注册设备唯一ID不能为空！");
         }else{
             List list = gcmService.findByRegisterId(regisId);
-            if(list != null && !regisId.isEmpty()){
+            if(list != null && !list.isEmpty()){
                 resultMap.put("success", false);
                 resultMap.put("msg", "该设备唯一ID已经被注册过！");
             }else{
@@ -83,12 +86,13 @@ public class GoogleGcmAction extends BaseAction {
                 if(userList != null && !userList.isEmpty()){
                     //用户已注册，判断其密码
                     String checkPass= "from UserInfo where userName = ? and password = ?";
-                    userList = userService.findUserByPageCondition(checkPass, 0, 999999, new Object[]{userName, userPass});
+                    userList = userService.findUserByPageCondition(checkPass, 0, 999999, new Object[]{userName, CipherUtil.generatePassword(userPass, userName)});
                     if(userList != null && !userList.isEmpty()){
                         //密码验证通过，允许每个用户注册多个设备
                         GcmModel model = new GcmModel();
                         model.setRegisId(regisId);
                         model.setUserName(userName);
+                        model.setAndroidAlias(androidAlias);
                         gcmService.saveGcmRegis(model);
                         resultMap.put("success", true);
                         resultMap.put("msg", "用户设备注册成功！");
@@ -119,6 +123,7 @@ public class GoogleGcmAction extends BaseAction {
                     GcmModel model = new GcmModel();
                     model.setRegisId(regisId);
                     model.setUserName(userName);
+                    model.setAndroidAlias(androidAlias);
                     gcmService.saveGcmRegis(model);
                     resultMap.put("success", true);
                     resultMap.put("msg", "用户设备注册成功！");
@@ -175,6 +180,7 @@ public class GoogleGcmAction extends BaseAction {
                 resultMap.put("msg", "请选择要推送消息的设备");
             }else{
                 String [] regisIds = regisIdArray.split(",");
+                String [] androidAlias = androidAliasArray.split(",");
                 //多人推送
                 List<String> devices = CollectionUtils.arrayToList(regisIds);
                 //如果GCM服务器无效的话，有5次重发机会
@@ -189,21 +195,21 @@ public class GoogleGcmAction extends BaseAction {
                     String messageId = result.getMessageId();
                     if (messageId != null) {
                         LOG.info("Succesfully sent message to device: " + regId +
-                                "; messageId = " + messageId);
+                                "; messageId = " + messageId + "; alias : " + androidAlias[i]);
                         String canonicalRegId = result.getCanonicalRegistrationId();
                         if (canonicalRegId != null) {
                             LOG.info("canonicalRegId " + canonicalRegId);
                         }
-                        resultList.add(new String[]{regId, "消息推送成功，返回的消息编号：" + messageId});
+                        resultList.add(new String[]{androidAlias[i], "消息推送成功，返回的消息编号：" + messageId});
                     }else{
                         String error = result.getErrorCodeName();
                         if (error.equals(com.google.android.gcm.server.Constants.ERROR_NOT_REGISTERED)) {
                             //application has been removed from device - unregister it
                             LOG.info("Unregistered device: " + regId);
-                            resultList.add(new String[]{regId, "消息推送失败，失败原因：用户设备已将该应用删除！"});
+                            resultList.add(new String[]{androidAlias[i], "消息推送失败，失败原因：用户设备已将该应用删除！"});
                         }else{
                             LOG.info("Error sending message to " + regId + ": " + error);
-                            resultList.add(new String[]{regId, "消息推送失败，失败原因：" + error});
+                            resultList.add(new String[]{androidAlias[i], "消息推送失败，失败原因：" + error});
                         }
                     }
                 }
@@ -224,8 +230,15 @@ public class GoogleGcmAction extends BaseAction {
      * @update:2013-3-12
      */
     public String userList(){
-        List userList = gcmService.findRegisList(start, limit);
-        int size = gcmService.findRegisList(-1, -1).size();
+        List userList = null;
+        int size = 0;
+        if(userName != null && !"".equals(userName.trim())){
+            userList = gcmService.findMyDroidList(userName, start, limit);
+            size = gcmService.findMyDroidList(userName, start, limit).size();
+        }else{
+            userList = gcmService.findRegisList(start, limit);
+            size = gcmService.findRegisList(-1, -1).size();
+        }
         Map<String, Object> resultMap = new HashMap<String, Object>();
         resultMap.put("success", true);
         resultMap.put("userList", userList);
@@ -281,6 +294,42 @@ public class GoogleGcmAction extends BaseAction {
     }
     public void setGcmService(GcmService gcmService) {
         this.gcmService = gcmService;
+    }
+    public String getAndroidAlias() {
+        return androidAlias;
+    }
+    public void setAndroidAlias(String androidAlias) {
+        this.androidAlias = androidAlias;
+    }
+    public IRoleService getRoleService() {
+        return roleService;
+    }
+    public void setRoleService(IRoleService roleService) {
+        this.roleService = roleService;
+    }
+    public IUserRoleService getUserRoleService() {
+        return userRoleService;
+    }
+    public void setUserRoleService(IUserRoleService userRoleService) {
+        this.userRoleService = userRoleService;
+    }
+    public String getSystemRoleName() {
+        return systemRoleName;
+    }
+    public void setSystemRoleName(String systemRoleName) {
+        this.systemRoleName = systemRoleName;
+    }
+    public String getPhoneImei() {
+        return phoneImei;
+    }
+    public void setPhoneImei(String phoneImei) {
+        this.phoneImei = phoneImei;
+    }
+    public String getAndroidAliasArray() {
+        return androidAliasArray;
+    }
+    public void setAndroidAliasArray(String androidAliasArray) {
+        this.androidAliasArray = androidAliasArray;
     }
     
 }

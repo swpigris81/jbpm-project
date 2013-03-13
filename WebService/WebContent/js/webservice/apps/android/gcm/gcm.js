@@ -11,7 +11,8 @@ function jpush(){
     },[
        {name:"id"},//编号
         {name:"userName"},//用户名
-        {name:"regisId"}//设备号
+        {name:"regisId"},//设备号
+        {name:"androidAlias"}//设备别名
     ]);
     
     /**
@@ -23,7 +24,7 @@ function jpush(){
         }),
         reader:userReader,
         //倒叙排序
-        baseParams:{start:0, limit:50},
+        baseParams:{start:0, limit:50, userName:userName},
         listeners:{
             "loadexception":function(loader, node, response){
                 try{
@@ -67,7 +68,11 @@ function jpush(){
     },{
         header:"用户名称",
         dataIndex:"userName",
-        width:150
+        width:50
+    },{
+        header:"设备别名",
+        dataIndex:"androidAlias",
+        width:80
     },{
         header:"设备注册号",
         dataIndex:"regisId",
@@ -130,9 +135,11 @@ function jpush(){
         var imeiArray = new Array();
         for(var i=0; i<gridSelection.length; i++){
             var userName = gridSelection[i].get("regisId");
+            var androidAlias = gridSelection[i].get("androidAlias");
             userArray.push(userName);
+            imeiArray.push(androidAlias);
         }
-        var userForm = showPushForm(url, userArray.join(","));
+        var userForm = showPushForm(url, userArray.join(","), imeiArray.join(","));
         var button = [{
             text:"推送消息",
             handler:function(){
@@ -152,13 +159,28 @@ function jpush(){
         showAllWindow("pushWindow", "推送消息",500, 320, userForm, null, button);
     };
     /**
+     * 显示所有设备（默认显示自己的设备）
+     */
+    this.findAllDroid = function(url){
+    	userStore.baseParams.userName = "";
+    	userStore.load();
+    };
+    /**
+     * 我的设备
+     */
+    this.findMyDroid = function(url){
+    	userStore.baseParams.userName = userName;
+    	userStore.load();
+    };
+    
+    /**
      * 推送表单
      * @param url
      * @param users
      * @param imeis
      * @returns {Ext.form.FormPanel}
      */
-    function showPushForm(url, users){
+    function showPushForm(url, users, androidAlias){
         var userForm = new Ext.form.FormPanel({
             frame: true,
             labelAlign: 'right',
@@ -172,7 +194,7 @@ function jpush(){
                 items:[{
                     columnWidth:.90,
                     layout:'form',
-                    items:[getTextField("regisIdArray", "推送设备", false, true, users)]
+                    items:[getTextField("androidAliasArray", "推送设备", false, true, androidAlias), getHiddenField("regisIdArray", users)]
                 }]
             },{
                 layout:'column',
@@ -216,6 +238,14 @@ function jpush(){
                         var msg = "消息推送成功！";
                         if(result.msg){
                             msg = result.msg;
+                        }
+                        var pushResult = result.result;
+                        if(pushResult){
+                        	msg = "";
+                        	for(var i=0; i<pushResult.length; i++){
+                            	var droid = pushResult[i];
+                            	msg += "设备：【" + droid[0] + "】" + droid[1]+"</br>";
+                            }
                         }
                         Ext.Msg.alert('系统提示信息', msg, function(btn, text) {
                             if (btn == 'ok') {

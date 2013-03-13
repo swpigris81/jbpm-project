@@ -18,5 +18,8 @@
             <column name="regis_id">
             </column>
         </property>
+        <property name="androidAlias" type="java.lang.String">
+        	<column name="android_alias"></column>
+        </property>
     </class>
 </hibernate-mapping>

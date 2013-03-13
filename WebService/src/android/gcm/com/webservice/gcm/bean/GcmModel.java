@@ -9,6 +9,8 @@ public class GcmModel {
     private Long id;
     private String userName;
     private String regisId;
+    private String androidAlias;
+    
     public Long getId() {
         return id;
     }
@@ -26,6 +28,12 @@ public class GcmModel {
     }
     public void setRegisId(String regisId) {
         this.regisId = regisId;
+    }
+    public String getAndroidAlias() {
+        return androidAlias;
+    }
+    public void setAndroidAlias(String androidAlias) {
+        this.androidAlias = androidAlias;
     }
     
     
