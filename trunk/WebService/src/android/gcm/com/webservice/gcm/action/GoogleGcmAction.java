@@ -2,6 +2,7 @@ package com.webservice.gcm.action;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,8 @@ import com.webservice.common.action.BaseAction;
 import com.webservice.gcm.bean.GcmModel;
 import com.webservice.gcm.service.GcmService;
 import com.webservice.system.common.constants.Constants;
+import com.webservice.system.common.helper.SpringHelper;
+import com.webservice.system.message.bean.SystemMessage;
 import com.webservice.system.role.bean.RoleInfo;
 import com.webservice.system.role.bean.UserRole;
 import com.webservice.system.role.service.IRoleService;
@@ -25,6 +28,7 @@ import com.webservice.system.user.bean.UserInfo;
 import com.webservice.system.user.service.IUserService;
 import com.webservice.system.util.CipherUtil;
 import com.webservice.system.util.ConfigProperties;
+import com.webservice.system.util.dwr.MessageSender;
 
 /** 
  * <p>Description: [GoogleGCM服务器端]</p>
@@ -259,12 +263,18 @@ public class GoogleGcmAction extends BaseAction {
      * @update:2013-3-13
      */
     public String gcmLocation(){
+        MessageSender dwrMessageSenderService = (MessageSender) SpringHelper.getBean("dwrMessageSenderService");
         LOG.info("获取得到的地理信息：");
         LOG.info("纬度：" + this.latitude);
         LOG.info("经度：" + this.lontitude);
         LOG.info("海拔：" + this.radius);
         LOG.info("地理位置：" + this.addr);
+        LOG.info("设备：" + regisId);
         LOG.info("POI：" + this.poi);
+        SystemMessage message = new SystemMessage();
+        message.setMessageContent("");
+        message.setMessageSendTime(new Date());
+        dwrMessageSenderService.sendMessageWithPage(regisId, message);
         return null;
     }
     
