@@ -41,6 +41,12 @@ public class GoogleGcmAction extends BaseAction {
     private String phoneImei;
     private String androidAlias;
     private String androidAliasArray;
+    
+    private String latitude;
+    private String lontitude;
+    private String radius;
+    private String addr;
+    private String poi;
     /**
      * 用户服务
      */
@@ -246,6 +252,21 @@ public class GoogleGcmAction extends BaseAction {
         writeMeessage(resultMap);
         return null;
     }
+    /**
+     * <p>Discription:[接收客户端返回的地理定位]</p>
+     * @return
+     * @author:大牙
+     * @update:2013-3-13
+     */
+    public String gcmLocation(){
+        LOG.info("获取得到的地理信息：");
+        LOG.info("纬度：" + this.latitude);
+        LOG.info("经度：" + this.lontitude);
+        LOG.info("海拔：" + this.radius);
+        LOG.info("地理位置：" + this.addr);
+        LOG.info("POI：" + this.poi);
+        return null;
+    }
     
     public String getRegisId() {
         return regisId;
@@ -330,6 +351,36 @@ public class GoogleGcmAction extends BaseAction {
     }
     public void setAndroidAliasArray(String androidAliasArray) {
         this.androidAliasArray = androidAliasArray;
+    }
+    public String getLatitude() {
+        return latitude;
+    }
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+    public String getLontitude() {
+        return lontitude;
+    }
+    public void setLontitude(String lontitude) {
+        this.lontitude = lontitude;
+    }
+    public String getRadius() {
+        return radius;
+    }
+    public void setRadius(String radius) {
+        this.radius = radius;
+    }
+    public String getAddr() {
+        return addr;
+    }
+    public void setAddr(String addr) {
+        this.addr = addr;
+    }
+    public String getPoi() {
+        return poi;
+    }
+    public void setPoi(String poi) {
+        this.poi = poi;
     }
     
 }

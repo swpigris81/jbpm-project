@@ -25,5 +25,9 @@
 			 <result name="success">/jsp/webservice/apps/android/gcm/gcm.jsp</result>
 			 <result name="input">/index.jsp</result>
 		</action>
+		<action name="gcmLocation" class="com.webservice.gcm.action.GoogleGcmAction" method="gcmLocation">
+			 <result name="success">/jsp/webservice/apps/android/gcm/gcm.jsp</result>
+			 <result name="input">/index.jsp</result>
+		</action>
 	</package>
 </struts>

@@ -59,6 +59,8 @@
 		<security:intercept-url pattern="/gcm/gcmUnRegister.action/**" filters="none"/>
 		<!-- GCM消息推送用户注册 -->
 		<security:intercept-url pattern="/gcm/gcmRegister.action/**" filters="none"/>
+		<!-- 接收客户端返回的地理定位 -->
+		<security:intercept-url pattern="/gcm/gcmLocation.action/**" filters="none"/>
 		<!-- 系统文件下载 -->
 		<security:intercept-url pattern="/base/downloadAction.action/**" filters="none"/>
 		<!-- 配置登录页面 -->
