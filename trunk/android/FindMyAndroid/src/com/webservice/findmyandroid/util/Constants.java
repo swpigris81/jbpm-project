@@ -13,6 +13,10 @@ public final class Constants {
      * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
      */
     public static final String SERVER_URL = "http://191.168.1.105:8088/WebService/gcm/gcmRegister.action?method=registration";
+    /**
+     * 接收定位数据的URL
+     */
+    public static final String LOCATION_SERVER_URL = "http://191.168.1.105:8088/WebService/gcm/gcmRegister.action?method=registration";
 
     /**
      * Google API project id registered to use GCM.
@@ -57,4 +61,5 @@ public final class Constants {
     public static final String DROID_USERNAME = "DROID_USERNAME";
     public static final String DROID_PASSWORD = "DROID_PASSWORD";
     public static final String DROID_ALIAS = "DROID_ALIAS";
+    public static final String DROID_REG_ID = "DROID_REG_ID";
 }

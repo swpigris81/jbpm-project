@@ -13,6 +13,7 @@ import android.util.Log;
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 import com.webservice.findmyandroid.activity.FindMyAndroidActivity;
+import com.webservice.findmyandroid.activity.LocationActivity;
 import com.webservice.findmyandroid.util.Constants;
 import com.webservice.findmyandroid.util.FindDroidPreferenceManager;
 import com.webservice.findmyandroid.util.HttpHelper;
@@ -43,8 +44,10 @@ public class GCMIntentService extends GCMBaseIntentService {
      * @update:2013-3-12
      */
     protected void onMessage(Context context, Intent intent) {
-        // TODO Auto-generated method stub
         Log.d(TAG, "收到消息触发");
+        Intent ni = new Intent(context, LocationActivity.class);
+        ni.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+        context.startActivity(ni);
     }
 
     /**
@@ -56,13 +59,11 @@ public class GCMIntentService extends GCMBaseIntentService {
      */
     protected void onRegistered(Context context, String regId) {
         Log.d(TAG, "用户注册的唯一编号是：" + regId + "，开始向服务器端发送注册信息");
+        FindDroidPreferenceManager.commitString(Constants.DROID_REG_ID, regId);
         String tempUserName = FindDroidPreferenceManager.getString(Constants.DROID_USERNAME, "");
         String tempUserPass = FindDroidPreferenceManager.getString(Constants.DROID_PASSWORD, "");
         String androidAlias = FindDroidPreferenceManager.getString(Constants.DROID_ALIAS, "");
         regisThread(context, regId, tempUserName, tempUserPass, androidAlias);
-//        Intent intent = new Intent(Constants.ACTION_ON_REGISTERED);
-//        intent.putExtra(Constants.FIELD_REGISTRATION_ID, regId);
-//        context.sendBroadcast(intent);
         Log.d(TAG, "用户注册时触发");
     }
 
