@@ -167,5 +167,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jpush-api.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gson-2.2.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gcm-server.jar" sourcepath="WebContent/WEB-INF/lib/gcm-server-src.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/json_simple-1.1.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

@@ -9,7 +9,6 @@
         class="com.webservice.gcm.action.GoogleGcmAction"
         scope="prototype" id="googleGcmAction">
         <property name="gcmService" ref="gcmService"></property>
-        <property name="systemRoleName" value="系统注册用户"></property>
         <property name="roleService" ref="roleService"></property>
 		<property name="userService" ref="userService"></property>
 		<property name="userRoleService" ref="userRoleService"></property>

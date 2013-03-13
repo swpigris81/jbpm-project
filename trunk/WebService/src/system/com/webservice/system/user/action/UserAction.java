@@ -28,6 +28,7 @@ import com.webservice.system.role.service.IUserRoleService;
 import com.webservice.system.user.bean.UserInfo;
 import com.webservice.system.user.service.IUserService;
 import com.webservice.system.util.CipherUtil;
+import com.webservice.system.util.ConfigProperties;
 import com.webservice.system.util.RequestUtil;
 
 public class UserAction extends BaseAction implements ServletRequestAware, ServletResponseAware{
@@ -40,7 +41,7 @@ public class UserAction extends BaseAction implements ServletRequestAware, Servl
     /**
      * 系统配置的默认用户注册成功之后的角色
      */
-    private String systemRoleName;
+    private String systemRoleName = ConfigProperties.getProperties("defaultRoleName");
     
     /** 事务处理 */
     private DataSourceTransactionManager transactionManager;

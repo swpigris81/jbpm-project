@@ -2,6 +2,7 @@ package com.webservice.system.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -84,25 +85,29 @@ public class ConfigProperties {
      */
     public static void loadInitSystemProperties() {
         props = new Properties();
-        InputStream in = null;
+//        InputStream in = null;
         try{
-            in = ConfigProperties.class.getClassLoader().getResourceAsStream(propertiesFile);
-            if (in != null) {
-                props.load(in);
-            } else {
-                throw new RuntimeException("无法加载配置文件");
-            }
+//            in = ConfigProperties.class.getClassLoader().getResourceAsStream(propertiesFile);
+//            if (in != null) {
+//                props.load(in);
+//            } else {
+//                throw new RuntimeException("无法加载配置文件");
+//            }
+            
+            props.load(new InputStreamReader(ConfigProperties.class.getClassLoader().getResourceAsStream("config.properties"), "UTF-8"));
+            
+            
             projectHomePath = props.getProperty("project.home.path");
         }catch(Exception e){
             log.error(e.getMessage(), e);
         }finally{
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ioe) {
-                log.error("初始化配置文件异常" + ioe.getMessage(), ioe);
-            }
+//            try {
+//                if (in != null) {
+//                    in.close();
+//                }
+//            } catch (IOException ioe) {
+//                log.error("初始化配置文件异常" + ioe.getMessage(), ioe);
+//            }
         }
     }
     
@@ -175,9 +180,6 @@ public class ConfigProperties {
     }
     
     public static void main(String[] arg) {
-        Map<String, String> taskDateRegexMap = new HashMap<String, String>();
-        taskDateRegexMap.put("yyyyMMdd", "20120909");
-        String modules = getProperties("file.location.ods.untar",taskDateRegexMap);
-        System.out.println(modules);
+        System.out.println(ConfigProperties.getProperties("defaultRoleName"));
     }
 }

@@ -47,4 +47,14 @@ public interface GcmService {
      * @update:2013-3-12
      */
     public List findRegisList(int start, int limit);
+    /**
+     * <p>Discription:[查找个人设备]</p>
+     * @param userName 用户名
+     * @param start 分页
+     * @param limit 分页
+     * @return
+     * @author:大牙
+     * @update:2013-3-13
+     */
+    public List findMyDroidList(String userName, int start, int limit);
 }

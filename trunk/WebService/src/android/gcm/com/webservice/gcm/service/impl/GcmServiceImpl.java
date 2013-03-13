@@ -78,6 +78,24 @@ public class GcmServiceImpl implements GcmService {
         paramMap.put("limit", limit);
         return gcmDao.findByHql(hql, paramMap);
     }
+    
+    /**
+     * <p>Discription:[查找个人设备]</p>
+     * @param userName 用户名
+     * @param start 分页
+     * @param limit 分页
+     * @return
+     * @author:大牙
+     * @update:2013-3-13
+     */
+    public List findMyDroidList(String userName, int start, int limit){
+        String hql = "from com.webservice.gcm.bean.GcmModel where userName = ?";
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("userName", userName);
+        paramMap.put("start", start);
+        paramMap.put("limit", limit);
+        return gcmDao.findByHql(hql, paramMap);
+    }
 
     public GcmDao getGcmDao() {
         return gcmDao;
