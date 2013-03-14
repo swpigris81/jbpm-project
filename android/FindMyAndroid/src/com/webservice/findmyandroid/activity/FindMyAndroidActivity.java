@@ -32,11 +32,11 @@ public class FindMyAndroidActivity extends Activity {
         }else{
             //only for test
             Log.d(TAG, "Already registered, registerId: " + regId);
-            GCMRegistrar.unregister(getApplicationContext());
-            Log.d(TAG, "unregistered.");
-            Intent intent = new Intent(FindMyAndroidActivity.this, UserRegisterActivity.class);
-            startActivityForResult(intent, Constants.START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
-//            setContentView(R.layout.activity_find_my_android_activity);
+//            GCMRegistrar.unregister(getApplicationContext());
+//            Log.d(TAG, "unregistered.");
+//            Intent intent = new Intent(FindMyAndroidActivity.this, UserRegisterActivity.class);
+//            startActivityForResult(intent, Constants.START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
+            setContentView(R.layout.activity_find_my_android_activity);
         }
     }
     /**
