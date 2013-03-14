@@ -202,7 +202,7 @@ function jpush(){
                 items:[{
                     columnWidth:.90,
                     layout:'form',
-                    items:[getTextField("messageTitle", "推送标题", false, false)]
+                    items:[getTextField("messageTitle", "推送标题", false, false), getHiddenField("userName", userName)]
                 }]
             },{
                 layout:'column',

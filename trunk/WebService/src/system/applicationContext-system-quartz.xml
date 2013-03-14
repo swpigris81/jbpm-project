@@ -65,4 +65,8 @@
 		<property name="dynamicJobSchedule" ref="dynamicJobSchedule"></property>
 		<property name="dwrMessageSenderService" ref="dwrMessageSenderService"></property>
 	</bean>
+	<bean id="messageReminder" class="com.webservice.system.util.msg.MessageReminder">
+	    <property name="dynamicJobSchedule" ref="dynamicJobSchedule"></property>
+		<property name="dwrMessageSenderService" ref="dwrMessageSenderService"></property>
+	</bean>
 </beans>

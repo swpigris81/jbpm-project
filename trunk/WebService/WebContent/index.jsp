@@ -68,13 +68,15 @@ function recieveMsg(msg){
 	var yheight = document.body.clientHeight-windowheight;
 	//alert(xwidth+" "+yheight+" "+xwidths+" "+yheights);
 	var show = Ext.getCmp("messageWindow_show");
+	var msgContent = msg.messageContent;
+	msgContent = msgContent.replaceAll("\n", "<br>");
 	if(!show){
 	    var messageWindow = new Ext.Window({
 		    id:"messageWindow_show",
 			title:"您有新的消息",
 			width:windowwidth,
 			height:windowheight,
-			html:"您有新的消息: <br>" + msg.messageContent + "<br>发送时间：" + msg.messageSendTime.format("Y-m-d H:i:s"),
+			html:"您有新的消息: <br>" + msgContent + "<br>发送时间：" + msg.messageSendTime.format("Y-m-d H:i:s"),
 			modal:false,
 			layout:"fit",
 			x:xwidth,

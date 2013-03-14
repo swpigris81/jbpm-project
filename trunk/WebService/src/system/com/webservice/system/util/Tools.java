@@ -866,14 +866,13 @@ public class Tools {
         
         
         //以下代码仅用于测试动态设置quartz
-        String newCorn = "0 0/1 10-23 * * ?";
-        //DynamicJobSchedule sc = new DynamicJobSchedule();
-        try {
-            dynamicJobSchedule.dynamicSchedule(newCorn);
-        }
-        catch (SchedulerException e) {
-            e.printStackTrace();
-        }
+//        String newCorn = "0 0/1 10-23 * * ?";
+//        try {
+//            dynamicJobSchedule.dynamicSchedule(newCorn);
+//        }
+//        catch (SchedulerException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public static void main(String[] args) throws ParseException {
