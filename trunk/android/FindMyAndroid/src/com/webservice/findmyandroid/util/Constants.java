@@ -10,13 +10,19 @@ import android.content.Intent;
  */
 public final class Constants {
     /**
+     * 基础主机.
+     * 本地测试时：http://191.168.1.105:8088.
+     * 部署在服务器上时：http://www.daichao.net
+     */
+    public static final String BASE_HOST = "http://www.daichao.net";
+    /**
      * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
      */
-    public static final String SERVER_URL = "http://191.168.1.105:8088/WebService/gcm/gcmRegister.action?method=registration";
+    public static final String SERVER_URL = BASE_HOST + "/WebService/gcm/gcmRegister.action?method=registration";
     /**
      * 接收定位数据的URL
      */
-    public static final String LOCATION_SERVER_URL = "http://191.168.1.105:8088/WebService/gcm/gcmLocation.action?method=gcmLocation";
+    public static final String LOCATION_SERVER_URL = BASE_HOST + "/WebService/gcm/gcmLocation.action?method=gcmLocation";
 
     /**
      * Google API project id registered to use GCM.
