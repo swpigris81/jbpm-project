@@ -11,6 +11,7 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.BDNotifyListener;
 import com.baidu.location.LocationClient;
+import com.webservice.findmyandroid.activity.LocationActivity;
 import com.webservice.findmyandroid.util.Constants;
 import com.webservice.findmyandroid.util.FindDroidPreferenceManager;
 import com.webservice.findmyandroid.util.HttpHelper;
@@ -41,13 +42,16 @@ public class FindMyAndroidApplication extends Application {
      * @version v1.0
      */
     public class MyLocationListenner implements BDLocationListener {
+        private String sendUserName;
         @Override
         public void onReceiveLocation(BDLocation location) {
+            sendUserName = LocationActivity.sendUserName;
             String latitude = "";
             String lontitude = "";
             String radius = "";
             String addr = "";
             String poi = "";
+            
             if(location != null){
                 StringBuffer sb = new StringBuffer(256);
                 sb.append("time : ");
@@ -77,13 +81,16 @@ public class FindMyAndroidApplication extends Application {
                 sb.append(mLocationClient.getVersion());
                 sb.append("\nisCellChangeFlag : ");
                 sb.append(location.isCellChangeFlag());
+                sb.append("\nsendUserName : ");
+                sb.append(sendUserName);
                 Log.i(TAG, sb.toString());
-                sendLocationToServer(latitude, lontitude, radius, addr, poi);
+                sendLocationToServer(latitude, lontitude, radius, addr, poi, sendUserName);
             }
         }
 
         @Override
         public void onReceivePoi(BDLocation poiLocation) {
+            sendUserName = LocationActivity.sendUserName;
             String latitude = "";
             String lontitude = "";
             String radius = "";
@@ -116,8 +123,10 @@ public class FindMyAndroidApplication extends Application {
                 }else{              
                     sb.append("noPoi information");
                 }
+                sb.append("\nsendUserName : ");
+                sb.append(sendUserName);
                 Log.i(TAG, sb.toString());
-                sendLocationToServer(latitude, lontitude, radius, addr, poi);
+                sendLocationToServer(latitude, lontitude, radius, addr, poi, sendUserName);
             }
         }
         /**
@@ -130,7 +139,7 @@ public class FindMyAndroidApplication extends Application {
          * @author:大牙
          * @update:2013-3-13
          */
-        private void sendLocationToServer(final String latitude, final String lontitude, final String radius, final String addr, final String poi){
+        private void sendLocationToServer(final String latitude, final String lontitude, final String radius, final String addr, final String poi, final String sendUserName){
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -142,6 +151,7 @@ public class FindMyAndroidApplication extends Application {
                     params.put("radius", radius);
                     params.put("addr", addr);
                     params.put("poi", poi);
+                    params.put("userName", sendUserName);
                     try {
                         String postResult = HttpHelper.post(Constants.LOCATION_SERVER_URL, params);
                         Log.d(TAG, "数据发送结果：" + postResult);

@@ -1,6 +1,7 @@
 package com.webservice.findmyandroid.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Process;
 import android.util.Log;
@@ -8,16 +9,18 @@ import android.util.Log;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.webservice.findmyandroid.FindMyAndroidApplication;
-import com.webservice.findmyandroid.R;
 
 public class LocationActivity extends Activity {
     private static String TAG = "LocationActivity";
     private LocationClient mLocClient;
+    public static String sendUserName;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLocClient = ((FindMyAndroidApplication)getApplication()).mLocationClient;
+        Intent intent = getIntent();
+        sendUserName = intent.getStringExtra("sendUserName");
         setLocationOption();
         mLocClient.start();
         Log.d(TAG, "地理位置客户端已开始");
