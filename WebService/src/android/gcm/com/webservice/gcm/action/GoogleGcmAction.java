@@ -20,6 +20,7 @@ import com.webservice.gcm.service.GcmService;
 import com.webservice.system.common.constants.Constants;
 import com.webservice.system.common.helper.SpringHelper;
 import com.webservice.system.message.bean.SystemMessage;
+import com.webservice.system.message.service.IMessageService;
 import com.webservice.system.role.bean.RoleInfo;
 import com.webservice.system.role.bean.UserRole;
 import com.webservice.system.role.service.IRoleService;
@@ -182,6 +183,10 @@ public class GoogleGcmAction extends BaseAction {
         Builder messageBuilder = new Message.Builder();
         messageBuilder.addData("title", messageTitle);
         messageBuilder.addData("message", messageContent);
+        messageBuilder.addData("sendUserName", userName);
+        //messageBuilder.delayWhileIdle(true);
+        messageBuilder.collapseKey(Constants.GCM_COLLAPSE_KEY);
+        messageBuilder.timeToLive(Constants.GCM_LIVE_TIME);
         Message message = messageBuilder.build();
         Map<String, Object> resultMap = new HashMap<String, Object>();
         try {
@@ -264,6 +269,16 @@ public class GoogleGcmAction extends BaseAction {
      */
     public String gcmLocation(){
         MessageSender dwrMessageSenderService = (MessageSender) SpringHelper.getBean("dwrMessageSenderService");
+        IMessageService messageService = (IMessageService) SpringHelper.getBean("messageService");
+        List deviceList = gcmService.findByRegisterId(regisId);
+        String sendToUser = "";
+        String alias = "";
+        if(deviceList != null && !deviceList.isEmpty()){
+            GcmModel model = (GcmModel) deviceList.get(0);
+            sendToUser = model.getUserName();
+            alias = model.getAndroidAlias();
+        }
+        //messageReminder
         LOG.info("获取得到的地理信息：");
         LOG.info("纬度：" + this.latitude);
         LOG.info("经度：" + this.lontitude);
@@ -271,10 +286,22 @@ public class GoogleGcmAction extends BaseAction {
         LOG.info("地理位置：" + this.addr);
         LOG.info("设备：" + regisId);
         LOG.info("POI：" + this.poi);
+        LOG.info("推送者：" + this.userName);
+        LOG.info("设备持有者：" + sendToUser);
         SystemMessage message = new SystemMessage();
-        message.setMessageContent("");
+        message.setMessageContent("纬度：" + this.latitude + "\n经度：" + this.lontitude + "\n海拔：" + this.radius + "\n地理位置：" + this.addr + "\n设备持有者：" + sendToUser + "\n设备别名：" + alias);
         message.setMessageSendTime(new Date());
-        dwrMessageSenderService.sendMessageWithPage(regisId, message);
+        message.setMessageFrom(sendToUser);
+        message.setMessageTo(userName);
+        message.setMessageNew("1");
+        message.setMessageReceiveTime(new Date());
+        message.setMessageTitle("设备定位通知消息");
+        messageService.save(message);
+        dwrMessageSenderService.sendMessageWithPage(userName, message);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("success", true);
+        resultMap.put("msg", "消息已经成功接收");
+        writeMeessage(resultMap);
         return null;
     }
     

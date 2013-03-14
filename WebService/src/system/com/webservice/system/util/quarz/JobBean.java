@@ -7,9 +7,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
+import com.webservice.system.common.helper.SpringHelper;
 import com.webservice.system.util.Tools;
 import com.webservice.system.util.jms.JmsReceiver;
 import com.webservice.system.util.jms.JmsSender;
+import com.webservice.system.util.msg.MessageReminder;
 
 public class JobBean {
     private static Log log = LogFactory.getLog(JobBean.class);
@@ -52,6 +54,8 @@ public class JobBean {
         log.info("run at "+Tools.dateToString3(new Date()));
         try {
             Tools.iLoveBaby();
+            MessageReminder messageReminder = (MessageReminder) SpringHelper.getBean("messageReminder");
+            messageReminder.sendAllMessageReminder();
             //IJbpmService jbpmService = (IJbpmService) SpringHelper.getBean("jbpmService");
             //jbpmService.disconnectJbpmServer();
         }

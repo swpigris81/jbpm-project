@@ -87,4 +87,12 @@ public class Constants {
      * GCM注册的APIkey
      */
     public static String GCM_API_KEY = "AIzaSyAu2yzgzJsC8NibpapNcslwYe2t1UgHyrY";
+    /**
+     * GCM消息离线保存时间：秒
+     */
+    public static int GCM_LIVE_TIME = 3600 * 24 * 10;
+    /**
+     * GCM消息离线时必须的参数
+     */
+    public static String GCM_COLLAPSE_KEY = "FindMyAndroid";
 }
