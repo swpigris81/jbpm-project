@@ -185,6 +185,8 @@ public class GoogleGcmAction extends BaseAction {
         messageBuilder.addData("message", messageContent);
         messageBuilder.addData("sendUserName", userName);
         //messageBuilder.delayWhileIdle(true);
+        // If multiple messages are sent using the same .collapseKey(),  the android target device, if it was offline during earlier message
+        // transmissions, will only receive the latest message for that key when it goes back on-line.
         messageBuilder.collapseKey(Constants.GCM_COLLAPSE_KEY);
         messageBuilder.timeToLive(Constants.GCM_LIVE_TIME);
         Message message = messageBuilder.build();
