@@ -227,7 +227,7 @@ public class SessionManager {
         private long maxInactiveInterval;
         
         public ContainerBackgroundProcessor() {
-            checkTimeoutInterval = Config.getLong("xmpp.session.maxInactiveInterval", 10 * 1000);
+            checkTimeoutInterval = Config.getLong("xmpp.session.checkTimeoutInterval", 10 * 1000);
             maxInactiveInterval = Config.getLong("xmpp.session.maxInactiveInterval", -1);
             log.debug("maxInactiveInterval:" + maxInactiveInterval);
             log.info("maxInactiveInterval:" + maxInactiveInterval);
