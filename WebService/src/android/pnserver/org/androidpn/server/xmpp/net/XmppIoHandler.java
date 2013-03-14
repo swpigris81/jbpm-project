@@ -133,7 +133,7 @@ public class XmppIoHandler implements IoHandler {
         log.debug("messageReceived()...");
         //<iq id="567-3" type="result"><test>aaaa</test></iq>
         //<iq id="567-3" type="result"><test>aaaa</test></iq>
-        log.info("RCVD: " + message);
+        //log.info("RCVD: " + message);
 
         // Get the stanza handler
         StanzaHandler handler = (StanzaHandler) session
