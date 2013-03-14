@@ -16,7 +16,7 @@ public final class Constants {
     /**
      * 接收定位数据的URL
      */
-    public static final String LOCATION_SERVER_URL = "http://191.168.1.105:8088/WebService/gcm/gcmRegister.action?method=registration";
+    public static final String LOCATION_SERVER_URL = "http://191.168.1.105:8088/WebService/gcm/gcmLocation.action?method=gcmLocation";
 
     /**
      * Google API project id registered to use GCM.

@@ -45,7 +45,9 @@ public class GCMIntentService extends GCMBaseIntentService {
      */
     protected void onMessage(Context context, Intent intent) {
         Log.d(TAG, "收到消息触发");
+        String sendUserName = intent.getStringExtra("sendUserName");
         Intent ni = new Intent(context, LocationActivity.class);
+        ni.putExtra("sendUserName", sendUserName);
         ni.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
         context.startActivity(ni);
     }
