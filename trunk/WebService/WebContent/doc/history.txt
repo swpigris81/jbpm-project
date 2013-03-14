@@ -89,3 +89,14 @@ COLLATE='utf8_general_ci'
 ENGINE=InnoDB;
 
 增加权限菜单：
+
+INSERT INTO `menubutton` (`button_id`, `button_name`, `button_text`, `menu_id`, `button_url`, `button_show`, `button_css`, `handler`) VALUES
+('002085543d614302013d6147b1950002', 'gcm_userlist_btn', '用户列表', '002085543d614302013d614711c90001', '/gcm/gcmUserList.action?method=userList', 'no', 'none', ''),
+('002085543d614302013d61487e3f0003', 'gcm_message_sender_btn', '推送消息', '002085543d614302013d614711c90001', '/gcm/gcmSender.action?method=gcmSender', 'yes', 'table_add', 'push'),
+('002085543d614302013d61492f8d0004', 'gcm_register_btn', 'GCM用户注册', '002085543d614302013d614711c90001', '/gcm/gcmRegister.action?method=registration', 'no', 'none', ''),
+('002085543d614302013d6149c9b80005', 'gcm_un_register_btn', 'GCM用户注销', '002085543d614302013d614711c90001', '/gcm/gcmUnRegister.action?method=unRegistration', 'no', 'none', ''),
+('002085543d62617e013d626bdad60001', 'all_gcm_droid_btn', '所有设备', '002085543d614302013d614711c90001', '/main.action', 'yes', 'table_find', 'findAllDroid'),
+('002085543d62617e013d626f7f670095', 'my_gcm_droid', '我的设备', '002085543d614302013d614711c90001', '/main.action', 'yes', 'table_find', 'findMyDroid');
+
+INSERT INTO `menu_info` (`menu_id`, `menu_name`, `page_path`, `menu_level`, `parent_menu`, `is_leave`, `is_show`, `comment`) VALUES
+('002085543d614302013d614711c90001', 'Google GCM云推送', '/gcm/gcmBegin.action?method=begin', '', '4028098136ce4d040136ce4de4490001', '1', '1', NULL);
