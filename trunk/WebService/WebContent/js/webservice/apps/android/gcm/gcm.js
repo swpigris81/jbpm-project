@@ -172,7 +172,13 @@ function jpush(){
     	userStore.baseParams.userName = userName;
     	userStore.load();
     };
-    
+    /**
+     * 客户端下载
+     */
+    this.download = function(url){
+    	url = "http://www.daichao.net/FindMyAndroid.apk";
+    	location.href=url;
+    };
     /**
      * 推送表单
      * @param url
