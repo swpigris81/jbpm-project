@@ -34,6 +34,15 @@ public class GCMIntentService extends GCMBaseIntentService {
     protected void onError(Context context, String errorId) {
         // TODO Auto-generated method stub
         Log.d(TAG, "异常：" + errorId);
+        if("AUTHENTICATION_FAILED".equals(errorId)){
+            Log.d(TAG, "认证失败！");
+            errorId += "，请检查您的网络是否正常！";
+        }
+        Intent intent = new Intent(context, FindMyAndroidActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+        intent.putExtra("success", false);
+        intent.putExtra("msg", "异常：" + errorId);
+        context.startActivity(intent);
     }
 
     /**
