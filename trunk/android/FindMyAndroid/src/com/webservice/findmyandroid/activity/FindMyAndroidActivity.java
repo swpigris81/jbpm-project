@@ -20,23 +20,27 @@ public class FindMyAndroidActivity extends Activity {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         showTip();
-        //验证设备是否支持GCM
-        GCMRegistrar.checkDevice(this);
-        //验证程序的manifest包含了在开始编写Android程序中所有符合要求的描述(这个方法只有你在开发程序的时候需要)
-        GCMRegistrar.checkManifest(this);
-        final String regId = GCMRegistrar.getRegistrationId(getApplicationContext());
-        if (regId == null || "".equals(regId)) {
-            Log.d(TAG, "Not registered, showing register page");
-            Intent intent = new Intent(FindMyAndroidActivity.this, UserRegisterActivity.class);
-            startActivityForResult(intent, Constants.START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
-        }else{
-            //only for test
-            Log.d(TAG, "Already registered, registerId: " + regId);
-//            GCMRegistrar.unregister(getApplicationContext());
-//            Log.d(TAG, "unregistered.");
-//            Intent intent = new Intent(FindMyAndroidActivity.this, UserRegisterActivity.class);
-//            startActivityForResult(intent, Constants.START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
-            setContentView(R.layout.activity_find_my_android_activity);
+        try{
+            //验证设备是否支持GCM
+            GCMRegistrar.checkDevice(this);
+            //验证程序的manifest包含了在开始编写Android程序中所有符合要求的描述(这个方法只有你在开发程序的时候需要)
+            GCMRegistrar.checkManifest(this);
+            final String regId = GCMRegistrar.getRegistrationId(getApplicationContext());
+            if (regId == null || "".equals(regId)) {
+                Log.d(TAG, "Not registered, showing register page");
+                Intent intent = new Intent(FindMyAndroidActivity.this, UserRegisterActivity.class);
+                startActivityForResult(intent, Constants.START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
+            }else{
+                //only for test
+                Log.d(TAG, "Already registered, registerId: " + regId);
+    //            GCMRegistrar.unregister(getApplicationContext());
+    //            Log.d(TAG, "unregistered.");
+    //            Intent intent = new Intent(FindMyAndroidActivity.this, UserRegisterActivity.class);
+    //            startActivityForResult(intent, Constants.START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
+                setContentView(R.layout.activity_find_my_android_activity);
+            }
+        }catch(Exception e){
+            Log.e(TAG, "系统异常，" + e.getMessage());
         }
     }
     /**
@@ -56,11 +60,16 @@ public class FindMyAndroidActivity extends Activity {
                   String tempUserPass = FindDroidPreferenceManager.getString(Constants.DROID_PASSWORD, "");
                   if(!StringUtils.isEmpty(tempUserName) && !StringUtils.isEmpty(tempUserPass)){
                       String regId = GCMRegistrar.getRegistrationId(getApplicationContext());
-                      if (regId == null || "".equals(regId)) {
-                          Log.d(TAG, "Not registered, registering...");
-                          GCMRegistrar.register(getApplicationContext(), Constants.SENDER_ID);
-                      }else{
-                          setContentView(R.layout.activity_find_my_android_activity);
+                      try{
+                          if (regId == null || "".equals(regId)) {
+                              Log.d(TAG, "Not registered, registering...");
+                              GCMRegistrar.register(getApplicationContext(), Constants.SENDER_ID);
+                          }else{
+                              setContentView(R.layout.activity_find_my_android_activity);
+                          }
+                      }catch(Exception e){
+                          Log.e(TAG, "手机不支持GCM注册！");
+                          return;
                       }
                   }else{
                       Intent intent = new Intent(FindMyAndroidActivity.this, UserRegisterActivity.class);
