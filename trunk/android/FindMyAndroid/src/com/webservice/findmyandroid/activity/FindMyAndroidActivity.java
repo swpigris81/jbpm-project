@@ -41,6 +41,9 @@ public class FindMyAndroidActivity extends Activity {
             }
         }catch(Exception e){
             Log.e(TAG, "系统异常，" + e.getMessage());
+            TextView tv = (TextView) findViewById(R.id.mainTextView);
+            tv.setText("抱歉！您的设备不支持GCM服务。请升级您的Android系统版本或者是在手机中使用Google账户登录Google Play商店。");
+            setContentView(R.layout.activity_find_my_android_activity);
         }
     }
     /**
@@ -69,6 +72,9 @@ public class FindMyAndroidActivity extends Activity {
                           }
                       }catch(Exception e){
                           Log.e(TAG, "手机不支持GCM注册！");
+                          TextView tv = (TextView) findViewById(R.id.mainTextView);
+                          tv.setText("抱歉！您的设备不支持GCM服务。请升级您的Android系统版本或者是在手机中使用Google账户登录Google Play商店。");
+                          setContentView(R.layout.activity_find_my_android_activity);
                           return;
                       }
                   }else{
