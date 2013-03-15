@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gcm.GCMRegistrar;
@@ -19,33 +21,63 @@ public class FindMyAndroidActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        showTip();
-        try{
-            //验证设备是否支持GCM
-            GCMRegistrar.checkDevice(this);
-            //验证程序的manifest包含了在开始编写Android程序中所有符合要求的描述(这个方法只有你在开发程序的时候需要)
-            GCMRegistrar.checkManifest(this);
-            final String regId = GCMRegistrar.getRegistrationId(getApplicationContext());
-            if (regId == null || "".equals(regId)) {
-                Log.d(TAG, "Not registered, showing register page");
-                Intent intent = new Intent(FindMyAndroidActivity.this, UserRegisterActivity.class);
-                startActivityForResult(intent, Constants.START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
-            }else{
-                //only for test
-                Log.d(TAG, "Already registered, registerId: " + regId);
-    //            GCMRegistrar.unregister(getApplicationContext());
-    //            Log.d(TAG, "unregistered.");
-    //            Intent intent = new Intent(FindMyAndroidActivity.this, UserRegisterActivity.class);
-    //            startActivityForResult(intent, Constants.START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
+        if(showTip()){
+            try{
+                //验证设备是否支持GCM
+                GCMRegistrar.checkDevice(this);
+                //验证程序的manifest包含了在开始编写Android程序中所有符合要求的描述(这个方法只有你在开发程序的时候需要)
+                GCMRegistrar.checkManifest(this);
+                final String regId = GCMRegistrar.getRegistrationId(getApplicationContext());
+                if (regId == null || "".equals(regId)) {
+                    Log.d(TAG, "Not registered, showing register page");
+                    Intent intent = new Intent(FindMyAndroidActivity.this, UserRegisterActivity.class);
+                    startActivityForResult(intent, Constants.START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
+                }else{
+                    //only for test
+                    Log.d(TAG, "Already registered, registerId: " + regId);
+        //            GCMRegistrar.unregister(getApplicationContext());
+        //            Log.d(TAG, "unregistered.");
+        //            Intent intent = new Intent(FindMyAndroidActivity.this, UserRegisterActivity.class);
+        //            startActivityForResult(intent, Constants.START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
+                    setContentView(R.layout.activity_find_my_android_activity);
+                }
+            }catch(Exception e){
+                Log.e(TAG, "系统异常，" + e.getMessage());
                 setContentView(R.layout.activity_find_my_android_activity);
+                TextView tv = (TextView) findViewById(R.id.mainTextView);
+                tv.setText("抱歉！您的设备不支持GCM服务。请升级您的Android系统版本或者是在手机中使用Google账户登录Google Play商店。");
             }
-        }catch(Exception e){
-            Log.e(TAG, "系统异常，" + e.getMessage());
-            TextView tv = (TextView) findViewById(R.id.mainTextView);
-            tv.setText("抱歉！您的设备不支持GCM服务。请升级您的Android系统版本或者是在手机中使用Google账户登录Google Play商店。");
+        }else{
             setContentView(R.layout.activity_find_my_android_activity);
+            Intent intent = getIntent();
+            if(intent != null){
+                Bundle bundle = intent.getExtras();
+                if(bundle != null){
+                    boolean bool = bundle.getBoolean("success");
+                    if(!bool){
+                        String msg = bundle.getString("msg");
+                        if(msg != null){
+                            TextView mainView = (TextView) findViewById(R.id.mainTextView);
+                            mainView.setText(msg + "！ 请升级您的Android系统版本或者是在手机中使用Google账户登录Google Play商店之后再重试。");
+                        }
+                    }
+                }
+            }
         }
     }
+    
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0){
+            finish();
+            //moveTaskToBack(true);
+            //System.exit(0);
+            return super.onKeyDown(keyCode, event);
+        }else{
+            return false;
+        }
+    }
+    
+    
     /**
      * <p>Discription:[当用户注册页面返回时触发]</p>
      * @param requestCode
@@ -72,9 +104,9 @@ public class FindMyAndroidActivity extends Activity {
                           }
                       }catch(Exception e){
                           Log.e(TAG, "手机不支持GCM注册！");
+                          setContentView(R.layout.activity_find_my_android_activity);
                           TextView tv = (TextView) findViewById(R.id.mainTextView);
                           tv.setText("抱歉！您的设备不支持GCM服务。请升级您的Android系统版本或者是在手机中使用Google账户登录Google Play商店。");
-                          setContentView(R.layout.activity_find_my_android_activity);
                           return;
                       }
                   }else{
@@ -95,20 +127,22 @@ public class FindMyAndroidActivity extends Activity {
      * @author:大牙
      * @update:2013-3-13
      */
-    private void showTip(){
+    private boolean showTip(){
         Intent intent = getIntent();
         if(intent != null){
             Bundle bundle = intent.getExtras();
             if(bundle != null){
                 boolean bool = bundle.getBoolean("success");
-                if(!bool){
-                    String msg = bundle.getString("msg");
-                    if(msg != null){
-                        TextView mainView = (TextView) findViewById(R.id.mainTextView);
-                        mainView.setText(msg);
-                    }
-                }
+//                if(!bool){
+//                    String msg = bundle.getString("msg");
+//                    if(msg != null){
+//                        TextView mainView = (TextView) findViewById(R.id.mainTextView);
+//                        mainView.setText(msg);
+//                    }
+//                }
+                return bool;
             }
         }
+        return true;
     }
 }
