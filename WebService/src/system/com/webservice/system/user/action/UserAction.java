@@ -411,8 +411,21 @@ public class UserAction extends BaseAction implements ServletRequestAware, Servl
 								new String[] { user.getUserName(),
 										user.getPhoneImei() });
 				if(userList != null && !userList.isEmpty()){
-					out.print("{'success':false, 'msg':'您输入的用户名以及设备IMEI号已被注册，请更换！'}");
-					bool = true;
+				    checkUserHql = "from UserInfo where userName = ? and password = ?";
+                    userList = userService
+                            .findUserByPageCondition(
+                                    checkUserHql,
+                                    0,
+                                    9999999,
+                                    new String[] { user.getUserName(),
+                                            user.getPassword() });
+                    if(userList != null && !userList.isEmpty()){
+                        out.print("{'success':true, 'msg':'您已成功登陆系统！'}");
+                        bool = true;
+                    }else{
+                        out.print("{'success':false, 'msg':'您输入的用户名以及设备IMEI号已被注册，请更换！'}");
+                        bool = true;
+                    }
 				}else{
 					checkUserHql = "from UserInfo where userName = ? and password = ?";
 					userList = userService
