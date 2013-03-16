@@ -41,6 +41,11 @@ public class JPushAction extends BaseAction {
      * 消息内容
      */
     private String content;
+    
+    /**
+     * 推送人
+     */
+    private String pushUserName;
     /**
      * 用户服务
      */
@@ -86,6 +91,8 @@ public class JPushAction extends BaseAction {
      */
     public String push(){
         Map<String, Object> resultMap = new HashMap<String, Object>();
+        Map<String, Object> extraMap = new HashMap<String, Object>();
+        extraMap.put("pushUserName", pushUserName);
         if((userName == null || "".equals(userName.trim())) && (phoneImei == null || "".equals(phoneImei.trim()))){
             resultMap.put("success", false);
             resultMap.put("msg", "用户名或者设备IMEI必须输入其中一个才能正常推送消息！");
@@ -101,8 +108,8 @@ public class JPushAction extends BaseAction {
                     sendNo ++;
                     //发送通知
                     //sendCustomMessageWithAlias
-                    msgResult = jpushClient.sendNotificationWithAlias(sendNo, user, "测试标题", content);
-                    
+                    //msgResult = jpushClient.sendNotificationWithAlias(sendNo, user, "测试标题", content);
+                    msgResult = jpushClient.sendCustomMessageWithAlias(sendNo, user, "测试标题", content, null, extraMap);
                     if(msgResult != null){
                         LOG.info("JPUSH服务器返回数据：" + msgResult.toString());
                         if(msgResult.getErrcode() == ErrorCodeEnum.NOERROR.value()){
@@ -118,18 +125,18 @@ public class JPushAction extends BaseAction {
                     }
                 }
             }else{
-            boolean bool = true;
+                boolean bool = true;
                 if(userName != null && !"".equals(userName.trim())){
                     sendNo ++;
                     bool = true;
                     //发送通知
                     //sendCustomMessageWithAlias
-                    msgResult = jpushClient.sendNotificationWithAlias(sendNo, userName, "测试标题", content);
+                    msgResult = jpushClient.sendCustomMessageWithAlias(sendNo, userName, "测试标题", content, null, extraMap);
                 }else{
                     sendNo ++;
                     bool = false;
                     //sendCustomMessageWithImei
-                    msgResult = jpushClient.sendNotificationWithImei(sendNo, phoneImei, "测试标题", content);
+                    msgResult = jpushClient.sendCustomMessageWithAlias(sendNo, phoneImei, "测试标题", content, null, extraMap);
                 }
                 if(msgResult != null){
                     LOG.info("JPUSH服务器返回数据：" + msgResult.toString());
@@ -158,6 +165,7 @@ public class JPushAction extends BaseAction {
                 }
             }
         }
+        writeMeessage(resultMap);
         return null;
     }
     /**
@@ -247,6 +255,12 @@ public class JPushAction extends BaseAction {
      */
     public void setTitle(String title) {
         this.title = title;
+    }
+    public String getPushUserName() {
+        return pushUserName;
+    }
+    public void setPushUserName(String pushUserName) {
+        this.pushUserName = pushUserName;
     }
     
 }
