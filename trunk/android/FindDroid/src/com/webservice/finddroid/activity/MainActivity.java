@@ -17,7 +17,6 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
-        super.onCreate(savedInstanceState);
         //判断客户端是否已经注册
         String userName = FindDroidPreferenceManager.getString(Constants.DROID_USERNAME, "");
         if(userName != null && !StringUtils.isEmpty(userName)){
@@ -27,7 +26,9 @@ public class MainActivity extends Activity {
             Intent intent = new Intent(MainActivity.this, UserRegisterActivity.class);
             startActivityForResult(intent, Constants.START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
         }
+        super.onCreate(savedInstanceState);
     }
+    
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0){
             finish();
@@ -51,10 +52,15 @@ public class MainActivity extends Activity {
                 if(userName == null || StringUtils.isEmpty(userName)){
                     Intent intent = new Intent(MainActivity.this, UserRegisterActivity.class);
                     startActivityForResult(intent, Constants.START_ACTIVITY_FOR_RESULT_REQUEST_CODE);
+                }else{
+                    Log.d(TAG, "用户注册成功，返回主页面");
+                    setContentView(R.layout.activity_main);
                 }
             }else{
+                setContentView(R.layout.activity_main);
                 TextView tv = (TextView) findViewById(R.id.textViewa);
-                tv.setText("用户注册失败，请重启本应用程序！");
+                String msg = FindDroidPreferenceManager.getString(Constants.USER_REG_INFO, "");
+                tv.setText("用户注册失败，" + msg);
             }
         }
     }
