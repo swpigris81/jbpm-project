@@ -226,6 +226,7 @@ function jpush(){
         });
         form.getForm().submit({
             timeout:60000,
+            params:{pushUserName:userName},
             success: function(form, action) {
                 Ext.Msg.hide();
                 try{
