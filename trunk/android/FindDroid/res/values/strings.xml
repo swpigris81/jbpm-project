@@ -1,18 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="app_name">FindDroid</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">FindDroid</string>
     <string name="title_activity_user_register">UserRegister</string>
     <string name="hello">Hello Android, DemoAppActivity!</string>
     <string name="insertusername">请输入用户名: </string>
     <string name="insertpass">请输入密码: </string>
     <string name="button_ok">确定</string>
-	<string name="comment">使用说明：\n\t用户名是www.daichao.net网站上注册的用户名，密码是登录www.daichao.net网站的密码。如果在该网站上尚未注册，系统将自动为您注册，注册的用户名及密码将是您输入的用户名和密码</string>
-	<string name="readme">
-	    程序说明：\n\t本程序的构想主要是为了能够找回丢失的终端（如：手机、平板电脑等）而做的一个应用。主要功能是用户在网站上向终端推送消息，终端返回当前所在的地理位置。\n\t
+    <string name="comment">使用说明：\n\t用户名是www.daichao.net网站上注册的用户名，密码是登录www.daichao.net网站的密码。如果在该网站上尚未注册，系统将自动为您注册，注册的用户名及密码将是您输入的用户名和密码</string>
+    <string name="readme">	    程序说明：\n\t本程序的构想主要是为了能够找回丢失的终端（如：手机、平板电脑等）而做的一个应用。主要功能是用户在网站上向终端推送消息，终端返回当前所在的地理位置。\n\t
 	    终端上需要注册用户名和密码，该用户名和密码是网站www.daichao.net上的用户名和密码。如果未注册该网站用户名和密码，系统将自动为您创建。
 	    创建成功之后，即可登录网站向自己的客户端发送消息。注意，一个客户端上的用户名必须唯一！
 	</string>
+    <string name="title_activity_location">LocationActivity</string>
+    <string name="action_settings">Settings</string>
+
 </resources>
