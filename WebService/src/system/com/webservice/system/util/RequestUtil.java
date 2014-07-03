@@ -25,7 +25,7 @@ public class RequestUtil {
      */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> getRequestMap(HttpServletRequest request) {
-        Map<String, Object[]> srcMap = request.getParameterMap();
+        Map<String, String[]> srcMap = request.getParameterMap();
         Map<String, Object> destMap = new HashMap<String, Object>();
         Set keySet = srcMap.keySet();
         Iterator<String> it = keySet.iterator();
