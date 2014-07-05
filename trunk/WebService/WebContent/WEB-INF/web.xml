@@ -157,6 +157,20 @@
 		<description>初始化JBPM4的用户角色</description>
 	</servlet>
 	-->
+	
+	<!-- 避免内存泄漏 -->
+	<!-- Struts2.3.16.3版本之后下面这个filter已过时 -->
+	<!-- <filter>
+		<filter-name>struts-cleanup</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>struts-cleanup</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping> -->
+	<!-- Struts2.3.16.3版本之后上面这个filter已过时 -->
+	
+	
 	<!-- 集成Struts2 -->
 	<filter>
 		<filter-name>struts2</filter-name>
@@ -166,15 +180,8 @@
 		<filter-name>struts2</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	<!-- 避免内存泄漏 -->
-	<filter>
-		<filter-name>struts-cleanup</filter-name>
-		<filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>struts-cleanup</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+	
+	
 	<!-- Spring刷新Interceptor防止内存泄漏 -->
 	<listener>
 		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
