@@ -52,6 +52,9 @@
 	<import resource="classpath*:/applicationContext-gcm-service.xml"/>
 	<import resource="classpath*:/applicationContext-gcm-dao.xml"/>
 	
+	<!-- MongoDB -->
+	<import resource="classpath*:/applicationContext-mongodb.xml"/>
+	
 	<!-- C3P0数据源配置 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">

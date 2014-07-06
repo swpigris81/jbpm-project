@@ -276,4 +276,21 @@
 	
 	<!-- Installs a listener to apply Spring Security authorities -->
 	<bean id="securityFlowExecutionListener" class="org.springframework.webflow.security.SecurityFlowExecutionListener"></bean> 
+	
+	<!-- DelegatingFilterProxy is a Spring Framework class which delegates to a filter implementation which is defined
+	 as a Spring bean in your application context. In this case, the bean is named “springSecurityFilterChain”, 
+	 which is an internal infrastructure bean created by the namespace to handle web security.
+	 should not use this bean name yourself -->
+	<bean id="springSecurityFilterChain" class="org.springframework.security.web.FilterChainProxy">
+		<!-- 
+		<s:filter-chain-map path-type="ant">
+        <s:filter-chain pattern="/**"
+            filters="securityContextPersistenceFilter,
+                    exceptionTranslationFilter,
+                    authenticationProcessingFilter,
+                    filterSecurityInterceptor,
+                    anonymousAuthenticationFilter"/>
+   		</s:filter-chain-map>
+		 -->
+	</bean>
 </beans>
