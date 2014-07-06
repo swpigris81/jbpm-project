@@ -6,7 +6,10 @@
 	<constant name="struts.action.extension" value="action"></constant>
 	
 	<include file="struts-jbpm.xml"></include>
-	<!-- <constant name="struts.enable.DynamicMethodInvocation" value="false"></constant> -->
+	<!-- 使用下面的配置，可以使用!来访问action，但是这样的话会有一些安全方面的隐患，尽量不要这样使用。 -->
+	<!-- 尽量使用通配符：配置成这样： -->
+	<!-- <action name="Crud_*" class="example.Crud" method="{1}"> -->
+	<constant name="struts.enable.DynamicMethodInvocation" value="true"></constant>
 	<constant name="struts.devMode" value="false"></constant>
 	<constant name="struts.i18n.encoding" value="UTF-8" />
 	
@@ -64,6 +67,8 @@
     <include file="struts-pnserver.xml"></include>
     <include file="struts-jpush.xml"></include>
     <include file="struts-gcm.xml"></include>
+    <!-- 大数据 -->
+    <include file="struts-mongodb.xml"></include>
     
     <package name="base" namespace="/base" extends="struts-default">
     	<action name="downloadAction" class="com.webservice.system.download.action.DownloadBaseAction">

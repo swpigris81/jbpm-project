@@ -741,3 +741,42 @@ function getExportForm(url, baseParams, target){
 	});
 	return exportForm;
 }
+/**
+ * 发起Ajax请求
+ * @param url 请求路径
+ * @param params 请求参数obj{}
+ * @param successFunction 响应成功的回调函数
+ * @param failFunction 响应失败的回调函数
+ */
+function requestAjax(url, params, successFunction, failFunction){
+	if(Ext){
+		Ext.Ajax.request({
+			params:params,
+			timeout:60000,
+			url: url,
+			success:function(response,options){
+				var msg = Ext.util.JSON.decode(response.responseText);
+				if(successFunction && typeof successFunction == "function"){
+					successFunction(msg);
+				}else{
+					if(msg){
+						Ext.Msg.alert("系统提示", msg.msg);
+					}else{
+						Ext.Msg.alert("系统提示", "交易成功！");
+					}
+				}
+			},failure:function(response,options){
+				var msg = Ext.util.JSON.decode(response.responseText);
+				if(failFunction && typeof failFunction == "function"){
+					failFunction(msg);
+				}else{
+					if(msg){
+						Ext.Msg.alert("系统提示", msg.msg);
+					}else{
+						Ext.Msg.alert("系统提示", "交易失败！");
+					}
+				}
+			}
+		});
+	}
+}
